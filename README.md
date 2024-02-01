@@ -70,6 +70,8 @@
 ## 기타
 ```
 
+## 기획/디자인 산출물
+https://www.figma.com/file/VEBy2qa3Y0ZbZSDUr50v6W/33MA3?type=design&node-id=0-1&mode=design&t=vypBQaEwXPJSfxsc-0
+
 ## 팀 활동 노션 📒
-- 기획 / 디자인 / 회의록
 - https://north-appliance-4ba.notion.site/2-e44bf8d52fc34c9daa157004923a0688?pvs=4
