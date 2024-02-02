@@ -5,17 +5,14 @@ import lombok.Getter;
 
 @Entity
 @Getter
-public class Offer {
+public class PostPerCenter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long offerId;
-    private int price;
-    private String contents;
-    private boolean selected;
-    @ManyToOne
-    @JoinColumn(name = "post_id")
-    private Post post;
+    private long postPerCenterId;
     @ManyToOne
     @JoinColumn(name = "center_id")
     private Center center;
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post post;
 }
