@@ -11,7 +11,7 @@ import lombok.Getter;
 public class Member {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long memberId;
-    private String memberTye;
+    private int memberType;     // 클라이언트: 1, 서비스 센터: 2
     private String loginId;
     private String password;
 }

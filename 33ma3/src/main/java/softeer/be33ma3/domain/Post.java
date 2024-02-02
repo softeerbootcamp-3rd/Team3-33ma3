@@ -8,22 +8,16 @@ import lombok.Getter;
 public class Post extends BaseTimeEntity{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long postId;
-
     private String modelName;
-    private boolean done;
-
+    private boolean done;       // 경매 완료시 true
     @ManyToOne
     @JoinColumn(name = "color_id")
     private Color color;
-
-    @ManyToOne
-    @JoinColumn(name = "car_category_id")
-    private CarCategory carCategory;
-
+    private String contents;
+    private String carType;
     @ManyToOne
     @JoinColumn(name = "region_id")
     private Region region;
-
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;

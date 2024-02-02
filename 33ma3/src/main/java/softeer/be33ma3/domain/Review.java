@@ -5,17 +5,16 @@ import lombok.Getter;
 
 @Entity
 @Getter
-public class Offer {
+public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long offerId;
-    private int price;
+    private long reviewId;
     private String contents;
-    private boolean selected;
-    @ManyToOne
+    private double score;
+    @OneToOne
     @JoinColumn(name = "post_id")
     private Post post;
     @ManyToOne
-    @JoinColumn(name = "center_id")
-    private Center center;
+    @JoinColumn(name = "member_id")
+    private Member member;
 }
