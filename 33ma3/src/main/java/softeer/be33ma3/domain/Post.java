@@ -10,9 +10,7 @@ public class Post extends BaseTimeEntity{
     private long postId;
     private String modelName;
     private boolean done;       // 경매 완료시 true
-    @ManyToOne
-    @JoinColumn(name = "color_id")
-    private Color color;
+    private int deadline;
     private String contents;
     private String carType;
     @ManyToOne
