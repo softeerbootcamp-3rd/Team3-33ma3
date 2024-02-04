@@ -4,10 +4,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long memberId;
@@ -17,4 +20,10 @@ public class Member {
     private String loginId;
 
     private String password;
+
+    public Member(int memberType, String loginId, String password) {
+        this.memberType = memberType;
+        this.loginId = loginId;
+        this.password = password;
+    }
 }
