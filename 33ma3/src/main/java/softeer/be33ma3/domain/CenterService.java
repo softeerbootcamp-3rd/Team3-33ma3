@@ -11,6 +11,8 @@ import lombok.Getter;
 public class CenterService {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long centerServiceId;
+
     private String centerServiceName;
+
     private int centerServiceType;      // 수리: 1, 정비: 2
 }
