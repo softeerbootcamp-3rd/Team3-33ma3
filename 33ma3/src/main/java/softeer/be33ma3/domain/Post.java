@@ -11,13 +11,17 @@ public class Post extends BaseTimeEntity{
 
     private String modelName;
 
-    private boolean done;       //낙찰 시 true
+    private boolean done;       //낙찰 시 or 마감기한 끝난경우 true
 
     private int deadline;
 
     private String contents;
 
     private String carType;
+
+    private String repairService;
+
+    private String tuneUpService;
 
     @ManyToOne
     @JoinColumn(name = "region_id")
