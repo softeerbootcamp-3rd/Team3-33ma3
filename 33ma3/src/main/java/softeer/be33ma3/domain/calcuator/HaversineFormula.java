@@ -17,6 +17,6 @@ public class HaversineFormula implements DistanceCalculator {
                         Math.sin(dLon / 2) * Math.sin(dLon / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-        return EARTH_RADIUS * c;
+        return Math.round(EARTH_RADIUS * c * 10) / 10.0 ;   //소수점 첫째자리 까지만
     }
 }

@@ -28,5 +28,4 @@ public class LocationService {
 
         return centerListDtos;
     }
-
 }
