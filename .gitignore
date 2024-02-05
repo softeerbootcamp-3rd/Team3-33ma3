@@ -47,6 +47,8 @@ psd
 thumb
 sketch
 
+.vite
+
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
