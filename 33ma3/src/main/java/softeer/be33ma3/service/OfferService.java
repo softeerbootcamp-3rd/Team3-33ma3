@@ -39,6 +39,7 @@ public class OfferService {
         // 3. 댓글 생성하여 저장하기
         Offer offer = offerCreateDto.toEntity(post, center);
         offer = offerRepository.save(offer);
+
         // 4. 응답 객체 구축하기
         PostDetailDto postDetailDto = PostDetailDto.fromEntity(post);
         double priceAvg = postService.priceAvgOfPost(postId);

@@ -25,7 +25,7 @@ public class OfferController {
         return ResponseEntity.ok(DataResponse.success("견적 불러오기 성공", offerDetailDto));
     }
 
-    @PostMapping("/post/{post_id}/offer")
+    @PostMapping("/{post_id}/offer")
     public ResponseEntity<?> createOffer(@PathVariable("post_id") Long postId, OfferCreateDto offerCreateDto) {
         List<Object> createOfferResult = offerService.createOffer(postId, offerCreateDto);
         return ResponseEntity.ok(DataResponse.success("입찰 성공", createOfferResult));
