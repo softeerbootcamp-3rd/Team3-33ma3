@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Getter;
 import softeer.be33ma3.domain.Offer;
 
-@Builder
 @Getter
 public class OfferDetailDto {
     private Long offerId;
@@ -12,6 +11,15 @@ public class OfferDetailDto {
     private int price;
     private String contents;
     private boolean selected;
+
+    @Builder
+    private OfferDetailDto(Long offerId, String centerName, int price, String contents, boolean selected) {
+        this.offerId = offerId;
+        this.centerName = centerName;
+        this.price = price;
+        this.contents = contents;
+        this.selected = selected;
+    }
 
     // Offer Entity -> OfferDetailDto 변환
     public static OfferDetailDto fromEntity(Offer offer) {
