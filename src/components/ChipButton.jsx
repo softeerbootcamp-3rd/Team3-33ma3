@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { useState } from "react";
 
 const Button = styled.button`
   color: ${(props) => props.theme.colors.text_default};
@@ -20,3 +21,20 @@ const Button = styled.button`
     color: ${(props) => props.theme.colors.text_strong};
   }
 `;
+
+export default function ChipButton({ type, onClick }) {
+  const [isActive, setIsActive] = useState(false);
+
+  function handleOnclick() {
+    setIsActive((prevStat) => !prevStat);
+    onClick(type);
+  }
+
+  return (
+    <>
+      <Button className={isActive ? "active" : ""} onClick={handleOnclick}>
+        {type}
+      </Button>
+    </>
+  );
+}
