@@ -20,7 +20,7 @@ public class PostService {
     // 해당 게시글의 평균 견적 제시 가격 반환
     double priceAvgOfPost(Long postId) {
         // 해당 게시글의 견적 모두 가져오기
-        List<Offer> offerList = offerRepository.findAllByPostId(postId);
+        List<Offer> offerList = offerRepository.findByPost_PostId(postId);
 
         // 제시 가격의 합계, 개수 구하기
         IntSummaryStatistics stats = offerList.stream()

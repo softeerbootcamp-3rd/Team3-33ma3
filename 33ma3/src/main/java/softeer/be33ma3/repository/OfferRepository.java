@@ -6,5 +6,5 @@ import softeer.be33ma3.domain.Offer;
 import java.util.List;
 
 public interface OfferRepository extends JpaRepository<Offer, Long> {
-    List<Offer> findAllByPostId(Long postId);
+    List<Offer> findByPost_PostId(Long postId);
 }
