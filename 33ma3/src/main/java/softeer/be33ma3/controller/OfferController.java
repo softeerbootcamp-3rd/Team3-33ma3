@@ -20,7 +20,6 @@ public class OfferController {
     @GetMapping("/{post_id}/offer/{offer_id}")
     public ResponseEntity<?> getOneOffer(@PathVariable("post_id") Long postId,
                                          @PathVariable("offer_id") Long offerId) {
-
         OfferDetailDto offerDetailDto = offerService.getOneOffer(postId, offerId);
         return ResponseEntity.ok(DataResponse.success("견적 불러오기 성공", offerDetailDto));
     }
