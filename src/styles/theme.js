@@ -2,9 +2,9 @@ const DefaultTheme = {
   fontSize: {
     title: "40px",
     large: "35px",
-    medium: "28px",
-    regular: "20px",
-    small: "15px",
+    medium: "20px",
+    regular: "15px",
+    small: "10px",
   },
   colors: {
     text_strong: "#14142B",
