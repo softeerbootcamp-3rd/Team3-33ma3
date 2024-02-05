@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostService {
 
-    private PostRepository postRepository;
-    private OfferRepository offerRepository;
+    private final OfferRepository offerRepository;
+    private final PostRepository postRepository;
 
     // 해당 게시글의 평균 견적 제시 가격 반환
     private double priceAvgOfPost(Long postId) {
