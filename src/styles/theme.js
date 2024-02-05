@@ -24,19 +24,19 @@ const DefaultTheme = {
     surface_white_weak: "#EEEEEE",
     surface_opacity_50: {
       color: "#0E1D4F",
-      opacity: "50%",
+      opacity: "0.5",
     },
     surface_opacity_75: {
       color: "#0E1D4F",
-      opacity: "75%",
+      opacity: "0.75",
     },
     border_default: "#F2F2F6",
     border_strong: "#A5A5A5",
   },
-  rediuses: {
+  radiuses: {
     radius_s: "10px",
     radius_m: "16px",
-    radius_l: "50%",
+    radius_l: "0.5",
   },
   dropShadow: {
     normal: {
