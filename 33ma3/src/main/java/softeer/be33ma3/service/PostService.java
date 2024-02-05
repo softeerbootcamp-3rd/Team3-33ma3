@@ -7,6 +7,7 @@ import softeer.be33ma3.domain.*;
 import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.repository.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

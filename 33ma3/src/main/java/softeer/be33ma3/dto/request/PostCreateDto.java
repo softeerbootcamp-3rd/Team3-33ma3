@@ -2,12 +2,14 @@ package softeer.be33ma3.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.List;
 
 @Data
+@AllArgsConstructor
 public class PostCreateDto {
     @NotNull(message = "멤버 아이디는 필수입니다.")
     private long memberId;
