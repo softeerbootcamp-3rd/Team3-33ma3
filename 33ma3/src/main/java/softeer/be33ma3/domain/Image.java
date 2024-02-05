@@ -1,10 +1,13 @@
 package softeer.be33ma3.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,4 +18,9 @@ public class Image {
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
+
+    public void setPost(Post post){
+        this.post = post;
+        post.getImages().add(this);
+    }
 }
