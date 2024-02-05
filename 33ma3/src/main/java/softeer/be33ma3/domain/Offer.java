@@ -8,8 +8,8 @@ import lombok.Getter;
 public class Offer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long offerId;
-
+    private Long offerId;
+  
     private int price;
 
     private String contents;
@@ -23,4 +23,11 @@ public class Offer {
     @ManyToOne
     @JoinColumn(name = "center_id")
     private Center center;
+
+    public Offer(int price, String contents, Post post, Center center) {
+        this.price = price;
+        this.contents = contents;
+        this.post = post;
+        this.center = center;
+    }
 }
