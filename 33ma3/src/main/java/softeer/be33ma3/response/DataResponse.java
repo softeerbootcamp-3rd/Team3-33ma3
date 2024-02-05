@@ -1,5 +1,8 @@
 package softeer.be33ma3.response;
 
+import lombok.Getter;
+
+@Getter
 public class DataResponse<T> extends SingleResponse{
     private T data;
 

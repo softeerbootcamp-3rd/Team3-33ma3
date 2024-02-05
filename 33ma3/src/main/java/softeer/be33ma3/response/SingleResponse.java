@@ -1,6 +1,7 @@
 package softeer.be33ma3.response;
 
-
+import lombok.Getter;
+@Getter
 public class SingleResponse {
     protected static final String SUCCESS_STATUS = "SUCCESS";
     private static final String ERROR_STATUS = "ERROR";
