@@ -15,7 +15,6 @@ public class OfferDetailDto {
 
     // Offer Entity -> OfferDetailDto 변환
     public static OfferDetailDto fromEntity(Offer offer) {
-        System.out.println("okay " + offer.getCenter());
         return OfferDetailDto.builder()
                 .offerId(offer.getOfferId())
                 .centerName(offer.getCenter().getCenterName())
