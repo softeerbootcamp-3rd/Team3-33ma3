@@ -18,7 +18,7 @@ public class PostService {
     private final PostRepository postRepository;
 
     // 해당 게시글의 평균 견적 제시 가격 반환
-    private double priceAvgOfPost(Long postId) {
+    double priceAvgOfPost(Long postId) {
         // 해당 게시글의 견적 모두 가져오기
         List<Offer> offerList = offerRepository.findAllByPostId(postId);
 
@@ -26,6 +26,8 @@ public class PostService {
         IntSummaryStatistics stats = offerList.stream()
                 .collect(Collectors.summarizingInt(Offer::getPrice));
 
+        if(stats.getCount() == 0)
+            throw new ArithmeticException("견적 제시 댓글이 없습니다.");
         return stats.getAverage();
     }
 }

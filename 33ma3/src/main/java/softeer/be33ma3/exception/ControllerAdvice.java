@@ -7,7 +7,7 @@ import softeer.be33ma3.response.SingleResponse;
 
 @RestControllerAdvice
 public class ControllerAdvice {
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler({IllegalArgumentException.class, ArithmeticException.class})
     public ResponseEntity<?> badRequest(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(SingleResponse.error(e.getMessage()));
     }
