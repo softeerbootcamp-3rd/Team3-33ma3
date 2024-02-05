@@ -9,7 +9,9 @@ public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long imageId;
+
     private String link;
+
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
