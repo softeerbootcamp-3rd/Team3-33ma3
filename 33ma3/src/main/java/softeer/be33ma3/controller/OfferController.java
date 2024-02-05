@@ -18,7 +18,7 @@ public class OfferController {
 
     private final OfferService offerService;
 
-    @GetMapping({"/{post_id}/offer/{offer_id}", "/{post_id}/offer/{offer_id}/update"})
+    @GetMapping("/{post_id}/offer/{offer_id}")
     public ResponseEntity<?> getOneOffer(@PathVariable("post_id") Long postId,
                                          @PathVariable("offer_id") Long offerId) {
 
