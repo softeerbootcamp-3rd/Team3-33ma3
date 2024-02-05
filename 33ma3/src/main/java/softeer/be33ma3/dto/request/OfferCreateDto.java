@@ -1,6 +1,5 @@
 package softeer.be33ma3.dto.request;
 
-import lombok.Builder;
 import lombok.Getter;
 import softeer.be33ma3.domain.Center;
 import softeer.be33ma3.domain.Offer;

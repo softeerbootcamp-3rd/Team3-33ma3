@@ -1,9 +1,6 @@
 package softeer.be33ma3.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import softeer.be33ma3.domain.Center;
 import softeer.be33ma3.domain.Offer;
@@ -13,11 +10,8 @@ import softeer.be33ma3.dto.response.OfferDetailDto;
 import softeer.be33ma3.dto.response.PostDetailDto;
 import softeer.be33ma3.repository.OfferRepository;
 import softeer.be33ma3.repository.PostRepository;
-import softeer.be33ma3.response.DataResponse;
-import softeer.be33ma3.response.SingleResponse;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
