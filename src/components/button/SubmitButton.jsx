@@ -3,10 +3,13 @@ import styled from "styled-components";
 
 const Button = styled.button`
   color: ${(props) => props.theme.colors.text_white_default};
-  font-size: ${(props) => props.theme.fontSize.medium};
+  font-size: ${(props) =>
+    props.size === "small"
+      ? props.theme.fontSize.regular
+      : props.theme.fontSize.medium};
   font-weight: 700;
 
-  padding: 10px 120px;
+  padding: ${(props) => (props.size === "small" ? "7px 20px" : "10px 120px")};
   border-radius: ${(props) => props.theme.radiuses.radius_s};
   background: ${(props) => props.theme.colors.surface_brand};
 
@@ -20,10 +23,12 @@ const Button = styled.button`
   }
 `;
 
-export default function SubmitButton({ children, onClick }) {
+export default function SubmitButton({ size, children, onClick }) {
   return (
     <>
-      <Button onClick={onClick}>{children}</Button>
+      <Button size={size} onClick={onClick}>
+        {children}
+      </Button>
     </>
   );
 }
