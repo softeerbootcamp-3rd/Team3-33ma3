@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface OfferRepository extends JpaRepository<Offer, Long> {
     List<Offer> findByPost_PostId(Long postId);
-    Optional<Offer> findByCenter_CenterId(Long centerId);
+    Optional<Offer> findByCenter_CenterIdAndPost_PostId(Long centerId, Long postId);
 }

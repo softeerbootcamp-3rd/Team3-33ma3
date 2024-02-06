@@ -120,7 +120,7 @@ public class PostService {
         Center center = centerRepository.findByMember_MemberId(member.getMemberId())
                 .orElseThrow(()->new IllegalArgumentException("존재하지 않는 서비스 센터"));
         // 해당 게시글에 해당 센터가 작성한 견적 찾기
-        Optional<Offer> offer = offerRepository.findByCenter_CenterId(center.getCenterId());
+        Optional<Offer> offer = offerRepository.findByCenter_CenterIdAndPost_PostId(center.getCenterId(), postId);
         return (offer.isEmpty() ? null : OfferDetailDto.fromEntity(offer.get()));
     }
 }
