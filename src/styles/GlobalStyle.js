@@ -9,6 +9,10 @@ const GlobalStyle = createGlobalStyle`
         height:100%;
         font-family: Pretendard;
     }
+
+    *{
+        font-family: Pretendard;
+    }
     
     button{
         background: inherit;
