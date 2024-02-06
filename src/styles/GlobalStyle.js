@@ -3,22 +3,15 @@ import reset from "styled-reset";
 
 const GlobalStyle = createGlobalStyle`
     ${reset}
-
-    * {
-        margin: 0;
-        padding: 0;
-        font-family: Pretendard;
-        font-style: normal;
-        line-height: normal;
-    }
-
-    html, body {
+    
+    html, body, #root{
         width: 100%;
         height:100%;
+        font-family: Pretendard;
     }
     
     button{
-        background: inherit ;
+        background: inherit;
         border:none;
         box-shadow:none;
         border-radius:0;
