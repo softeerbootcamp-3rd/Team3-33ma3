@@ -3,6 +3,8 @@ package softeer.be33ma3.dto.response;
 import lombok.Builder;
 import softeer.be33ma3.domain.Post;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,7 +13,8 @@ public class PostDetailDto {
     private Long postId;
     private String carType;
     private String modelName;
-    private int deadLine;
+    private int dDay;
+    private LocalDateTime serverTime;
     private String regionName;
     private String contents;
     private List<String> repairList;
@@ -21,11 +24,13 @@ public class PostDetailDto {
     public static PostDetailDto fromEntity(Post post) {
         List<String> repairList = stringCommaParsing(post.getRepairService());
         List<String> tuneUpList = stringCommaParsing(post.getTuneUpService());
+        int betweenTime = (int)ChronoUnit.DAYS.between(LocalDateTime.now(), post.getCreateTime());
         return PostDetailDto.builder()
                 .postId(post.getPostId())
                 .carType(post.getCarType())
                 .modelName(post.getModelName())
-                .deadLine(post.getDeadline())
+                .dDay(post.getDeadline() - betweenTime)
+                .serverTime(LocalDateTime.now())
                 .regionName(post.getRegion().getRegionName())
                 .contents(post.getContents())
                 .repairList(repairList)
