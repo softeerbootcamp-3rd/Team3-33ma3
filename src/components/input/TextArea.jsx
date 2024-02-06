@@ -18,8 +18,31 @@ const Input = styled.textarea`
   }
 `;
 
-function TextArea({ onChange }) {
-  return <Input onChange={onChange}></Input>;
+const InputLength = styled.div`
+  display: flex;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  justify-content: flex-end;
+  font-size: ${(props) => props.theme.fontSize.medium};
+  font-weight: 500;
+  color: ${(props) => props.theme.colors.text_weak};
+
+  & > h3 {
+    color: ${(props) => props.theme.colors.text_strong};
+  }
+`;
+
+function TextArea({ length, maxLength, onChange }) {
+  return (
+    <>
+      <Input onChange={onChange}></Input>
+      <InputLength>
+        <h3>{length}</h3>
+        <p>/{maxLength}</p>
+      </InputLength>
+    </>
+  );
 }
 
 export default TextArea;
