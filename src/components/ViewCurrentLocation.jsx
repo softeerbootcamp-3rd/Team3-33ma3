@@ -32,15 +32,29 @@ async function fetchCurrentLocation() {
   }
 }
 
-function initMap(latitude, longitude, map) {
+function initMap(latitude, longitude, mapElement) {
   const center = new naver.maps.LatLng(latitude, longitude);
   const mapOptions = {
     center: center,
     zoom: DEFAULT_ZOOM_SCALE,
     scaleControl: false,
   };
+  const map = new naver.maps.Map(mapElement, mapOptions);
 
-  return new naver.maps.Map(map, mapOptions);
+  const marker = new naver.maps.Marker({
+    position: map.getCenter(),
+    map: map,
+  });
+
+  naver.maps.Event.addListener(map, "drag", (e) => {
+    marker.setPosition(map.getCenter());
+  });
+
+  naver.maps.Event.addListener(map, "dragend", (e) => {
+    const currentCoords = map.getCenter();
+  });
+
+  return map;
 }
 
 export default function ViewCurrentLocation() {
@@ -59,7 +73,6 @@ export default function ViewCurrentLocation() {
         console.error(error);
       });
     const map = initMap(newLatitude, newLongitude, mapElement.current);
-    console.log(map);
     setNewMap(map);
   }, [newLatitude, newLongitude]);
 
