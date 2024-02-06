@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @SpringBootTest
-@AutoConfigureMockMvc //@WebMvcTest 없이도 MockMvc를 자동으로 설정
+@AutoConfigureMockMvc   //@WebMvcTest 없이도 MockMvc를 자동으로 설정
 class LocationControllerTest {
     @Autowired private MockMvc mockMvc;
     @MockBean private LocationService locationService;
