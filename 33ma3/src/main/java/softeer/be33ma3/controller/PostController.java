@@ -1,5 +1,12 @@
 package softeer.be33ma3.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +26,12 @@ import java.util.List;
 public class PostController {
     private final PostService postService;
 
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게시글 작성 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>존재하지 않는 회원" + "<br>존재하지 않는 구",
+                    content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+    })
+    @Operation(summary = "게시글 작성", description = "게시글 작성 메서드 입니다.")
     @PostMapping("/create")
     public ResponseEntity<?> createPost(@RequestBody @Valid PostCreateDto postCreateDto){
         postService.createPost(postCreateDto);
@@ -26,6 +39,13 @@ public class PostController {
         return ResponseEntity.ok().body(SingleResponse.success("게시글 작성 성공"));
     }
 
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게시글 조회 완료", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>존재하지 않는 서비스 센터" + "<br>견적 제시 댓글이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+    })
+    @Operation(summary = "게시글 조회", description = "게시글 조회 메서드 입니다.")
+    @Parameter(name = "post_id", description = "조회할 게시글 id", required = true, example = "1", in = ParameterIn.PATH)
     @GetMapping("/{post_id}")
     public ResponseEntity<?> getPost(@PathVariable("post_id") Long postId) {
         List<Object> getPostResult = postService.getPost(postId);

@@ -15,24 +15,43 @@ import java.util.List;
 @NoArgsConstructor
 @Schema(description = "게시글 작성 요청 DTO")
 public class PostCreateDto {
+    @Schema(description = "멤버 아이디", example = "1")
     @NotNull(message = "멤버 아이디는 필수입니다.")
     private Long memberId;
+
+    @Schema(description = "차종", example = "승용차")
     @NotBlank(message = "차종은 필수입니다.")
     private String carType;
+
+    @Schema(description = "모델명", example = "제네시스")
     @NotBlank(message = "모델명은 필수입니다.")
     private String modelName;
+
+    @Schema(description = "마감기한", example = "2")
     @NotNull(message = "마감기한은 필수입니다.")
     private Integer deadline;
+
+    @Schema(description = "사용자 위치", example = "서울시 강남구")
     @NotBlank(message = "위치는 필수입니다.")
     private String location;
+
+    @Schema(description = "수리 서비스 종류", example = "기스, 깨짐")
     @NotBlank(message = "수리 서비스는 필수입니다.")
     private String repairService;
+
+    @Schema(description = "정비 서비스", example = "오일 교체, 타이어 교체")
     @NotNull
     private String tuneUpService;
+
+    @Schema(description = "주위 센터 아이디", example = "1, 2, 3")
     @NotNull(message = "주위 센터 정보는 필수입니다.")
     private List<Long> centers;
+
+    @Schema(description = "이미지 아이디", example = "1, 2, 3")
     @NotNull
     private List<Long> images;
+
+    @Schema(description = "내용", example = "기스났는데 얼마할까요?")
     @Length(max=10, message = "내용은 최대 50글자입니다.")
     @NotNull
     private String contents;
