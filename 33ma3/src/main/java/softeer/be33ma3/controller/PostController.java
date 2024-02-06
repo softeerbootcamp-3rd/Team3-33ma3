@@ -3,13 +3,13 @@ package softeer.be33ma3.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import softeer.be33ma3.dto.request.PostCreateDto;
+import softeer.be33ma3.response.DataResponse;
 import softeer.be33ma3.response.SingleResponse;
 import softeer.be33ma3.service.PostService;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,5 +22,11 @@ public class PostController {
         postService.createPost(postCreateDto);
 
         return ResponseEntity.ok().body(SingleResponse.success("게시글 작성 성공"));
+    }
+
+    @GetMapping("/{post_id}")
+    public ResponseEntity<?> getPost(@PathVariable("post_id") Long postId) {
+        List<Object> getPostResult = postService.getPost(postId);
+        return ResponseEntity.ok(DataResponse.success("게시글 조회 완료", getPostResult));
     }
 }

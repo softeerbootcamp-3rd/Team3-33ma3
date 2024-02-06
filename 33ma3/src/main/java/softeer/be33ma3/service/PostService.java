@@ -6,14 +6,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.domain.*;
 import softeer.be33ma3.dto.request.PostCreateDto;
+import softeer.be33ma3.dto.response.OfferDetailDto;
+import softeer.be33ma3.dto.response.PostDetailDto;
 import softeer.be33ma3.repository.*;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.IntSummaryStatistics;
 import java.util.List;
 
 @Service
@@ -70,9 +70,33 @@ public class PostService {
 
         throw new IllegalArgumentException("주소에서 구를 찾을 수 없음");
     }
-  
+
+    // 게시글 세부사항 반환 (로그인 하지 않아도 확인 가능)
+    public List<Object> getPost(Long postId) {
+        // 1. 게시글 존재 유무 판단
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
+        // 2. 게시글 세부 사항 가져오기
+        PostDetailDto postDetailDto = PostDetailDto.fromEntity(post);
+        // 3. TODO: 접근자 정보 가져오기
+        Optional<Member> member = Optional.empty();
+        // 3-1. 경매가 완료되었거나 글 작성자의 접근일 경우
+        if(post.isDone() ||
+                member.isPresent() && post.getMember().getMemberId() == member.get().getMemberId()) {
+            List<Offer> offerList = offerRepository.findByPost_PostId(postId);
+            List<OfferDetailDto> offerDetailList = offerList.stream()
+                    .map(OfferDetailDto::fromEntity)
+                    .toList();
+            return List.of(postDetailDto, offerDetailList);
+        }
+        // 3-2. 경매가 진행 중이고 작성자가 아닌 유저의 접근일 경우
+        double priceAvg = priceAvgOfPost(postId);
+        // 견적을 작성한 이력이 있는 서비스 센터의 접근일 경우 작성한 견적 가져오기
+        OfferDetailDto offerDetailDto = getCenterOffer(postId, member.get());
+        return List.of(postDetailDto, priceAvg, offerDetailDto);
+    }
+
     // 해당 게시글의 평균 견적 제시 가격 반환
-    double priceAvgOfPost(Long postId) {
+    private double priceAvgOfPost(Long postId) {
         // 해당 게시글의 견적 모두 가져오기
         List<Offer> offerList = offerRepository.findByPost_PostId(postId);
 
@@ -83,5 +107,18 @@ public class PostService {
         if(stats.getCount() == 0)
             throw new ArithmeticException("견적 제시 댓글이 없습니다.");
         return stats.getAverage();
+    }
+
+    // 멤버 정보를 이용하여 견적을 작성한 이력이 있는 서비스 센터일 경우 작성한 견적 반환
+    // 해당사항 없을 경우 null 반환
+    private OfferDetailDto getCenterOffer(Long postId, Member member) {
+        if(member.getMemberType() == 1)
+            return null;
+        // 센터 엔티티 찾기
+        Center center = centerRepository.findByMember_MemberId(member.getMemberId())
+                .orElseThrow(()->new IllegalArgumentException("존재하지 않는 서비스 센터"));
+        // 해당 게시글에 해당 센터가 작성한 견적 찾기
+        Optional<Offer> offer = offerRepository.findByCenter_CenterId(center.getCenterId());
+        return (offer.isEmpty() ? null : OfferDetailDto.fromEntity(offer.get()));
     }
 }
