@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import softeer.be33ma3.dto.request.OfferCreateDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
 import softeer.be33ma3.response.DataResponse;
+import softeer.be33ma3.response.SingleResponse;
 import softeer.be33ma3.service.OfferService;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class OfferController {
 
     @PostMapping("/{post_id}/offer")
     public ResponseEntity<?> createOffer(@PathVariable("post_id") Long postId, @RequestBody @Valid OfferCreateDto offerCreateDto) {
-        List<Object> createOfferResult = offerService.createOffer(postId, offerCreateDto);
-        return ResponseEntity.ok(DataResponse.success("입찰 성공", createOfferResult));
+        offerService.createOffer(postId, offerCreateDto);
+        return ResponseEntity.ok(SingleResponse.success("입찰 성공"));
     }
 }
