@@ -2,9 +2,9 @@ const DefaultTheme = {
   fontSize: {
     title: "35px",
     large: "30px",
-    medium: "15px",
-    regular: "10px",
-    small: "5px",
+    medium: "20px",
+    regular: "15px",
+    small: "10px",
   },
   colors: {
     text_strong: "#14142B",
@@ -38,26 +38,11 @@ const DefaultTheme = {
     radius_m: "16px",
     radius_l: "0.5",
   },
-  dropShadow: {
-    normal: {
-      border_radius: "8px",
-      background: "#FEFEFE",
-      box_shadow: "0px 1px 4px 0px rgba(110, 128, 145, 0.24)",
-    },
-    up: {
-      border_radius: "8px",
-      background: "#FEFEFE",
-      box_shadow:
-        "0px 2px 8px 0px rgba(110, 128, 145, 0.16), 0px 2px 8px 0px rgba(110, 128, 145, 0.16)",
-      backdrop_filter: "blur(2px)",
-    },
-    floating: {
-      border_radius: "8px",
-      background: "#FEFEFE",
-      box_shadow: "0px 1px 4px 0px rgba(110, 128, 145, 0.24)",
-      box_shadow:
-        "0px 16px 16px 0px rgba(110, 128, 145, 0.24), 0px 0px 4px 0px rgba(110, 128, 145, 0.08)",
-    },
+  boxShadow: {
+    normal: "0px 1px 4px 0px rgba(110, 128, 145, 0.24)",
+    up: "0px 2px 8px 0px rgba(110, 128, 145, 0.16), 0px 2px 8px 0px rgba(110, 128, 145, 0.16)",
+    floating:
+      "0px 16px 16px 0px rgba(110, 128, 145, 0.24), 0px 0px 4px 0px rgba(110, 128, 145, 0.08);",
   },
 };
 

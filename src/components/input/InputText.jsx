@@ -6,8 +6,8 @@ const Input = styled.input`
   width: ${(props) => (props.size === "small" ? "100%" : "160px")};
   font-size: ${(props) =>
     props.size === "small"
-      ? props.theme.fontSize.medium
-      : props.theme.fontSize.large};
+      ? props.theme.fontSize.regular
+      : props.theme.fontSize.medium};
   font-weight: ${(props) => (props.size === "small" ? "500" : "700")};
   padding: 10px;
   border: none;
