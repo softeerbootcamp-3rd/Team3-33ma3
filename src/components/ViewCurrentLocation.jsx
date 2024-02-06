@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from "react";
 
 const DEFAULT_LATITUDE = 0;
 const DEFAULT_LONGITUDE = 0;
+const DEFAULT_ZOOM_SCALE = 15;
 
 function getCurrentLocation() {
   return new Promise((resolve, reject) => {
@@ -35,7 +36,7 @@ function initMap(latitude, longitude, map) {
   const center = new naver.maps.LatLng(latitude, longitude);
   const mapOptions = {
     center: center,
-    zoom: 15,
+    zoom: DEFAULT_ZOOM_SCALE,
     scaleControl: false,
   };
 
@@ -58,6 +59,7 @@ export default function ViewCurrentLocation() {
         console.error(error);
       });
     const map = initMap(newLatitude, newLongitude, mapElement.current);
+    console.log(map);
     setNewMap(map);
   }, [newLatitude, newLongitude]);
 
