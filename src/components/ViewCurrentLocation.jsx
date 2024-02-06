@@ -31,6 +31,17 @@ async function fetchCurrentLocation() {
   }
 }
 
+function initMap(latitude, longitude, map) {
+  const center = new naver.maps.LatLng(latitude, longitude);
+  const mapOptions = {
+    center: center,
+    zoom: 15,
+    scaleControl: false,
+  };
+
+  return new naver.maps.Map(map, mapOptions);
+}
+
 export default function ViewCurrentLocation() {
   const mapElement = useRef();
   const [newMap, setNewMap] = useState();
@@ -46,14 +57,7 @@ export default function ViewCurrentLocation() {
       .catch((error) => {
         console.error(error);
       });
-    const center = new N.LatLng(newLatitude, newLongitude);
-    const mapOptions = {
-      center: center,
-      zoom: 15,
-      scaleControl: false,
-    };
-
-    const map = new N.Map(mapElement.current, mapOptions);
+    const map = initMap(newLatitude, newLongitude, mapElement.current);
     setNewMap(map);
   }, [newLatitude, newLongitude]);
 
