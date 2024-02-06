@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
+// size 별 크기 지정
 const sizeList = {
   small: {
     width: "195px",

@@ -35,6 +35,7 @@ function ImageUpload() {
     imageInputRef.current.click();
   }
 
+  // image 업로드
   function onImageUpload(e) {
     const fileList = e.target.files;
     const url = URL.createObjectURL(fileList[0]);
