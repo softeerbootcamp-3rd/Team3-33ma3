@@ -23,4 +23,11 @@ public class Image {
         this.post = post;
         post.getImages().add(this);
     }
+
+    public static Image createImage(String link){
+        Image image = new Image();
+        image.link = link;
+
+        return image;
+    }
 }

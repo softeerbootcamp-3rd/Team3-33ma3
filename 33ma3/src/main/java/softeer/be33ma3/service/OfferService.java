@@ -8,6 +8,7 @@ import softeer.be33ma3.domain.Offer;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.dto.request.OfferCreateDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
+
 import softeer.be33ma3.repository.CenterRepository;
 import softeer.be33ma3.repository.OfferRepository;
 import softeer.be33ma3.repository.PostRepository;
@@ -17,10 +18,8 @@ import softeer.be33ma3.repository.PostRepository;
 @Transactional(readOnly = true)
 public class OfferService {
 
-    private final PostService postService;
     private final OfferRepository offerRepository;
     private final PostRepository postRepository;
-    private final CenterRepository centerRepository;
 
     // 견적 제시 댓글 하나 반환
     public OfferDetailDto getOffer(Long postId, Long offerId) {
