@@ -29,6 +29,7 @@ async function fetchCurrentLocation() {
     return response;
   } catch (error) {
     console.error(error.message);
+    return { latitude: DEFAULT_LATITUDE, longitude: DEFAULT_LONGITUDE };
   }
 }
 
@@ -82,24 +83,25 @@ function searchCoordinateToAddress(latLng, setNewAddress) {
 export default function ViewCurrentLocation() {
   const mapElement = useRef();
   const [newMap, setNewMap] = useState();
-  const [newLatitude, setNewLatitude] = useState(DEFAULT_LATITUDE);
-  const [newLongitude, setNewLongitude] = useState(DEFAULT_LONGITUDE);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    fetchCurrentLocation()
-      .then((res) => {
-        setNewLatitude(res.latitude);
-        setNewLongitude(res.longitude);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-    const map = initMap(newLatitude, newLongitude, mapElement.current);
-    setNewMap(map);
-  }, [newLatitude, newLongitude]);
+    async function fetchAndSetLocation() {
+      const currentLocation = await fetchCurrentLocation();
+      const map = initMap(
+        currentLocation.latitude,
+        currentLocation.longitude,
+        mapElement.current
+      );
+      setIsLoading(true);
+      setNewMap(map);
+    }
+    fetchAndSetLocation();
+  }, []);
 
   return (
     <div>
+      {!isLoading && <p>Loading.......</p>}
       <div
         ref={mapElement}
         id="map"
