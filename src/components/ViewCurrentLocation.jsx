@@ -52,9 +52,31 @@ function initMap(latitude, longitude, mapElement) {
 
   naver.maps.Event.addListener(map, "dragend", (e) => {
     const currentCoords = map.getCenter();
+    const currentAddress = searchCoordinateToAddress(currentCoords, map);
   });
 
   return map;
+}
+
+function searchCoordinateToAddress(latLng, setNewAddress) {
+  naver.maps.Service.reverseGeocode(
+    {
+      coords: latLng,
+      orders: [
+        naver.maps.Service.OrderType.ADDR,
+        naver.maps.Service.OrderType.ROAD_ADDR,
+      ].join(","),
+    },
+    function (status, response) {
+      if (status !== naver.maps.Service.Status.OK) {
+        return alert("Something went wrong!");
+      }
+      const address = response.v2.address.roadAddress
+        ? response.v2.address.roadAddress
+        : response.v2.address.jibunAddress;
+      setNewAddress(address);
+    }
+  );
 }
 
 export default function ViewCurrentLocation() {
