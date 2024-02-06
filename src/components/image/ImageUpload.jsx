@@ -13,6 +13,10 @@ const ImageUploadButton = styled.button`
   background: ${(props) => props.theme.colors.surface_white_weak};
   width: 195px;
   height: 195px;
+
+  &:hover {
+    background: ${(props) => props.theme.colors.surface_weak};
+  }
 `;
 
 const ImageList = styled.div`
