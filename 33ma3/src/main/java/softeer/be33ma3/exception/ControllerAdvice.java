@@ -16,7 +16,12 @@ public class ControllerAdvice {
     }
   
     @ExceptionHandler({IllegalArgumentException.class, ArithmeticException.class})
-    public ResponseEntity<?> badRequest(IllegalArgumentException e) {
+    public ResponseEntity<?> badRequest(RuntimeException e) {
         return ResponseEntity.badRequest().body(SingleResponse.error(e.getMessage()));
+    }
+
+    @ExceptionHandler(SseException.class)
+    public ResponseEntity<?> serverError(RuntimeException e) {
+        return ResponseEntity.internalServerError().body(SingleResponse.error(e.getMessage()));
     }
 }
