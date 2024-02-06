@@ -1,5 +1,6 @@
 package softeer.be33ma3.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import softeer.be33ma3.service.PostService;
 
 import java.util.List;
 
+@Tag(name = "Post", description = "게시글 관련 api")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/post")

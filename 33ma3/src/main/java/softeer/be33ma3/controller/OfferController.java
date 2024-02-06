@@ -1,5 +1,6 @@
 package softeer.be33ma3.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +11,7 @@ import softeer.be33ma3.response.DataResponse;
 import softeer.be33ma3.response.SingleResponse;
 import softeer.be33ma3.service.OfferService;
 
-
+@Tag(name = "Offer", description = "견적 제시 관련 api")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/post")

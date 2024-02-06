@@ -1,5 +1,6 @@
 package softeer.be33ma3.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,7 @@ import softeer.be33ma3.service.LocationService;
 
 import java.util.List;
 
+@Tag(name = "Location", description = "위치 관련 api")
 @RestController
 @RequiredArgsConstructor
 public class LocationController {
