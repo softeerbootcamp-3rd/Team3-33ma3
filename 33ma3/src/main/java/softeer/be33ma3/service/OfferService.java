@@ -2,20 +2,19 @@ package softeer.be33ma3.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.domain.Center;
 import softeer.be33ma3.domain.Offer;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.dto.request.OfferCreateDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
-import softeer.be33ma3.dto.response.PostDetailDto;
 import softeer.be33ma3.repository.CenterRepository;
 import softeer.be33ma3.repository.OfferRepository;
 import softeer.be33ma3.repository.PostRepository;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class OfferService {
 
     private final PostService postService;
@@ -24,7 +23,7 @@ public class OfferService {
     private final CenterRepository centerRepository;
 
     // 견적 제시 댓글 하나 반환
-    public OfferDetailDto getOneOffer(Long postId, Long offerId) {
+    public OfferDetailDto getOffer(Long postId, Long offerId) {
         // 1. 해당하는 게시글 가져와 존재하는지 판단하기
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
         // 2. 해당하는 댓글 가져와 존재하는지 판단하기
@@ -33,6 +32,7 @@ public class OfferService {
     }
 
     // 견적 제시 댓글 생성
+    @Transactional
     public void createOffer(Long postId, OfferCreateDto offerCreateDto) {
         // 1. 해당 게시글 가져오기
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
