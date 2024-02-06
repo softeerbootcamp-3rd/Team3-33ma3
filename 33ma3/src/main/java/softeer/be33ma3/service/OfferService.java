@@ -23,7 +23,7 @@ public class OfferService {
     private final CenterRepository centerRepository;
 
     // 견적 제시 댓글 하나 반환
-    public OfferDetailDto getOneOffer(Long postId, Long offerId) {
+    public OfferDetailDto getOffer(Long postId, Long offerId) {
         // 1. 해당하는 게시글 가져와 존재하는지 판단하기
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
         // 2. 해당하는 댓글 가져와 존재하는지 판단하기
