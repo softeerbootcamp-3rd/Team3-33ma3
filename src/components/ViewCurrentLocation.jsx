@@ -1,7 +1,35 @@
 import { useRef, useEffect, useState } from "react";
 
-const DEFAULT_LATITUDE = 37.3595704;
-const DEFAULT_LONGITUDE = 127.105399;
+const DEFAULT_LATITUDE = 0;
+const DEFAULT_LONGITUDE = 0;
+
+function getCurrentLocation() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error("Geolocation is not supported!"));
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        resolve({ latitude, longitude });
+      },
+      (error) => {
+        reject(error);
+      }
+    );
+  });
+}
+
+async function fetchCurrentLocation() {
+  try {
+    const response = await getCurrentLocation();
+    return response;
+  } catch (error) {
+    console.error(error.message);
+  }
+}
 
 export default function ViewCurrentLocation() {
   const mapElement = useRef();
@@ -10,10 +38,14 @@ export default function ViewCurrentLocation() {
   const [newLongitude, setNewLongitude] = useState(DEFAULT_LONGITUDE);
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      setNewLatitude(position.coords.latitude);
-      setNewLongitude(position.coords.longitude);
-    });
+    fetchCurrentLocation()
+      .then((res) => {
+        setNewLatitude(res.latitude);
+        setNewLongitude(res.longitude);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     const center = new N.LatLng(newLatitude, newLongitude);
     const mapOptions = {
       center: center,
@@ -26,11 +58,11 @@ export default function ViewCurrentLocation() {
   }, [newLatitude, newLongitude]);
 
   return (
-    <div style={{ width: "400px", height: "400px" }}>
+    <div>
       <div
         ref={mapElement}
         id="map"
-        style={{ width: "100%", height: "100%" }}
+        style={{ width: "400px", height: "400px" }}
       />
     </div>
   );
