@@ -10,7 +10,6 @@ import softeer.be33ma3.repository.ImageRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +31,7 @@ public class ImageService {
         List<Image> savedImages = imageRepository.saveAll(images);
         List<Long> savedImageIds = savedImages.stream()
                 .map(Image::getImageId)
-                .collect(Collectors.toList());
+                .toList();
 
         return new ImageListDto(savedImageIds);
     }
