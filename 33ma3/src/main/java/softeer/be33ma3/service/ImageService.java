@@ -31,7 +31,7 @@ public class ImageService {
         List<Image> savedImages = imageRepository.saveAll(images);
         List<Long> savedImageIds = savedImages.stream()
                 .map(Image::getImageId)
-                .toList();
+                .toList();
 
         return new ImageListDto(savedImageIds);
     }
