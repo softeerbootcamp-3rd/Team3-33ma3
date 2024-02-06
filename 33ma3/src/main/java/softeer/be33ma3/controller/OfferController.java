@@ -1,5 +1,6 @@
 package softeer.be33ma3.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class OfferController {
     }
 
     @PostMapping("/{post_id}/offer")
-    public ResponseEntity<?> createOffer(@PathVariable("post_id") Long postId, OfferCreateDto offerCreateDto) {
+    public ResponseEntity<?> createOffer(@PathVariable("post_id") Long postId, @Valid OfferCreateDto offerCreateDto) {
         List<Object> createOfferResult = offerService.createOffer(postId, offerCreateDto);
         return ResponseEntity.ok(DataResponse.success("입찰 성공", createOfferResult));
     }
