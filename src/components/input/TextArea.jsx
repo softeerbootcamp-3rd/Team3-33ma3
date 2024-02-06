@@ -9,7 +9,7 @@ const Input = styled.textarea`
   resize: none;
   border-radius: ${(props) => props.theme.radiuses.radius_s};
   box-sizing: border-box;
-  font-size: ${(props) => props.theme.fontSize.medium};
+  font-size: ${(props) => props.theme.fontSize.regular};
   padding: 10px;
 
   &:focus {
