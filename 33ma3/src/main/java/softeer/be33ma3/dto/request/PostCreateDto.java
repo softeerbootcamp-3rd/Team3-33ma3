@@ -14,13 +14,13 @@ import java.util.List;
 @NoArgsConstructor
 public class PostCreateDto {
     @NotNull(message = "멤버 아이디는 필수입니다.")
-    private long memberId;
+    private Long memberId;
     @NotBlank(message = "차종은 필수입니다.")
     private String carType;
     @NotBlank(message = "모델명은 필수입니다.")
     private String modelName;
     @NotNull(message = "마감기한은 필수입니다.")
-    private int deadline;
+    private Integer deadline;
     @NotBlank(message = "위치는 필수입니다.")
     private String location;
     @NotBlank(message = "수리 서비스는 필수입니다.")
