@@ -1,13 +1,10 @@
 package softeer.be33ma3.dto.response;
 
 import lombok.Builder;
-import softeer.be33ma3.domain.Offer;
 import softeer.be33ma3.domain.Post;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Builder
 public class PostDetailDto {
