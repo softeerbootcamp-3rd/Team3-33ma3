@@ -1,10 +1,12 @@
 package softeer.be33ma3.dto.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import softeer.be33ma3.domain.Offer;
 
 @Getter
+@Schema(description = "견적 상세보기 응답 DTO")
 public class OfferDetailDto {
     private Long offerId;
     private String centerName;

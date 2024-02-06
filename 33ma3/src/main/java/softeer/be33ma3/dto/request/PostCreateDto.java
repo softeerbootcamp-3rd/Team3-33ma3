@@ -1,5 +1,6 @@
 package softeer.be33ma3.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "게시글 작성 요청 DTO")
 public class PostCreateDto {
     @NotNull(message = "멤버 아이디는 필수입니다.")
     private Long memberId;

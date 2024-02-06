@@ -1,5 +1,6 @@
 package softeer.be33ma3.dto.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import softeer.be33ma3.domain.Image;
 import softeer.be33ma3.domain.Post;
@@ -10,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Builder
+@Schema(description = "게시글 상세보기 응답 DTO")
 public class PostDetailDto {
     private Long postId;
     private String carType;
