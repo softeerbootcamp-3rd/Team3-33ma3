@@ -13,13 +13,15 @@ const Dialog = styled.dialog`
   ${(props) => props.theme.dropShadow.floating}
 `;
 
-export default function LocationModal() {
+const LocationModal = forwardRef(function LocationModal(props, ref) {
   return createPortal(
     <>
-      <Dialog className="location-modal" open>
+      <Dialog ref={ref} className="location-modal">
         <ViewCurrentLocation />
       </Dialog>
     </>,
     document.getElementById("modal")
   );
-}
+});
+
+export default LocationModal;
