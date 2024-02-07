@@ -1,6 +1,8 @@
 package softeer.be33ma3.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -29,6 +31,7 @@ public class PostCreateDto {
 
     @Schema(description = "마감기한", example = "2")
     @NotNull(message = "마감기한은 필수입니다.")
+    @Max(value = 10, message = "최대 10일까지 가능합니다.")
     private Integer deadline;
 
     @Schema(description = "사용자 위치", example = "서울시 강남구")
