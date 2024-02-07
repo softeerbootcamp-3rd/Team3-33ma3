@@ -9,6 +9,7 @@ import softeer.be33ma3.dto.response.ImageListDto;
 import softeer.be33ma3.repository.ImageRepository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -29,10 +30,6 @@ public class ImageService {
         }
 
         List<Image> savedImages = imageRepository.saveAll(images);
-        List<Long> savedImageIds = savedImages.stream()
-                .map(Image::getImageId)
-                .toList();
-
-        return new ImageListDto(savedImageIds);
+        return ImageListDto.create(savedImages);
     }
 }
