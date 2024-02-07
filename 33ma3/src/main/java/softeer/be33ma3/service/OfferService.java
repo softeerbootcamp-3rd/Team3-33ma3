@@ -9,13 +9,9 @@ import softeer.be33ma3.domain.Offer;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.dto.request.OfferCreateDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
-
-import softeer.be33ma3.repository.CenterRepository;
 import softeer.be33ma3.repository.OfferRepository;
 import softeer.be33ma3.repository.PostRepository;
 
-import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 @Service
