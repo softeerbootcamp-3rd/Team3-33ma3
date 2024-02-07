@@ -39,7 +39,7 @@ public class OfferService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
         // 2. 경매 완료된 게시글인지 검증
         if(post.isDone())
-            throw new IllegalArgumentException("경매가 완료되었습니다.");
+            throw new IllegalArgumentException("완료된 게시글");
         // TODO: 3. 센터 정보 가져오고 작성 가능한지 검증
         Center center = null;
         // 3. 댓글 생성하여 저장하기
