@@ -5,12 +5,7 @@ import ViewCurrentLocation from "./ViewCurrentLocation";
 import InputText from "./input/InputText";
 
 const Dialog = styled.dialog`
-  display: inline-flex;
   padding: 30px;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-
   border-radius: ${(props) => props.theme.radiuses.radius_m};
   box-shadow: ${(props) => props.theme.boxShadow.floating};
 `;
@@ -50,6 +45,13 @@ const RadiusContainer = styled.div`
   align-items: center;
 `;
 
+const Wrapper = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-direction: column;
+`;
+
 const LocationModal = forwardRef(function LocationModal(props, ref) {
   const [currentAddress, setCurrentAddress] = useState("");
 
@@ -59,20 +61,24 @@ const LocationModal = forwardRef(function LocationModal(props, ref) {
 
   return createPortal(
     <>
-      <Dialog ref={ref} className="location-modal" open>
-        <TopContainer>
-          <Title>위치선택</Title>
-          <CloseButton>X</CloseButton>
-        </TopContainer>
-        <ViewCurrentLocation setNewAddress={handleLocation} />
-        <InputText size={"small"} defaultValue={currentAddress} />
-        <BottomContainer>
-          반경
-          <RadiusContainer>
-            <InputText placeholder={0} />
-            Km
-          </RadiusContainer>
-        </BottomContainer>
+      <Dialog ref={ref} className="location-modal">
+        <Wrapper>
+          <TopContainer>
+            <Title>위치선택</Title>
+            <form method="dialog">
+              <CloseButton>X</CloseButton>
+            </form>
+          </TopContainer>
+          <ViewCurrentLocation setNewAddress={handleLocation} />
+          <InputText size={"small"} defaultValue={currentAddress} />
+          <BottomContainer>
+            반경
+            <RadiusContainer>
+              <InputText placeholder={0} />
+              Km
+            </RadiusContainer>
+          </BottomContainer>
+        </Wrapper>
       </Dialog>
     </>,
     document.getElementById("modal")
