@@ -35,4 +35,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
         // 연결이 종료된 클라이언트의 세션을 맵에서 제거
         webSocketService.delete(session);
     }
+
+    // 서버 -> 클라이언트 데이터 전송
+    public void sendData2Client(Long memberId, Object data) throws IOException {
+        webSocketService.sendData(memberId, data);
+    }
 }
