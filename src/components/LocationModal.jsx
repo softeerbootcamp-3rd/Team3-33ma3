@@ -1,4 +1,4 @@
-import { forwardRef, useRef, useState } from "react";
+import { forwardRef, useRef, useState, useImperativeHandle } from "react";
 import { createPortal } from "react-dom";
 import styled from "styled-components";
 import ViewCurrentLocation from "./ViewCurrentLocation";
@@ -54,23 +54,38 @@ const Wrapper = styled.div`
 
 const LocationModal = forwardRef(function LocationModal(props, ref) {
   const [currentAddress, setCurrentAddress] = useState("");
+  const dialog = useRef();
 
   function handleLocation(address) {
     setCurrentAddress(address);
   }
 
+  function handleCloseModal() {
+    dialog.current.close();
+  }
+
+  useImperativeHandle(ref, () => {
+    return {
+      open() {
+        dialog.current.showModal();
+      },
+    };
+  });
+
   return createPortal(
     <>
-      <Dialog ref={ref} className="location-modal">
+      <Dialog ref={dialog} className="location-modal">
         <Wrapper>
           <TopContainer>
             <Title>위치선택</Title>
-            <form method="dialog">
-              <CloseButton>X</CloseButton>
-            </form>
+            <CloseButton onClick={handleCloseModal}>X</CloseButton>
           </TopContainer>
           <ViewCurrentLocation setNewAddress={handleLocation} />
-          <InputText size={"small"} defaultValue={currentAddress} />
+          <InputText
+            size={"small"}
+            defaultValue={currentAddress}
+            key={currentAddress}
+          />
           <BottomContainer>
             반경
             <RadiusContainer>
