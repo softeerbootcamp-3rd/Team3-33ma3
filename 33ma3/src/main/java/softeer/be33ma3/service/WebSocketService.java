@@ -27,10 +27,15 @@ public class WebSocketService {
 
     public void save(WebSocketSession session) {
         // TODO: 로그인한 유저 정보를 이용하여 member id 가져오기
-        Long memberId = 1L;
+        Long memberId = getMemberId();
         webSocketRepository.save(memberId, session);
     }
-    public void delete(WebSocketSession session) {
-        webSocketRepository.delete(session);
+    public void delete(WebSocketSession webSocketSession) {
+        webSocketRepository.delete(webSocketSession);
+    }
+
+    // TODO: 로그인한 유저 정보를 이용하여 member id 가져오기
+    private Long getMemberId() {
+        return 1L;
     }
 }
