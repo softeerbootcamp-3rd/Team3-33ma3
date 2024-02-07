@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import softeer.be33ma3.domain.Offer;
 
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -35,9 +36,12 @@ public class OfferDetailDto implements Comparable<OfferDetailDto> {
 
     // List<Offer> -> List<OfferDetailDto> 변환
     public static List<OfferDetailDto> fromEntityList(List<Offer> offerList) {
-        return offerList.stream()
+        List<OfferDetailDto> offerDetailList = offerList.stream()
                 .map(OfferDetailDto::fromEntity)
                 .toList();
+        Collections.sort(offerDetailList);
+
+        return offerDetailList;
     }
 
     // 제시 가격 저렴한 순 -> 별점 높은 순 정렬
