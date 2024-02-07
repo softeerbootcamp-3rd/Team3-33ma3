@@ -54,7 +54,7 @@ public class OfferService {
     // 게시글에 해당하는 견적 제시 댓글 리스트 반환
 
 
-    public void sendOfferList2Writer(Long postId) throws IOException {
+    public void sendOfferList2Writer(Long postId) {
         // 1. 해당 게시글 가져오기
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
         // 2. 글 작성자 아이디 가져오기
