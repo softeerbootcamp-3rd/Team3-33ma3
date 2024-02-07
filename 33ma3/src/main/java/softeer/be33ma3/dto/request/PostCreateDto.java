@@ -43,11 +43,11 @@ public class PostCreateDto {
     @NotNull
     private String tuneUpService;
 
-    @Schema(description = "주위 센터 아이디", example = "1, 2, 3")
+    @Schema(description = "주위 센터 아이디", example = "[1, 2, 3]")
     @NotNull(message = "주위 센터 정보는 필수입니다.")
     private List<Long> centers;
 
-    @Schema(description = "이미지 아이디", example = "1, 2, 3")
+    @Schema(description = "이미지 아이디", example = "[1, 2, 3]")
     @NotNull
     private List<Long> images;
 
