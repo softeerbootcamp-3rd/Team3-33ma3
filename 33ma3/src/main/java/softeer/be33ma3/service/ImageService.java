@@ -29,10 +29,6 @@ public class ImageService {
         }
 
         List<Image> savedImages = imageRepository.saveAll(images);
-        List<Long> savedImageIds = savedImages.stream()
-                .map(Image::getImageId)
-                .toList();
-
-        return new ImageListDto(savedImageIds);
+        return ImageListDto.create(savedImages);
     }
 }
