@@ -5,7 +5,7 @@ import lombok.Getter;
 import softeer.be33ma3.domain.Offer;
 
 @Getter
-public class OfferDetailDto {
+public class OfferDetailDto implements Comparable<OfferDetailDto> {
     private Long offerId;
     private String centerName;
     private int price;
@@ -29,5 +29,14 @@ public class OfferDetailDto {
                 .price(offer.getPrice())
                 .contents(offer.getContents())
                 .selected(offer.isSelected()).build();
+    }
+
+    // 제시 가격 저렴한 순 -> 별점 높은 순 정렬
+    @Override
+    public int compareTo(OfferDetailDto other) {
+        if(price != other.price)
+            return price - other.price;
+        // TODO: 센터 별점 높은 순 정렬
+        return 0;
     }
 }
