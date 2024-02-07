@@ -80,6 +80,30 @@ function searchCoordinateToAddress(latLng, setNewAddress) {
   );
 }
 
+function searchAddressToCoordinate(address, map) {
+  naver.maps.Service.geocode(
+    {
+      query: address,
+    },
+    function (status, response) {
+      if (status === naver.maps.Service.Status.ERROR) {
+        return alert("Something went Wrong!");
+      }
+
+      // 주소를 도로명으로 찾을 때, 건물명까지 입력하지 않으면 응답받지 못한다.
+      if (response.v2.meta.totalCount === 0) {
+        return;
+      }
+
+      const item = response.v2.addresses[0]; // 찾은 주소 정보
+      const point = new naver.maps.Point(Number(item.x), Number(item.y)); // 지도에서 이동할 좌표
+      const address = item.roadAddress ? item.roadAddress : item.jibunAddress;
+
+      map.setCenter(point);
+    }
+  );
+}
+
 export default function ViewCurrentLocation({ setNewAddress }) {
   const mapElement = useRef();
   const [newMap, setNewMap] = useState();
