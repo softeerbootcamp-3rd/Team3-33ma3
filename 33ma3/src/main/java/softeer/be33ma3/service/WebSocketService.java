@@ -26,8 +26,7 @@ public class WebSocketService {
     }
 
     public void save(WebSocketSession session) {
-        // TODO: 로그인한 유저 정보를 이용하여 member id 가져오기
-        Long memberId = getMemberId();
+        Long memberId = MemberService.getMemberId();
         webSocketRepository.save(memberId, session);
     }
     public void delete(WebSocketSession webSocketSession) {
@@ -42,10 +41,5 @@ public class WebSocketService {
         String jsonString = objectMapper.writeValueAsString(data);
         // 데이터 전송
         session.sendMessage(new TextMessage(jsonString));
-    }
-
-    // TODO: 로그인한 유저 정보를 이용하여 member id 가져오기
-    private Long getMemberId() {
-        return 1L;
     }
 }

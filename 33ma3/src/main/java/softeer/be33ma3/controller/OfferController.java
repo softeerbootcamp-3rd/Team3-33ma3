@@ -10,6 +10,8 @@ import softeer.be33ma3.response.DataResponse;
 import softeer.be33ma3.response.SingleResponse;
 import softeer.be33ma3.service.OfferService;
 
+import java.io.IOException;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -26,8 +28,11 @@ public class OfferController {
     }
 
     @PostMapping("/{post_id}/offer")
-    public ResponseEntity<?> createOffer(@PathVariable("post_id") Long postId, @RequestBody @Valid OfferCreateDto offerCreateDto) {
+    public ResponseEntity<?> createOffer(@PathVariable("post_id") Long postId,
+                                         @RequestBody @Valid OfferCreateDto offerCreateDto) throws IOException {
         offerService.createOffer(postId, offerCreateDto);
+        // 글 작성자에게 업데이트 된 댓글 리스트 보내기
+        offerService.sendOfferList2Writer(postId);
         return ResponseEntity.ok(SingleResponse.success("입찰 성공"));
     }
 }

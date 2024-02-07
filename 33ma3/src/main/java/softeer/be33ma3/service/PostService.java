@@ -83,9 +83,7 @@ public class PostService {
         if(post.isDone() ||
                 member.isPresent() && post.getMember().getMemberId() == member.get().getMemberId()) {
             List<Offer> offerList = offerRepository.findByPost_PostId(postId);
-            List<OfferDetailDto> offerDetailList = offerList.stream()
-                    .map(OfferDetailDto::fromEntity)
-                    .toList();
+            List<OfferDetailDto> offerDetailList = OfferDetailDto.fromEntityList(offerList);
             return List.of(postDetailDto, offerDetailList);
         }
         // 3-2. 경매가 진행 중이고 작성자가 아닌 유저의 접근일 경우
