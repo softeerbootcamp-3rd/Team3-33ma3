@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import softeer.be33ma3.dto.request.MemberSignUpDto;
 
 @Entity
 @Getter
@@ -21,9 +22,15 @@ public class Member {
 
     private String password;
 
+    private String refreshToken;
+
     public Member(int memberType, String loginId, String password) {
         this.memberType = memberType;
         this.loginId = loginId;
         this.password = password;
+    }
+
+    public static Member createMember(MemberSignUpDto memberSignUpDto){
+        return new Member(memberSignUpDto.getMemberType(), memberSignUpDto.getLoginId(), memberSignUpDto.getPassword());
     }
 }
