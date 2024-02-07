@@ -33,7 +33,7 @@ async function fetchCurrentLocation() {
   }
 }
 
-function initMap(latitude, longitude, mapElement) {
+function initMap(latitude, longitude, mapElement, setNewAddress) {
   const center = new naver.maps.LatLng(latitude, longitude);
   const mapOptions = {
     center: center,
@@ -41,7 +41,7 @@ function initMap(latitude, longitude, mapElement) {
     scaleControl: false,
   };
   const map = new naver.maps.Map(mapElement, mapOptions);
-
+  searchCoordinateToAddress(center, setNewAddress);
   const marker = new naver.maps.Marker({
     position: map.getCenter(),
     map: map,
@@ -53,7 +53,7 @@ function initMap(latitude, longitude, mapElement) {
 
   naver.maps.Event.addListener(map, "dragend", (e) => {
     const currentCoords = map.getCenter();
-    const currentAddress = searchCoordinateToAddress(currentCoords, map);
+    searchCoordinateToAddress(currentCoords, setNewAddress);
   });
 
   return map;
@@ -80,7 +80,7 @@ function searchCoordinateToAddress(latLng, setNewAddress) {
   );
 }
 
-export default function ViewCurrentLocation() {
+export default function ViewCurrentLocation({ setNewAddress }) {
   const mapElement = useRef();
   const [newMap, setNewMap] = useState();
   const [isLoading, setIsLoading] = useState(false);
@@ -91,7 +91,8 @@ export default function ViewCurrentLocation() {
       const map = initMap(
         currentLocation.latitude,
         currentLocation.longitude,
-        mapElement.current
+        mapElement.current,
+        setNewAddress
       );
       setIsLoading(true);
       setNewMap(map);
@@ -101,12 +102,13 @@ export default function ViewCurrentLocation() {
 
   return (
     <div>
-      {!isLoading && <p>Loading.......</p>}
       <div
         ref={mapElement}
         id="map"
-        style={{ width: "400px", height: "400px" }}
-      />
+        style={{ width: "350px", height: "350px" }}
+      >
+        Loading....
+      </div>
     </div>
   );
 }

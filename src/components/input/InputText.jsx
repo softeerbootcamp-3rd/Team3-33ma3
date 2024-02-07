@@ -22,9 +22,14 @@ const Input = styled.input`
   }
 `;
 
-function InputText({ size, placeholder, onChange }) {
+function InputText({ size, placeholder, onChange, defaultValue }) {
   return (
-    <Input size={size} placeholder={placeholder} onChange={onChange}></Input>
+    <Input
+      size={size}
+      placeholder={placeholder}
+      onChange={onChange}
+      defaultValue={defaultValue}
+    ></Input>
   );
 }
 
