@@ -9,7 +9,6 @@ import softeer.be33ma3.dto.response.ImageListDto;
 import softeer.be33ma3.repository.ImageRepository;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
