@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { searchCoordinateToAddress } from "./LocationModal";
+import { URL } from "./LocationModal";
 
 const DEFAULT_LATITUDE = 0;
 const DEFAULT_LONGITUDE = 0;
@@ -34,7 +35,15 @@ async function fetchCurrentLocation() {
   }
 }
 
-function initMap(latitude, longitude, mapElement, setNewAddress) {
+function initMap(
+  latitude,
+  longitude,
+  mapElement,
+  setMap,
+  setMarker,
+  setNewAddress,
+  setDragend
+) {
   const center = new naver.maps.LatLng(latitude, longitude);
   searchCoordinateToAddress(center, setNewAddress);
 
@@ -58,13 +67,22 @@ function initMap(latitude, longitude, mapElement, setNewAddress) {
   naver.maps.Event.addListener(map, "dragend", (e) => {
     const currentCoords = map.getCenter();
     map.setCenter(currentCoords);
+    marker.setPosition(currentCoords);
+    setMap(() => map);
+    setMarker(() => marker);
     searchCoordinateToAddress(currentCoords, setNewAddress);
+    setDragend(() => true);
   });
 
   return { map, marker };
 }
 
-export default function ViewCurrentLocation({ setMap, setMarker, setAddress }) {
+export default function ViewCurrentLocation({
+  setMap,
+  setMarker,
+  setAddress,
+  setDragend,
+}) {
   const mapElement = useRef();
 
   useEffect(() => {
@@ -74,7 +92,10 @@ export default function ViewCurrentLocation({ setMap, setMarker, setAddress }) {
         currentLocation.latitude,
         currentLocation.longitude,
         mapElement.current,
-        setAddress
+        setMap,
+        setMarker,
+        setAddress,
+        setDragend
       );
       setMap(map);
       setMarker(marker);

@@ -5,7 +5,7 @@ import ViewCurrentLocation from "./ViewCurrentLocation";
 import InputText from "./input/InputText";
 import SubmitButton from "./button/SubmitButton";
 
-const URL = "http://192.168.1.141:8080/";
+export const URL = "http://192.168.1.141:8080/";
 
 const Dialog = styled.dialog`
   padding: 30px;
@@ -119,9 +119,35 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
   const [newMap, setNewMap] = useState(); //이거를 상위 컴포넌트로 옮기면 더 효율적일듯
   const [newMarker, setNewMarker] = useState();
   const [newAddress, setNewAddress] = useState();
-  // const [inputRadius, setInputRadius] = useState();
+  const [inputRadius, setInputRadius] = useState(0);
+  const [isDragend, setIsDragend] = useState(false);
 
   const dialog = useRef();
+
+  if (isDragend) {
+    setIsDragend(false);
+    const coords = newMarker.position;
+
+    if (inputRadius < 0 || inputRadius > 10) {
+      alert("반경은 1이상 10이하까지 입력해주세요.");
+      return;
+    }
+
+    fetch(
+      `${URL}location?latitude=${coords._lat}&longitude=${coords._lng}&radius=${
+        inputRadius || 0
+      }`
+    )
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        const repairCenterList = data.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   function handleCloseModal() {
     dialog.current.close();
@@ -142,6 +168,8 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
     const inputRadius = e.target.value;
     const coords = newMarker.position;
 
+    setInputRadius(() => inputRadius);
+
     if (inputRadius < 0 || inputRadius > 10) {
       alert("반경은 1이상 10이하까지 입력해주세요.");
       return;
@@ -156,7 +184,7 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
         return res.json();
       })
       .then((data) => {
-        console.log(data);
+        const repairCenterList = data.data;
       })
       .catch((error) => {
         console.log(error);
@@ -185,6 +213,7 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
             setMap={setNewMap}
             setMarker={setNewMarker}
             setAddress={setNewAddress}
+            setDragend={setIsDragend}
           />
           <InputText
             key={generateKeyBasedOnCurrentTime()}
