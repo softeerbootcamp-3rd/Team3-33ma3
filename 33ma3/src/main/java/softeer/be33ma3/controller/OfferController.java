@@ -49,8 +49,11 @@ public class OfferController {
     @Parameter(name = "post_id", description = "입찰할 게시글 id", required = true, example = "1", in = ParameterIn.PATH)
     @Operation(summary = "입찰 하기", description = "입찰하기 메서드 입니다.")
     @PostMapping("/{post_id}/offer")
-    public ResponseEntity<?> createOffer(@PathVariable("post_id") Long postId, @RequestBody @Valid OfferCreateDto offerCreateDto) {
+    public ResponseEntity<?> createOffer(@PathVariable("post_id") Long postId,
+                                         @RequestBody @Valid OfferCreateDto offerCreateDto) {
         offerService.createOffer(postId, offerCreateDto);
+        // 글 작성자에게 업데이트 된 댓글 리스트 보내기
+        offerService.sendOfferList2Writer(postId);
         return ResponseEntity.ok(SingleResponse.success("입찰 성공"));
     }
 }

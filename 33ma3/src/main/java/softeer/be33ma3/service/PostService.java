@@ -83,9 +83,7 @@ public class PostService {
         if(post.isDone() ||
                 member.isPresent() && post.getMember().getMemberId() == member.get().getMemberId()) {
             List<Offer> offerList = offerRepository.findByPost_PostId(postId);
-            List<OfferDetailDto> offerDetailList = offerList.stream()
-                    .map(OfferDetailDto::fromEntity)
-                    .toList();
+            List<OfferDetailDto> offerDetailList = OfferDetailDto.fromEntityList(offerList);
             return List.of(postDetailDto, offerDetailList);
         }
         // 3-2. 경매가 진행 중이고 작성자가 아닌 유저의 접근일 경우
@@ -104,6 +102,8 @@ public class PostService {
         IntSummaryStatistics stats = offerList.stream()
                 .collect(Collectors.summarizingInt(Offer::getPrice));
 
+        if(stats.getSum() == 0)
+            return 0;
         if(stats.getCount() == 0)
             throw new ArithmeticException("견적 제시 댓글이 없습니다.");
         return stats.getAverage();
@@ -118,7 +118,7 @@ public class PostService {
         Center center = centerRepository.findByMember_MemberId(member.getMemberId())
                 .orElseThrow(()->new IllegalArgumentException("존재하지 않는 서비스 센터"));
         // 해당 게시글에 해당 센터가 작성한 견적 찾기
-        Optional<Offer> offer = offerRepository.findByCenter_CenterId(center.getCenterId());
+        Optional<Offer> offer = offerRepository.findByCenter_CenterIdAndPost_PostId(center.getCenterId(), postId);
         return (offer.isEmpty() ? null : OfferDetailDto.fromEntity(offer.get()));
     }
 }
