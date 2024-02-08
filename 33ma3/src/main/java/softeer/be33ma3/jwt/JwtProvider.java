@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import softeer.be33ma3.exception.JwtUnAuthorizedException;
 import softeer.be33ma3.repository.MemberRepository;
 
 import java.security.Key;
@@ -54,14 +55,11 @@ public class JwtProvider {  //jwt 토큰을 만들고 검증하는 역할
             Jwts.parserBuilder().setSigningKey(key)
                     .build().parseClaimsJws(token).getBody();
         }catch (SignatureException e ){ //signature 검증에 실패한 경우
-            log.error("SignatureException", e.getMessage());
-            return false;
+            throw new JwtUnAuthorizedException("JWT_NOT_VALID");
         }catch (ExpiredJwtException e) { //토큰이 만료된 경우
-            log.error("ExpiredJwtException", e.getMessage());
-            return false;
+            throw new JwtUnAuthorizedException("JWT_NOT_VALID");
         } catch (MalformedJwtException e) { //jwt 형식에 맞지 않는 경우
-            log.error("MalformedJwtException", e.getMessage());
-            return false;
+            throw new JwtUnAuthorizedException("JWT_NOT_VALID");
         }
 
         return true;
