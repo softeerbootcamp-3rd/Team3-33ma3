@@ -56,4 +56,24 @@ public class OfferController {
         offerService.sendOfferList2Writer(postId);
         return ResponseEntity.ok(SingleResponse.success("입찰 성공"));
     }
+
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "댓글 수정 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "401", description = "작성자만 수정 가능합니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "400", description = "기존 금액보다 낮은 금액으로만 수정 가능합니다."
+                    + "<br>존재하지 않는 게시글" + "<br>완료된 게시글" + "<br>존재하지 않는 견적",
+                    content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+    })
+    @Parameter(name = "post_id", description = "게시글 id", required = true, example = "1", in = ParameterIn.PATH)
+    @Parameter(name = "offer_id", description = "offer id", required = true, example = "2", in = ParameterIn.PATH)
+    @Operation(summary = "견적 댓글 수정하기", description = "견적 댓글 수정하기 메서드 입니다.")
+    @PatchMapping("/{post_id}/offer/{offer_id}")
+    public ResponseEntity<?> updateOffer(@PathVariable("post_id") Long postId,
+                                         @PathVariable("offer_id") Long offerId,
+                                         @RequestBody OfferCreateDto offerCreateDto) {
+        offerService.updateOffer(postId, offerId, offerCreateDto);
+        // 글 작성자에게 업데이트 된 댓글 리스트 보내기
+        offerService.sendOfferList2Writer(postId);
+        return ResponseEntity.ok(SingleResponse.success("댓글 수정 성공"));
+    }
 }

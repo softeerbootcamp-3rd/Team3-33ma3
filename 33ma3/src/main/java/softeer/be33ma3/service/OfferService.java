@@ -9,6 +9,7 @@ import softeer.be33ma3.domain.Offer;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.dto.request.OfferCreateDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
+import softeer.be33ma3.exception.UnauthorizedException;
 import softeer.be33ma3.repository.OfferRepository;
 import softeer.be33ma3.repository.PostRepository;
 
@@ -42,14 +43,35 @@ public class OfferService {
             throw new IllegalArgumentException("완료된 게시글");
         // TODO: 3. 센터 정보 가져오고 작성 가능한지 검증
         Center center = null;
-        // 3. 댓글 생성하여 저장하기
+        // 4. 댓글 생성하여 저장하기
         Offer offer = offerCreateDto.toEntity(post, center);
         offerRepository.save(offer);
     }
 
+    // 견적 제시 댓글 수정
+    @Transactional
+    public void updateOffer(Long postId, Long offerId, OfferCreateDto offerCreateDto) {
+        // 1. 해당 게시글 가져오기
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
+        // 2. 경매 완료된 게시글인지 검증
+        if(post.isDone())
+            throw new IllegalArgumentException("완료된 게시글");
+        // TODO: 3. 센터 정보 가져오기
+        Center center = null;
+        // 4. 기존 댓글 가져오기
+        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
+        // 5. 수정 가능한지 검증
+        if(center.getCenterId() != offer.getCenter().getCenterId())
+            throw new UnauthorizedException("작성자만 수정 가능합니다.");
+        if(offerCreateDto.getPrice() > offer.getPrice())
+            throw new IllegalArgumentException("기존 금액보다 낮은 금액으로만 수정 가능합니다.");
+        // 6. 댓글 수정하기
+        offer.setPrice(offerCreateDto.getPrice());
+        offer.setContents(offerCreateDto.getContents());
+        offerRepository.save(offer);
+    }
+
     // 게시글에 해당하는 견적 제시 댓글 리스트 반환
-
-
     public void sendOfferList2Writer(Long postId) {
         // 1. 해당 게시글 가져오기
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
