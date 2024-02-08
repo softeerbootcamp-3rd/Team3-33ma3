@@ -33,4 +33,8 @@ public class Member {
     public static Member createMember(MemberSignUpDto memberSignUpDto){
         return new Member(memberSignUpDto.getMemberType(), memberSignUpDto.getLoginId(), memberSignUpDto.getPassword());
     }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }
