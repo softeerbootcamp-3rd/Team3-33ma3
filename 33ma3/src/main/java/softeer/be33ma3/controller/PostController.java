@@ -47,8 +47,8 @@ public class PostController {
     @Operation(summary = "게시글 조회", description = "게시글 조회 메서드 입니다.")
     @Parameter(name = "post_id", description = "조회할 게시글 id", required = true, example = "1", in = ParameterIn.PATH)
     @GetMapping("/{post_id}")
-    public ResponseEntity<?> getPost(@PathVariable("post_id") Long postId) {
-        List<Object> getPostResult = postService.getPost(postId);
+    public ResponseEntity<?> showPost(@PathVariable("post_id") Long postId) {
+        List<Object> getPostResult = postService.showPost(postId);
         return ResponseEntity.ok(DataResponse.success("게시글 조회 완료", getPostResult));
     }
 }

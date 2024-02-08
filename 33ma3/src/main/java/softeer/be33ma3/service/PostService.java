@@ -72,7 +72,7 @@ public class PostService {
     }
 
     // 게시글 세부사항 반환 (로그인 하지 않아도 확인 가능)
-    public List<Object> getPost(Long postId) {
+    public List<Object> showPost(Long postId) {
         // 1. 게시글 존재 유무 판단
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
         // 2. 게시글 세부 사항 가져오기
