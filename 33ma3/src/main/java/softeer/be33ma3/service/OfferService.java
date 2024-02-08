@@ -24,7 +24,7 @@ public class OfferService {
     private final WebSocketHandler webSocketHandler;
 
     // 견적 제시 댓글 하나 반환
-    public OfferDetailDto getOffer(Long postId, Long offerId) {
+    public OfferDetailDto showOffer(Long postId, Long offerId) {
         // 1. 해당 게시글 가져오기
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
         // 2. 해당 댓글 가져오기

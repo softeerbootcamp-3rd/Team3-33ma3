@@ -35,9 +35,9 @@ public class OfferController {
     @Parameter(name = "offer_id", description = "offer id", required = true, example = "2", in = ParameterIn.PATH)
     @Operation(summary = "견적 댓글 불러오기", description = "견적 댓글 불러오기 메서드 입니다.")
     @GetMapping("/{post_id}/offer/{offer_id}")
-    public ResponseEntity<?> getOneOffer(@PathVariable("post_id") Long postId,
+    public ResponseEntity<?> showOffer(@PathVariable("post_id") Long postId,
                                          @PathVariable("offer_id") Long offerId) {
-        OfferDetailDto offerDetailDto = offerService.getOffer(postId, offerId);
+        OfferDetailDto offerDetailDto = offerService.showOffer(postId, offerId);
         return ResponseEntity.ok(DataResponse.success("견적 불러오기 성공", offerDetailDto));
     }
 
