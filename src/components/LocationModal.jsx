@@ -3,6 +3,9 @@ import { createPortal } from "react-dom";
 import styled from "styled-components";
 import ViewCurrentLocation from "./ViewCurrentLocation";
 import InputText from "./input/InputText";
+import SubmitButton from "./button/SubmitButton";
+
+const URL = "http://192.168.1.141:8080/";
 
 const Dialog = styled.dialog`
   padding: 30px;
@@ -81,7 +84,13 @@ export function searchCoordinateToAddress(latLng, updateAddress) {
   );
 }
 
-export function searchAddressToCoordinate(address, map, marker) {
+export function searchAddressToCoordinate(
+  address,
+  map,
+  marker,
+  updateMap,
+  updateMarker
+) {
   naver.maps.Service.geocode(
     {
       query: address ? address : "DEFAULT",
@@ -100,14 +109,17 @@ export function searchAddressToCoordinate(address, map, marker) {
       const point = new naver.maps.Point(Number(item.x), Number(item.y)); // 지도에서 이동할 좌표
       map.setCenter(point);
       marker.setPosition(point);
+      updateMap(map);
+      updateMarker(marker);
     }
   );
 }
 
-const LocationModal = forwardRef(function LocationModal(props, ref) {
+const LocationModal = forwardRef(function LocationModal({ props }, ref) {
   const [newMap, setNewMap] = useState(); //이거를 상위 컴포넌트로 옮기면 더 효율적일듯
   const [newMarker, setNewMarker] = useState();
   const [newAddress, setNewAddress] = useState();
+  // const [inputRadius, setInputRadius] = useState();
 
   const dialog = useRef();
 
@@ -115,10 +127,43 @@ const LocationModal = forwardRef(function LocationModal(props, ref) {
     dialog.current.close();
   }
 
-  function handleInputChange(e) {
+  function handleInputAddressChange(e) {
     const inputAddress = e.target.value;
-    searchAddressToCoordinate(inputAddress, newMap, newMarker);
+    searchAddressToCoordinate(
+      inputAddress,
+      newMap,
+      newMarker,
+      setNewMap,
+      setNewMarker
+    );
   }
+
+  function handleInputRadiusChange(e) {
+    const inputRadius = e.target.value;
+    const coords = newMarker.position;
+
+    if (inputRadius < 0 || inputRadius > 10) {
+      alert("반경은 1이상 10이하까지 입력해주세요.");
+      return;
+    }
+
+    fetch(
+      `${URL}location?latitude=${coords._lat}&longitude=${coords._lng}&radius=${
+        inputRadius || 0
+      }`
+    )
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  function handleSubmitOnClick() {}
 
   useImperativeHandle(ref, () => {
     return {
@@ -145,15 +190,16 @@ const LocationModal = forwardRef(function LocationModal(props, ref) {
             key={generateKeyBasedOnCurrentTime()}
             defaultValue={newAddress}
             size={"small"}
-            onChange={handleInputChange}
+            onChange={handleInputAddressChange}
           />
           <BottomContainer>
             반경
             <RadiusContainer>
-              <InputText placeholder={0} />
+              <InputText placeholder={0} onChange={handleInputRadiusChange} />
               Km
             </RadiusContainer>
           </BottomContainer>
+          <SubmitButton children={"저장"} onClick={handleSubmitOnClick} />
         </Wrapper>
       </Dialog>
     </>,
