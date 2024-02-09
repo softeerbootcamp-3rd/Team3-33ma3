@@ -56,9 +56,7 @@ const Wrapper = styled.div`
 `;
 
 function generateKeyBasedOnCurrentTime() {
-  // 현재 시간을 밀리초 단위로 표현
   const currentTime = new Date().getTime();
-  // 현재 시간을 기반으로 키 생성
   const key = `key_${currentTime}`;
   return key;
 }
@@ -84,13 +82,7 @@ export function searchCoordinateToAddress(latLng, updateAddress) {
   );
 }
 
-export function searchAddressToCoordinate(
-  address,
-  map,
-  marker,
-  updateMap,
-  updateMarker
-) {
+export function searchAddressToCoordinate(address, map, marker, circle) {
   naver.maps.Service.geocode(
     {
       query: address ? address : "DEFAULT",
@@ -100,7 +92,7 @@ export function searchAddressToCoordinate(
         return alert("Something went Wrong!");
       }
 
-      // 주소를 도로명으로 찾을 때, 건물명까지 입력하지 않으면 응답받지 못한다.
+      // 주소를 도로명으로 찾을 때, 건물명까지 입력하지 않으면 응답받지 못함
       if (response.v2.meta.totalCount === 0) {
         return;
       }
@@ -109,17 +101,17 @@ export function searchAddressToCoordinate(
       const point = new naver.maps.Point(Number(item.x), Number(item.y)); // 지도에서 이동할 좌표
       map.setCenter(point);
       marker.setPosition(point);
-      updateMap(map);
-      updateMarker(marker);
+      circle.setCenter(point);
     }
   );
 }
 
 const LocationModal = forwardRef(function LocationModal({ props }, ref) {
-  const [newMap, setNewMap] = useState(); //이거를 상위 컴포넌트로 옮기면 더 효율적일듯
+  const [newMap, setNewMap] = useState();
   const [newMarker, setNewMarker] = useState();
   const [newAddress, setNewAddress] = useState();
-  const [inputRadius, setInputRadius] = useState(0);
+  const [newCircle, setNewCircle] = useState();
+
   const [isDragend, setIsDragend] = useState(false);
 
   const dialog = useRef();
@@ -127,26 +119,27 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
   if (isDragend) {
     setIsDragend(false);
     const coords = newMarker.position;
+    const radius = newCircle.getRadius() / 1000;
 
-    if (inputRadius < 0 || inputRadius > 10) {
+    if (radius < 0 || radius > 10) {
       alert("반경은 1이상 10이하까지 입력해주세요.");
       return;
     }
 
-    fetch(
-      `${URL}location?latitude=${coords._lat}&longitude=${coords._lng}&radius=${
-        inputRadius || 0
-      }`
-    )
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        const repairCenterList = data.data;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    // fetch(
+    //   `${URL}location?latitude=${coords._lat}&longitude=${coords._lng}&radius=${
+    //     radius || 0
+    //   }`
+    // )
+    //   .then((res) => {
+    //     return res.json();
+    //   })
+    //   .then((data) => {
+    //     const repairCenterList = data.data;
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
   }
 
   function handleCloseModal() {
@@ -155,40 +148,34 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
 
   function handleInputAddressChange(e) {
     const inputAddress = e.target.value;
-    searchAddressToCoordinate(
-      inputAddress,
-      newMap,
-      newMarker,
-      setNewMap,
-      setNewMarker
-    );
+    searchAddressToCoordinate(inputAddress, newMap, newMarker, newCircle);
   }
 
   function handleInputRadiusChange(e) {
     const inputRadius = e.target.value;
     const coords = newMarker.position;
 
-    setInputRadius(() => inputRadius);
-
     if (inputRadius < 0 || inputRadius > 10) {
       alert("반경은 1이상 10이하까지 입력해주세요.");
       return;
     }
 
-    fetch(
-      `${URL}location?latitude=${coords._lat}&longitude=${coords._lng}&radius=${
-        inputRadius || 0
-      }`
-    )
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        const repairCenterList = data.data;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    newCircle.setRadius(inputRadius * 100);
+
+    // fetch(
+    //   `${URL}location?latitude=${coords._lat}&longitude=${coords._lng}&radius=${
+    //     inputRadius || 0
+    //   }`
+    // )
+    //   .then((res) => {
+    //     return res.json();
+    //   })
+    //   .then((data) => {
+    //     const repairCenterList = data.data;
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
   }
 
   function handleSubmitOnClick() {}
@@ -213,6 +200,7 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
             setMap={setNewMap}
             setMarker={setNewMarker}
             setAddress={setNewAddress}
+            setCircle={setNewCircle}
             setDragend={setIsDragend}
           />
           <InputText

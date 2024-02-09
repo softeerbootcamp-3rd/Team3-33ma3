@@ -1,6 +1,5 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import { searchCoordinateToAddress } from "./LocationModal";
-import { URL } from "./LocationModal";
 
 const DEFAULT_LATITUDE = 0;
 const DEFAULT_LONGITUDE = 0;
@@ -35,15 +34,7 @@ async function fetchCurrentLocation() {
   }
 }
 
-function initMap(
-  latitude,
-  longitude,
-  mapElement,
-  setMap,
-  setMarker,
-  setNewAddress,
-  setDragend
-) {
+function initMap(latitude, longitude, mapElement, setNewAddress) {
   const center = new naver.maps.LatLng(latitude, longitude);
   searchCoordinateToAddress(center, setNewAddress);
 
@@ -60,27 +51,20 @@ function initMap(
   };
   const marker = new naver.maps.Marker(markerOptions);
 
-  naver.maps.Event.addListener(map, "drag", (e) => {
-    marker.setPosition(map.getCenter());
-  });
+  const circleOptions = {
+    map: map,
+    center: center,
+  };
+  const circle = new naver.maps.Circle(circleOptions);
 
-  naver.maps.Event.addListener(map, "dragend", (e) => {
-    const currentCoords = map.getCenter();
-    map.setCenter(currentCoords);
-    marker.setPosition(currentCoords);
-    setMap(() => map);
-    setMarker(() => marker);
-    searchCoordinateToAddress(currentCoords, setNewAddress);
-    setDragend(() => true);
-  });
-
-  return { map, marker };
+  return { map, marker, circle };
 }
 
 export default function ViewCurrentLocation({
   setMap,
   setMarker,
   setAddress,
+  setCircle,
   setDragend,
 }) {
   const mapElement = useRef();
@@ -88,17 +72,30 @@ export default function ViewCurrentLocation({
   useEffect(() => {
     async function fetchAndSetLocation() {
       const currentLocation = await fetchCurrentLocation();
-      const { map, marker } = initMap(
+      const { map, marker, circle } = initMap(
         currentLocation.latitude,
         currentLocation.longitude,
         mapElement.current,
-        setMap,
-        setMarker,
-        setAddress,
-        setDragend
+        setAddress
       );
       setMap(map);
       setMarker(marker);
+      setCircle(circle);
+
+      naver.maps.Event.addListener(map, "drag", (e) => {
+        const currentCoords = map.getCenter();
+        marker.setPosition(currentCoords);
+        circle.setCenter(currentCoords);
+      });
+
+      naver.maps.Event.addListener(map, "dragend", (e) => {
+        const currentCoords = map.getCenter();
+        map.setCenter(currentCoords);
+        marker.setPosition(currentCoords);
+
+        setDragend(() => true);
+        searchCoordinateToAddress(currentCoords, setAddress);
+      });
     }
     fetchAndSetLocation();
   }, []);
