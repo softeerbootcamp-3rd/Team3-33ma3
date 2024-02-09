@@ -57,7 +57,7 @@ public class JwtProvider {  //jwt 토큰을 만들고 검증하는 역할
         }catch (SignatureException e ){ //signature 검증에 실패한 경우
             throw new JwtUnAuthorizedException("JWT_NOT_VALID");
         }catch (ExpiredJwtException e) { //토큰이 만료된 경우
-            throw new JwtUnAuthorizedException("JWT_NOT_VALID");
+            throw new JwtUnAuthorizedException("만료된 토큰");
         } catch (MalformedJwtException e) { //jwt 형식에 맞지 않는 경우
             throw new JwtUnAuthorizedException("JWT_NOT_VALID");
         }
@@ -68,7 +68,11 @@ public class JwtProvider {  //jwt 토큰을 만들고 검증하는 역할
 
     //JWT 토큰의 Claims 을 가져오는 메서드
     public Claims getClaims(String accessToken){
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(accessToken.replace(ACCESS_PREFIX_STRING, "")) // ACCESS_PREFIX_STRING 제거
+                .getBody();
     }
 
     private String createRefreshToken(Long memberId) {  //리프레시 토큰 생성

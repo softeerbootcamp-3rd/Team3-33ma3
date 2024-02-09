@@ -20,9 +20,7 @@ public class JwtService {
         //토큰 생성
         JwtToken jwtToken = jwtProvider.createJwtToken(memberType, memberId, loginId);
 
-        //기존 사용자인지 신규 사용자인지 확인 - 리프레시 토큰으로 확인
-
-        //신규 사용자인 경우 - 새로 만들기
+        //refreshToken 저장
         member.setRefreshToken(jwtToken.getRefreshToken());
 
         return jwtToken;
