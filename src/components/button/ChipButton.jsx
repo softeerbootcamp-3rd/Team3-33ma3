@@ -10,12 +10,14 @@ const Button = styled.button`
   border-radius: ${(props) => props.theme.radiuses.radius_m};
   box-shadow: 0px 0px 0px 1.5px ${(props) => props.theme.colors.border_strong};
   background: ${(props) => props.theme.colors.surface_default};
+  transition: 0.3s;
 
   &:hover,
   &.active {
     box-shadow: 0px 0px 0px 1.5px ${(props) => props.theme.colors.surface_black};
     background: ${(props) => props.theme.colors.surface_default};
     color: ${(props) => props.theme.colors.text_strong};
+    transition: 0.3s;
   }
 `;
 
@@ -24,12 +26,16 @@ export default function ChipButton({ type, onClick }) {
 
   function handleOnclick() {
     setIsActive((prevStat) => !prevStat);
-    onClick(type);
+    onClick();
   }
 
   return (
     <>
-      <Button className={isActive ? "active" : ""} onClick={handleOnclick}>
+      <Button
+        type="button"
+        className={isActive ? "active" : ""}
+        onClick={handleOnclick}
+      >
         {type}
       </Button>
     </>
