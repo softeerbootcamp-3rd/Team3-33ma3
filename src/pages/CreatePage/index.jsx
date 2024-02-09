@@ -46,10 +46,11 @@ const ServiceList = styled.div`
 `;
 
 const Grid = styled.div`
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: 20px;
-  grid-column-gap: 50px;
+  grid-column-gap: 70px;
+  grid-row-gap: 25px;
 `;
 
 function PostCreatePage() {
@@ -140,7 +141,7 @@ function PostCreatePage() {
   }
 
   const Repair = (
-    <OptionItem title={"수리 서비스"}>
+    <OptionItem title={"수리 서비스"} align={"start"}>
       <ServiceList>
         {REPAIR_SERVICE_OPTIONS.map((item, index) => (
           <ChipButton
@@ -155,7 +156,7 @@ function PostCreatePage() {
   );
 
   const TuneUp = (
-    <OptionItem title={"정비 서비스"}>
+    <OptionItem title={"정비 서비스"} align={"start"}>
       <ServiceList>
         {TUNEUP_SERVICE_OPTIONS.map((item, index) => (
           <ChipButton
