@@ -56,10 +56,11 @@ function PostCreatePage() {
   const repairService = useRef([]);
   const tuneUpService = useRef([]);
   const imageFiles = useRef([]);
+  const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
   // Form 제출 버튼 클릭 시 실행
-  async function onSubmit(e) {
+  function onSubmit(e) {
     e.preventDefault();
     setLoading(true);
 
@@ -78,6 +79,13 @@ function PostCreatePage() {
       centers: [1, 2, 3],
       memberId: 1,
     };
+
+    // TODO: 에러처리 필요
+    if (!validateOptions(newPost)) {
+      console.log("게시물 작성 형식 안맞음");
+      setLoading(false);
+      return;
+    }
 
     fd.append(
       "request",
@@ -105,6 +113,24 @@ function PostCreatePage() {
       });
   }
 
+  // 올바른 게시물 작성 형태인지 확인
+  function validateOptions(post) {
+    const errors = {};
+    // 수리, 정비 중 하나도 고르지 않은 경우
+    if (repairService.current.length < 1 && tuneUpService.current.length < 1) {
+      errors.service =
+        "수리 서비스 혹은 정비 서비스 중 하나는 반드시 선택해야 합니다.";
+    }
+
+    // 모델명에 아무것도 안썼을 경우
+    if (post.modelName.length < 1) {
+      errors.modelName = "모델명을 입력해주세요.";
+    }
+
+    setFormErrors(errors);
+    return false;
+  }
+
   function toggle(state, value) {
     if (state.current.includes(value)) {
       state.current = state.current.filter((item) => item !== value);
@@ -124,6 +150,7 @@ function PostCreatePage() {
           />
         ))}
       </ServiceList>
+      {formErrors.service && <span>{formErrors.service}</span>}
     </OptionItem>
   );
 
@@ -138,6 +165,7 @@ function PostCreatePage() {
           />
         ))}
       </ServiceList>
+      {formErrors.service && <span>{formErrors.service}</span>}
     </OptionItem>
   );
 
@@ -149,8 +177,9 @@ function PostCreatePage() {
           <ImageUpload imageFiles={imageFiles} />
           <Option title={"차량 정보"}>
             <Grid>
-              <OptionItem title={"모델 명"}>
+              <OptionItem title={"모델"}>
                 <InputText size={"small"} name={"modelName"} />
+                {formErrors.modelName && <span>{formErrors.modelName}</span>}
               </OptionItem>
               <OptionItem title={"차종"}>
                 <SelectCategory name={"carType"} />
