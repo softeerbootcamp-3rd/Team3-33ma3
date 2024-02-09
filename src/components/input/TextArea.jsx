@@ -33,18 +33,18 @@ const InputLength = styled.div`
   }
 `;
 
-function TextArea({ length, maxLength, name }) {
-  const [value, setValue] = useState("");
+function TextArea({ maxLength, name }) {
+  const [length, setLength] = useState(0);
 
   function onChange(e) {
-    setValue(e.target.value);
+    setLength(e.target.value.length);
   }
 
   return (
     <>
-      <Input onChange={onChange} name={name}></Input>
+      <Input onChange={onChange} name={name} maxLength={maxLength}></Input>
       <InputLength>
-        <h3>{value.length}</h3>
+        <h3>{length}</h3>
         <p>/{maxLength}</p>
       </InputLength>
     </>
