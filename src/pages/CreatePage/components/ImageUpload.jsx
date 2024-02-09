@@ -29,7 +29,7 @@ const Images = styled.div`
   white-space: nowrap;
 `;
 
-function ImageUpload({ imageFiles, setImageFiles }) {
+function ImageUpload({ imageFiles }) {
   const imageInputRef = useRef();
   // TODO: 부모 컴포넌트에서 state 받아옴
   const [previewImageList, setPreviewImageList] = useState([]);
@@ -45,7 +45,7 @@ function ImageUpload({ imageFiles, setImageFiles }) {
     const url = URL.createObjectURL(fileList[0]);
 
     setPreviewImageList([...previewImageList, url]);
-    setImageFiles([...imageFiles, fileList[0]]);
+    imageFiles.current = [...imageFiles.current, fileList[0]];
   }
 
   const images = previewImageList.map((image, index) => (
