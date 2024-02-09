@@ -4,7 +4,8 @@ import styled from "styled-components";
 const OptionItemContainer = styled.div`
   width: 100%;
   display: flex;
-  align-items: ${({ align }) => (align === "start" ? "flex-start" : "center")};
+  align-items: ${(props) =>
+    props.$layout === "start" ? "flex-start" : "center"};
 `;
 
 const ItemTitle = styled.p`
@@ -27,9 +28,9 @@ const ItemContent = styled.div`
   }
 `;
 
-function OptionItem({ title, children, align }) {
+function OptionItem({ title, children, layout }) {
   return (
-    <OptionItemContainer align={align}>
+    <OptionItemContainer $layout={layout}>
       <ItemTitle>{title}</ItemTitle>
       <ItemContent>{children}</ItemContent>
     </OptionItemContainer>

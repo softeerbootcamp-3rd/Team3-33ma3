@@ -129,7 +129,9 @@ function PostCreatePage() {
     }
 
     setFormErrors(errors);
-    return false;
+    if (Object.keys(errors).length !== 0) {
+      return false;
+    }
   }
 
   function toggle(state, value) {
@@ -141,7 +143,7 @@ function PostCreatePage() {
   }
 
   const Repair = (
-    <OptionItem title={"수리 서비스"} align={"start"}>
+    <OptionItem title={"수리 서비스"} layout={"start"}>
       <ServiceList>
         {REPAIR_SERVICE_OPTIONS.map((item, index) => (
           <ChipButton
@@ -156,7 +158,7 @@ function PostCreatePage() {
   );
 
   const TuneUp = (
-    <OptionItem title={"정비 서비스"} align={"start"}>
+    <OptionItem title={"정비 서비스"} layout={"start"}>
       <ServiceList>
         {TUNEUP_SERVICE_OPTIONS.map((item, index) => (
           <ChipButton
