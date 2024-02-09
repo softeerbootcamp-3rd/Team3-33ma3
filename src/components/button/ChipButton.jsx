@@ -14,7 +14,7 @@ const Button = styled.button`
 
   &:hover,
   &.active {
-    box-shadow: 0px 0px 0px 1.5px ${(props) => props.theme.colors.surface_black};
+    box-shadow: 0px 0px 0px 2px ${(props) => props.theme.colors.surface_black};
     background: ${(props) => props.theme.colors.surface_default};
     color: ${(props) => props.theme.colors.text_strong};
     transition: 0.3s;
