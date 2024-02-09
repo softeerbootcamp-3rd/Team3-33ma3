@@ -7,7 +7,7 @@ import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import softeer.be33ma3.exception.JwtUnAuthorizedException;
+import softeer.be33ma3.exception.JwtTokenException;
 import softeer.be33ma3.repository.MemberRepository;
 
 import java.security.Key;
@@ -55,11 +55,11 @@ public class JwtProvider {  //jwt 토큰을 만들고 검증하는 역할
             Jwts.parserBuilder().setSigningKey(key)
                     .build().parseClaimsJws(token).getBody();
         }catch (SignatureException e ){ //signature 검증에 실패한 경우
-            throw new JwtUnAuthorizedException("JWT_NOT_VALID");
+            throw new JwtTokenException("JWT_NOT_VALID");
         }catch (ExpiredJwtException e) { //토큰이 만료된 경우
-            throw new JwtUnAuthorizedException("만료된 토큰");
+            throw new JwtTokenException("만료된 토큰");
         } catch (MalformedJwtException e) { //jwt 형식에 맞지 않는 경우
-            throw new JwtUnAuthorizedException("JWT_NOT_VALID");
+            throw new JwtTokenException("JWT_NOT_VALID");
         }
 
         return true;
@@ -67,11 +67,11 @@ public class JwtProvider {  //jwt 토큰을 만들고 검증하는 역할
 
 
     //JWT 토큰의 Claims 을 가져오는 메서드
-    public Claims getClaims(String accessToken){
+    public Claims getClaims(String token){
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
-                .parseClaimsJws(accessToken.replace(ACCESS_PREFIX_STRING, "")) // ACCESS_PREFIX_STRING 제거
+                .parseClaimsJws(token.replace(ACCESS_PREFIX_STRING, "")) // ACCESS_PREFIX_STRING 제거
                 .getBody();
     }
 

@@ -19,12 +19,14 @@ public class MemberService {
 
     @Transactional
     public void memberSignUp(MemberSignUpDto memberSignUpDto) {
+        //TODO: 중복회원 확인하기
         Member member = Member.createMember(memberSignUpDto);
 
         memberRepository.save(member);
     }
 
-    public String login(MemberLoginDto memberLoginDto) {
+    @Transactional
+    public JwtToken login(MemberLoginDto memberLoginDto) {
         Member member = memberRepository.findMemberByLoginId(memberLoginDto.getLoginId())
                 .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않음"));
 
@@ -33,6 +35,8 @@ public class MemberService {
         }
 
         JwtToken jwtToken = jwtService.getJwtToken(member.getMemberType(), member.getMemberId(), memberLoginDto.getLoginId());
-        return jwtToken.getAccessToken();
+        member.setRefreshToken(jwtToken.getRefreshToken()); //리프레시 토큰 저장
+
+        return jwtToken;
     }
 }

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
+import softeer.be33ma3.exception.JwtTokenException;
 import softeer.be33ma3.jwt.JwtProvider;
 
 import static softeer.be33ma3.jwt.JwtProperties.ACCESS_HEADER_STRING;
@@ -34,8 +35,13 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
 
     private String getToken(HttpServletRequest request) {
         String token = request.getHeader(ACCESS_HEADER_STRING);
-        if(StringUtils.hasText(token) && token.startsWith(ACCESS_PREFIX_STRING))
+        if(!StringUtils.hasText(token)){
+            throw new JwtTokenException("ACCESS TOKEN 필요");
+        }
+
+        if(token.startsWith(ACCESS_PREFIX_STRING)){
             return token.substring(7);
+        }
 
         return null;
     }

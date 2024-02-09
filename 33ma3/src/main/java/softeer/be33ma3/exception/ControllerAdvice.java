@@ -10,9 +10,9 @@ import softeer.be33ma3.response.SingleResponse;
 @RestControllerAdvice
 public class ControllerAdvice {
 
-    @ExceptionHandler(JwtUnAuthorizedException.class)
-    public ResponseEntity<?> jwtUnAuthorized(JwtUnAuthorizedException e){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(SingleResponse.error(e.getMessage()));
+    @ExceptionHandler(JwtTokenException.class)
+    public ResponseEntity<?> jwtUnAuthorized(JwtTokenException e){  //401
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(SingleResponse.error(e.getMessage()));
     }
   
     @ExceptionHandler(MethodArgumentNotValidException.class)
