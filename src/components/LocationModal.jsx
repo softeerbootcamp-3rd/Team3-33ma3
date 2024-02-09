@@ -6,6 +6,9 @@ import InputText from "./input/InputText";
 import SubmitButton from "./button/SubmitButton";
 
 export const URL = "http://192.168.1.141:8080/";
+const KM_TO_M_CONVERSION_FACTOR = 1000;
+const MIN_RADIUS = 0;
+const MAX_RADIUS = 10;
 
 const Dialog = styled.dialog`
   padding: 30px;
@@ -119,16 +122,16 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
   if (isDragend) {
     setIsDragend(false);
     const coords = newMarker.position;
-    const radius = newCircle.getRadius() / 1000;
+    const radius = newCircle.getRadius() / KM_TO_M_CONVERSION_FACTOR;
 
-    if (radius < 0 || radius > 10) {
+    if (radius < MIN_RADIUS || radius > MAX_RADIUS) {
       alert("반경은 1이상 10이하까지 입력해주세요.");
       return;
     }
 
     // fetch(
     //   `${URL}location?latitude=${coords._lat}&longitude=${coords._lng}&radius=${
-    //     radius || 0
+    //     radius || MIN_RADIUS
     //   }`
     // )
     //   .then((res) => {
@@ -155,16 +158,16 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
     const inputRadius = e.target.value;
     const coords = newMarker.position;
 
-    if (inputRadius < 0 || inputRadius > 10) {
+    if (inputRadius < MIN_RADIUS || inputRadius > MAX_RADIUS) {
       alert("반경은 1이상 10이하까지 입력해주세요.");
       return;
     }
 
-    newCircle.setRadius(inputRadius * 100);
+    newCircle.setRadius(inputRadius * KM_TO_M_CONVERSION_FACTOR);
 
     // fetch(
     //   `${URL}location?latitude=${coords._lat}&longitude=${coords._lng}&radius=${
-    //     inputRadius || 0
+    //     inputRadius || MIN_RADIUS
     //   }`
     // )
     //   .then((res) => {

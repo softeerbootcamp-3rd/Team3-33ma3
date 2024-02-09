@@ -4,6 +4,8 @@ import { searchCoordinateToAddress } from "./LocationModal";
 const DEFAULT_LATITUDE = 0;
 const DEFAULT_LONGITUDE = 0;
 const DEFAULT_ZOOM_SCALE = 15;
+const DEFAULT_MAX_ZOOM = 15;
+const DEFAULT_MIN_ZOOM = 11;
 
 function getCurrentLocation() {
   return new Promise((resolve, reject) => {
@@ -31,6 +33,8 @@ function initMap(latitude, longitude, mapElement, setNewAddress) {
   const mapOptions = {
     center: center,
     zoom: DEFAULT_ZOOM_SCALE,
+    maxZoom: DEFAULT_MAX_ZOOM,
+    minZoom: DEFAULT_MIN_ZOOM,
     scaleControl: false,
   };
   const map = new naver.maps.Map(mapElement, mapOptions);
