@@ -19,6 +19,7 @@ import softeer.be33ma3.response.SingleResponse;
 import softeer.be33ma3.service.OfferService;
 
 @Tag(name = "Offer", description = "견적 제시 관련 api")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/post")
