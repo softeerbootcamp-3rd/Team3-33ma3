@@ -47,22 +47,22 @@ public class OfferDetailDto implements Comparable<OfferDetailDto> {
 
     // List<Offer> -> List<OfferDetailDto> 변환
     public static List<OfferDetailDto> fromEntityList(List<Offer> offerList) {
+        // offer -> offerDetailDto로 변환
         List<OfferDetailDto> offerDetailList = offerList.stream()
                 .map(OfferDetailDto::fromEntity)
                 .toList();
-        Collections.sort(offerDetailList);      // 정렬
+        // 댓글 목록 정렬
+        Collections.sort(offerDetailList);
 
-        // 낙찰된 견적이 있는지 확인
-        OfferDetailDto selected = offerDetailList.stream()
+        // 낙찰된 견적이 있다면 첫 번째 순서로 보내기
+        offerDetailList.stream()
                 .filter(OfferDetailDto::isSelected)
                 .findFirst()
-                .orElse(null);
+                .ifPresent(target -> {
+                    offerDetailList.remove(target);
+                    offerDetailList.add(0, target);
+                });
 
-        // 선택된 요소를 리스트에서 제거하고 맨 앞으로 이동시킵니다.
-        if (selected != null) {
-            offerDetailList.remove(selected);
-            offerDetailList.add(0, selected);
-        }
         return offerDetailList;
     }
 
