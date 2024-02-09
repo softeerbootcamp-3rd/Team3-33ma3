@@ -24,16 +24,6 @@ function getCurrentLocation() {
   });
 }
 
-async function fetchCurrentLocation() {
-  try {
-    const response = await getCurrentLocation();
-    return response;
-  } catch (error) {
-    console.error(error.message);
-    return { latitude: DEFAULT_LATITUDE, longitude: DEFAULT_LONGITUDE };
-  }
-}
-
 function initMap(latitude, longitude, mapElement, setNewAddress) {
   const center = new naver.maps.LatLng(latitude, longitude);
   searchCoordinateToAddress(center, setNewAddress);
@@ -71,31 +61,37 @@ export default function ViewCurrentLocation({
 
   useEffect(() => {
     async function fetchAndSetLocation() {
-      const currentLocation = await fetchCurrentLocation();
-      const { map, marker, circle } = initMap(
-        currentLocation.latitude,
-        currentLocation.longitude,
-        mapElement.current,
-        setAddress
-      );
-      setMap(map);
-      setMarker(marker);
-      setCircle(circle);
+      try {
+        const currentLocation = await getCurrentLocation();
+        const { map, marker, circle } = initMap(
+          currentLocation.latitude,
+          currentLocation.longitude,
+          mapElement.current,
+          setAddress
+        );
+        setMap(map);
+        setMarker(marker);
+        setCircle(circle);
 
-      naver.maps.Event.addListener(map, "drag", (e) => {
-        const currentCoords = map.getCenter();
-        marker.setPosition(currentCoords);
-        circle.setCenter(currentCoords);
-      });
+        naver.maps.Event.addListener(map, "drag", (e) => {
+          const currentCoords = map.getCenter();
+          marker.setPosition(currentCoords);
+          circle.setCenter(currentCoords);
+        });
 
-      naver.maps.Event.addListener(map, "dragend", (e) => {
-        const currentCoords = map.getCenter();
-        map.setCenter(currentCoords);
-        marker.setPosition(currentCoords);
+        naver.maps.Event.addListener(map, "dragend", (e) => {
+          const currentCoords = map.getCenter();
+          map.setCenter(currentCoords);
+          marker.setPosition(currentCoords);
 
-        setDragend(() => true);
-        searchCoordinateToAddress(currentCoords, setAddress);
-      });
+          setDragend(() => true);
+          searchCoordinateToAddress(currentCoords, setAddress);
+        });
+      } catch (error) {
+        console.error(
+          console.error("Failed to fetch current location:", error)
+        );
+      }
     }
     fetchAndSetLocation();
   }, []);
