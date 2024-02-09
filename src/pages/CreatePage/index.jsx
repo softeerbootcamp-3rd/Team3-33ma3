@@ -129,9 +129,7 @@ function PostCreatePage() {
     }
 
     setFormErrors(errors);
-    if (Object.keys(errors).length !== 0) {
-      return false;
-    }
+    return Object.keys(errors).length === 0;
   }
 
   function toggle(state, value) {
