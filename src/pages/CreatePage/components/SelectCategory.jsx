@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { CAR_CATEGORY_OPTIONS } from "../../../constants/options";
 
 const Select = styled.select`
   -moz-appearance: none;
@@ -11,12 +12,13 @@ const Select = styled.select`
   color: ${(props) => props.theme.colors.text_strong};
   font-size: ${(props) => props.theme.fontSize.regular};
   border: none;
+  padding: 10px 0px;
 `;
 
-function SelectCategory({ name, carCategoryList }) {
+function SelectCategory({ name }) {
   return (
     <Select name={name}>
-      {carCategoryList.map((category, index) => (
+      {CAR_CATEGORY_OPTIONS.map((category, index) => (
         <option key={index}>{category}</option>
       ))}
     </Select>
