@@ -32,8 +32,8 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addInterceptor(jwtAuthenticationInterceptor())
                 .order(2)
-                .addPathPatterns("/post/create")
-                .excludePathPatterns("/member/signUp", "/location");
+                .addPathPatterns("/**")
+                .excludePathPatterns("/member/signUp", "/center/signUp", "/login");
     }
 
     @Override

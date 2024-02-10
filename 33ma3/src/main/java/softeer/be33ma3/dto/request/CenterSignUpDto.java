@@ -6,7 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class MemberSignUpDto {
+@Schema(description = "센터 회원가입 요청 DTO")
+public class CenterSignUpDto{
     @Schema(description = "멤버 타입", example = "1")
     @NotNull
     private Integer memberType;
@@ -18,4 +19,16 @@ public class MemberSignUpDto {
     @Schema(description = "비밀번호", example = "12345")
     @NotBlank(message = "비밀번호는 필수입니다.")
     private String password;
+
+    @Schema(description = "비밀번호", example = "12345")
+    @NotBlank(message = "비밀번호는 필수입니다.")
+    private String centerName;
+
+    @Schema(description = "위도", example = "37.1234")
+    @NotNull(message = "위도는 필수입니다.")
+    private double latitude;
+
+    @Schema(description = "경도", example = "127.1234")
+    @NotNull(message = "경도는 필수입니다.")
+    private double longitude;
 }

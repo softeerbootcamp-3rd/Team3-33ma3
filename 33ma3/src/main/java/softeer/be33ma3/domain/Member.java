@@ -30,8 +30,8 @@ public class Member {
         this.password = password;
     }
 
-    public static Member createMember(MemberSignUpDto memberSignUpDto){
-        return new Member(memberSignUpDto.getMemberType(), memberSignUpDto.getLoginId(), memberSignUpDto.getPassword());
+    public static Member createMember(int memberType, String loginId, String password){
+        return new Member(memberType, loginId, password);
     }
 
     public void setRefreshToken(String refreshToken) {
