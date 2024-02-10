@@ -19,9 +19,11 @@ public class MemberService {
 
     @Transactional
     public void memberSignUp(MemberSignUpDto memberSignUpDto) {
-        //TODO: 중복회원 확인하기
-        Member member = Member.createMember(memberSignUpDto);
+        if(memberRepository.findMemberByLoginId(memberSignUpDto.getLoginId()).isPresent()){//아이디가 이미 존재하는 경우
+            throw new IllegalArgumentException("이미 존재하는 아이디");
+        }
 
+        Member member = Member.createMember(memberSignUpDto);
         memberRepository.save(member);
     }
 

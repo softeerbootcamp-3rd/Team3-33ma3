@@ -28,7 +28,7 @@ public class MemberController {
         return ResponseEntity.ok(SingleResponse.success("회원가입 성공"));
     }
 
-    @PostMapping("/member/login")
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid MemberLoginDto memberLoginDto){
         JwtToken jwtToken = memberService.login(memberLoginDto);
 
