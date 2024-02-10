@@ -30,6 +30,7 @@ public class PostCreateDto {
 
     @Schema(description = "마감기한", example = "2")
     @NotNull(message = "마감기한은 필수입니다.")
+    @Min(value = 1,message = "최소 1일 이상 선택해야 합니다.")
     @Max(value = 10, message = "최대 10일까지 가능합니다.")
     private Integer deadline;
 

@@ -2,6 +2,7 @@ package softeer.be33ma3.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.domain.Center;
 import softeer.be33ma3.domain.Member;
@@ -20,6 +21,11 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final CenterRepository centerRepository;
     private final JwtService jwtService;
+  
+      // TODO: 현재 로그인한 유저의 정보를 이용하여 member id 가져오기
+    public static Long getMemberId() {
+        return 1L;
+    }
 
     @Transactional
     public void memberSignUp(MemberSignUpDto memberSignUpDto) {

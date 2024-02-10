@@ -35,4 +35,14 @@ public class Offer {
         this.post = post;
         this.center = center;
     }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+    public void setContents(String contents) {
+        this.contents = contents;
+    }
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
 }

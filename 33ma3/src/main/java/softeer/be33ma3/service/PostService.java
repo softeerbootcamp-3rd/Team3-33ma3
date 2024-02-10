@@ -76,7 +76,7 @@ public class PostService {
     }
 
     // 게시글 세부사항 반환 (로그인 하지 않아도 확인 가능)
-    public List<Object> getPost(Long postId) {
+    public List<Object> showPost(Long postId) {
         // 1. 게시글 존재 유무 판단
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
         // 2. 게시글 세부 사항 가져오기
@@ -87,30 +87,16 @@ public class PostService {
         if(post.isDone() ||
                 member.isPresent() && post.getMember().getMemberId() == member.get().getMemberId()) {
             List<Offer> offerList = offerRepository.findByPost_PostId(postId);
-            List<OfferDetailDto> offerDetailList = offerList.stream()
-                    .map(OfferDetailDto::fromEntity)
-                    .toList();
+            List<OfferDetailDto> offerDetailList = OfferDetailDto.fromEntityList(offerList);
             return List.of(postDetailDto, offerDetailList);
         }
         // 3-2. 경매가 진행 중이고 작성자가 아닌 유저의 접근일 경우
-        double priceAvg = priceAvgOfPost(postId);
-        // 견적을 작성한 이력이 있는 서비스 센터의 접근일 경우 작성한 견적 가져오기
-        OfferDetailDto offerDetailDto = getCenterOffer(postId, member.get());
-        return List.of(postDetailDto, priceAvg, offerDetailDto);
-    }
-
-    // 해당 게시글의 평균 견적 제시 가격 반환
-    private double priceAvgOfPost(Long postId) {
         // 해당 게시글의 견적 모두 가져오기
         List<Offer> offerList = offerRepository.findByPost_PostId(postId);
-
-        // 제시 가격의 합계, 개수 구하기
-        IntSummaryStatistics stats = offerList.stream()
-                .collect(Collectors.summarizingInt(Offer::getPrice));
-
-        if(stats.getCount() == 0)
-            throw new ArithmeticException("견적 제시 댓글이 없습니다.");
-        return stats.getAverage();
+        double avgPrice = OfferService.calculateAvgPrice(offerList);
+        // 견적을 작성한 이력이 있는 서비스 센터의 접근일 경우 작성한 견적 가져오기
+        OfferDetailDto offerDetailDto = getCenterOffer(postId, member.get());
+        return List.of(postDetailDto, avgPrice, offerDetailDto);
     }
 
     // 멤버 정보를 이용하여 견적을 작성한 이력이 있는 서비스 센터일 경우 작성한 견적 반환
@@ -122,7 +108,7 @@ public class PostService {
         Center center = centerRepository.findByMember_MemberId(member.getMemberId())
                 .orElseThrow(()->new IllegalArgumentException("존재하지 않는 서비스 센터"));
         // 해당 게시글에 해당 센터가 작성한 견적 찾기
-        Optional<Offer> offer = offerRepository.findByCenter_CenterId(center.getCenterId());
+        Optional<Offer> offer = offerRepository.findByCenter_CenterIdAndPost_PostId(center.getCenterId(), postId);
         return (offer.isEmpty() ? null : OfferDetailDto.fromEntity(offer.get()));
     }
 }

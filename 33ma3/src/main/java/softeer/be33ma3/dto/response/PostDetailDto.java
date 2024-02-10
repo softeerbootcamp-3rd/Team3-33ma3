@@ -5,7 +5,9 @@ import lombok.Builder;
 import softeer.be33ma3.domain.Image;
 import softeer.be33ma3.domain.Post;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
@@ -25,8 +27,8 @@ public class PostDetailDto {
     @Schema(description = "남은 기한", example = "3")
     private int dDay;
 
-    @Schema(description = "서버 시간", example = "2024-02-06T02:23:25.012345")
-    private LocalDateTime serverTime;
+    @Schema(description = "당일 남은 시간", example = "11:32:51")
+    private LocalTime remainTime;
 
     @Schema(description = "지역 명", example = "강남구")
     private String regionName;
@@ -49,13 +51,14 @@ public class PostDetailDto {
         List<String> tuneUpList = stringCommaParsing(post.getTuneUpService());
         List<String> imageList = post.getImages().stream().map(Image::getLink).toList();
         int betweenTime = (int)ChronoUnit.DAYS.between(LocalDateTime.now(), post.getCreateTime());
+        LocalTime remainTime = calculateRemainTime(post.getCreateTime());
 
         return PostDetailDto.builder()
                 .postId(post.getPostId())
                 .carType(post.getCarType())
                 .modelName(post.getModelName())
                 .dDay(post.getDeadline() - betweenTime)
-                .serverTime(LocalDateTime.now())
+                .remainTime(remainTime)
                 .regionName(post.getRegion().getRegionName())
                 .contents(post.getContents())
                 .repairList(repairList)
@@ -68,5 +71,11 @@ public class PostDetailDto {
         return Arrays.stream(inputString.split(","))
                 .map(String::strip)
                 .toList();
+    }
+
+    // 글 생성 시간과 현재 시간을 비교하여 남은 시간:분:초를 반환
+    private static LocalTime calculateRemainTime(LocalDateTime createTime) {
+        Duration duration = Duration.between(createTime, LocalDateTime.now());
+        return LocalTime.of((int)duration.toHours(), (int)duration.toMinutes()%60, (int)duration.toSeconds()%60);
     }
 }

@@ -20,8 +20,18 @@ public class ControllerAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(SingleResponse.error(e.getFieldError().getDefaultMessage()));
     }
   
-    @ExceptionHandler({IllegalArgumentException.class, ArithmeticException.class})
-    public ResponseEntity<?> badRequest(IllegalArgumentException e) {
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> badRequest(RuntimeException e) {
         return ResponseEntity.badRequest().body(SingleResponse.error(e.getMessage()));
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<?> unauthorized(UnauthorizedException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(SingleResponse.error(e.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> InternalServerError(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(SingleResponse.error(e.getMessage()));
     }
 }
