@@ -105,7 +105,7 @@ export default function ViewCurrentLocation({
       <div
         ref={mapElement}
         id="map"
-        style={{ width: "350px", height: "350px" }}
+        style={{ width: "500px", height: "500px" }}
       >
         Loading....
       </div>
