@@ -18,14 +18,12 @@ import softeer.be33ma3.repository.MemberRepository;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MemberService {
+    private static final int CLIENT_TYPE = 1;
+    private static final int CENTER_TYPE = 2;
+
     private final MemberRepository memberRepository;
     private final CenterRepository centerRepository;
     private final JwtService jwtService;
-  
-      // TODO: 현재 로그인한 유저의 정보를 이용하여 member id 가져오기
-    public static Long getMemberId() {
-        return 1L;
-    }
 
     @Transactional
     public void clientSignUp(ClientSignUpDto clientSignUpDto) {
@@ -33,11 +31,7 @@ public class MemberService {
             throw new IllegalArgumentException("이미 존재하는 아이디");
         }
 
-        if(clientSignUpDto.getMemberType() != 1){
-            throw new IllegalArgumentException("올바르지 않은 memberType");
-        }
-
-        Member member = Member.createMember(clientSignUpDto.getMemberType(), clientSignUpDto.getLoginId(), clientSignUpDto.getPassword());
+        Member member = Member.createMember(CENTER_TYPE, clientSignUpDto.getLoginId(), clientSignUpDto.getPassword());
         memberRepository.save(member);
     }
 
@@ -47,11 +41,7 @@ public class MemberService {
             throw new IllegalArgumentException("이미 존재하는 아이디");
         }
 
-        if(centerSignUpDto.getMemberType() != 2){
-            throw new IllegalArgumentException("올바르지 않은 memberType");
-        }
-
-        Member member = Member.createMember(centerSignUpDto.getMemberType(), centerSignUpDto.getLoginId(), centerSignUpDto.getPassword());
+        Member member = Member.createMember(CENTER_TYPE, centerSignUpDto.getLoginId(), centerSignUpDto.getPassword());
         member = memberRepository.save(member);
 
         Center center = Center.createCenter(centerSignUpDto.getCenterName(), centerSignUpDto.getLatitude(), centerSignUpDto.getLongitude(), member);
