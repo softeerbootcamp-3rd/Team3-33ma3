@@ -27,8 +27,8 @@ public class WebSocketService {
     }
 
     public void save(WebSocketSession session) {
-        Long memberId = MemberService.getMemberId();
-        webSocketRepository.save(memberId, session);
+//        Long memberId = MemberService.getMemberId();
+//        webSocketRepository.save(memberId, session);
     }
     public void delete(WebSocketSession webSocketSession) {
         webSocketRepository.delete(webSocketSession);

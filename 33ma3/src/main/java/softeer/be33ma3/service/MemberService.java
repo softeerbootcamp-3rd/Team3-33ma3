@@ -50,12 +50,8 @@ public class MemberService {
 
     @Transactional
     public JwtToken login(LoginDto loginDto) {
-        Member member = memberRepository.findMemberByLoginId(loginDto.getLoginId())
+        Member member = memberRepository.findByLoginIdAndPassword(loginDto.getLoginId(), loginDto.getPassword())
                 .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않음"));
-
-        if(!member.getPassword().equals(loginDto.getPassword())){
-            throw new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않음");
-        }
 
         JwtToken jwtToken = jwtService.getJwtToken(member.getMemberType(), member.getMemberId(), loginDto.getLoginId());
         member.setRefreshToken(jwtToken.getRefreshToken()); //리프레시 토큰 저장
