@@ -98,4 +98,18 @@ public class OfferService {
         // 4. 전송하기
         webSocketHandler.sendData2Client(memberId, offerDetailList);
     }
+
+    // 게시글에 견적을 작성한 모든 서비스 센터들에게 평균 견적 제시 가격 실시간 전송
+    public void sendAvgPrice2Centers(Long postId) {
+        // 1. 해당 게시글에 달린 모든 견적 가져오기
+        List<Offer> offerList = offerRepository.findByPost_PostId(postId);
+        // 2. 견적 작성자의 member id 가져오기
+        List<Long> memberList = offerList.stream()
+                .map(offer -> offer.getCenter().getMember().getMemberId())
+                .toList();
+        // 3. 평균 견적 가격 계산하기
+        double AvgPrice = calculatePriceAvg(offerList);
+        // 4. 전송하기
+        memberList.forEach(memberId -> webSocketHandler.sendData2Client(memberId, AvgPrice));
+    }
 }
