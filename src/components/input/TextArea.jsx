@@ -37,7 +37,8 @@ function TextArea({ maxLength, name }) {
   const [length, setLength] = useState(0);
 
   function onChange(e) {
-    setLength(e.target.value.length);
+    const userInputLength = e.target.value.length;
+    setLength(userInputLength);
   }
 
   return (
