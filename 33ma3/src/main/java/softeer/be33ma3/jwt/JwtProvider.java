@@ -79,7 +79,7 @@ public class JwtProvider {  //jwt 토큰을 만들고 검증하는 역할
         String refreshToken = Jwts.builder()
                 .setSubject(String.valueOf(memberId) + "_refresh")
                 .claim("memberId", memberId)
-                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_TIME))
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_TIME))   //만료시간 설정
                 .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
 

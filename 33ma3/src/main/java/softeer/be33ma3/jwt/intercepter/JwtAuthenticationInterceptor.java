@@ -19,14 +19,12 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String accessToken = getToken(request);
-        log.info("인터셉터도 들어옴");
 
         if(accessToken == null){    //헤더에 토큰이 없는 경우
             throw new IllegalArgumentException("JWT 토큰 필요");
         }
 
         if(StringUtils.hasText(accessToken)){   //토큰이 있는 경우
-            log.info("토큰 가지고 있음 들어옴");
             return jwtProvider.validationToken(accessToken);    //토큰 검증(마감기한, signature, jwt 형식인지)
         }
 

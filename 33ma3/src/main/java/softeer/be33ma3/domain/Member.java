@@ -7,7 +7,6 @@ import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import softeer.be33ma3.dto.request.MemberSignUpDto;
 
 @Entity
 @Getter

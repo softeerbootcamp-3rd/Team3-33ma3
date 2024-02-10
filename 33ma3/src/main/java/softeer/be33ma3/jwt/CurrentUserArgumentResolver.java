@@ -32,11 +32,11 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         log.info("resolveArgument 실행");
 
-         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
+        HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
 
-        String accessToken = request.getHeader(ACCESS_HEADER_STRING);
+        String accessToken = request.getHeader(ACCESS_HEADER_STRING);   //헤더에서 엑세스 토큰 가져오기
 
-        if(accessToken == null){
+        if(accessToken == null){    //토큰이 없는 경우
             return null;
         }
 
