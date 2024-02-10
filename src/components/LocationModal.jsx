@@ -1,4 +1,10 @@
-import { forwardRef, useRef, useState, useImperativeHandle } from "react";
+import {
+  forwardRef,
+  useRef,
+  useState,
+  useEffect,
+  useImperativeHandle,
+} from "react";
 import { createPortal } from "react-dom";
 import styled from "styled-components";
 import ViewCurrentLocation from "./ViewCurrentLocation";
@@ -190,6 +196,18 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
       },
     };
   });
+
+  useEffect(() => {
+    console.log("asd");
+    fetch(`${URL}center/all`)
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {})
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   return createPortal(
     <>
