@@ -73,8 +73,8 @@ public class OfferService {
         offerRepository.save(offer);
     }
 
-    // 견적 제시 댓글 목록의 평균 제시 가격 게산하여 반환하기
-    public static double calculatePriceAvg(List<Offer> offerList) {
+    // 견적 제시 댓글 목록의 평균 제시 가격 계산하여 반환하기
+    public static double calculateAvgPrice(List<Offer> offerList) {
         // 제시 가격의 합계, 개수 구하기
         IntSummaryStatistics stats = offerList.stream()
                 .collect(Collectors.summarizingInt(Offer::getPrice));
@@ -108,8 +108,8 @@ public class OfferService {
                 .map(offer -> offer.getCenter().getMember().getMemberId())
                 .toList();
         // 3. 평균 견적 가격 계산하기
-        double AvgPrice = calculatePriceAvg(offerList);
+        double avgPrice = calculateAvgPrice(offerList);
         // 4. 전송하기
-        memberList.forEach(memberId -> webSocketHandler.sendData2Client(memberId, AvgPrice));
+        memberList.forEach(memberId -> webSocketHandler.sendData2Client(memberId, avgPrice));
     }
 }
