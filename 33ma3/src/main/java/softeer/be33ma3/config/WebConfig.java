@@ -33,7 +33,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(jwtAuthenticationInterceptor())
                 .order(2)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/member/signUp", "/center/signUp", "/login");
+                .excludePathPatterns("/**");
     }
 
     @Override
