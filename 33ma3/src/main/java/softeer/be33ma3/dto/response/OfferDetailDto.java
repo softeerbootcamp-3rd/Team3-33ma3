@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import softeer.be33ma3.domain.Offer;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -48,9 +49,10 @@ public class OfferDetailDto implements Comparable<OfferDetailDto> {
     // List<Offer> -> List<OfferDetailDto> 변환
     public static List<OfferDetailDto> fromEntityList(List<Offer> offerList) {
         // offer -> offerDetailDto로 변환
-        List<OfferDetailDto> offerDetailList = offerList.stream()
+        List<OfferDetailDto> offerDetailList = new ArrayList<>(
+                offerList.stream()
                 .map(OfferDetailDto::fromEntity)
-                .toList();
+                .toList());
         // 댓글 목록 정렬
         Collections.sort(offerDetailList);
 
