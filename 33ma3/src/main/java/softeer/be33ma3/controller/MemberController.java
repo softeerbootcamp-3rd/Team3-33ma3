@@ -56,7 +56,7 @@ public class MemberController {
     }
 
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
             @ApiResponse(responseCode = "400", description = "아이디 또는 비밀번호가 일치하지 않음", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "로그인", description = "로그인 메서드 입니다.")
@@ -68,7 +68,7 @@ public class MemberController {
     }
 
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "토큰 재발급 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "200", description = "토큰 재발급 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 회원", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "엑세스 토큰 재발급", description = "엑세스 토큰 재발급 메서드 입니다.")
