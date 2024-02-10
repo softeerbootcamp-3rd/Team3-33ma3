@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import Camera from "../../assets/camera.svg";
-import PictureArea from "./PictureArea";
+import Camera from "../../../assets/camera.svg";
+import PictureArea from "../../../components/image/PictureArea";
 
 const ImageUploadContainer = styled.div`
   display: flex;
@@ -29,10 +29,10 @@ const Images = styled.div`
   white-space: nowrap;
 `;
 
-function ImageUpload() {
+function ImageUpload({ imageFiles }) {
   const imageInputRef = useRef();
   // TODO: 부모 컴포넌트에서 state 받아옴
-  const [postImgList, setPostImgList] = useState([]);
+  const [previewImageList, setPreviewImageList] = useState([]);
 
   // 버튼 클릭시 file input태그에 클릭이벤트 발생
   function onCickImageUpload() {
@@ -44,16 +44,17 @@ function ImageUpload() {
     const fileList = e.target.files;
     const url = URL.createObjectURL(fileList[0]);
 
-    setPostImgList([...postImgList, url]);
+    setPreviewImageList([...previewImageList, url]);
+    imageFiles.current = [...imageFiles.current, fileList[0]];
   }
 
-  const images = postImgList.map((image) => (
-    <PictureArea size={"small"} img={image} />
+  const images = previewImageList.map((image, index) => (
+    <PictureArea size={"small"} img={image} key={index} />
   ));
 
   return (
     <ImageUploadContainer>
-      <ImageUploadButton onClick={onCickImageUpload}>
+      <ImageUploadButton onClick={onCickImageUpload} type="button">
         <img
           src={Camera}
           style={{ width: "48px", height: "48px", margin: "auto" }}

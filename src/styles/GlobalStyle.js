@@ -1,5 +1,6 @@
 import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
+import { MIN_WIDTH } from "../constants/layouts";
 
 const GlobalStyle = createGlobalStyle`
     ${reset}
@@ -8,6 +9,10 @@ const GlobalStyle = createGlobalStyle`
         width: 100%;
         height:100%;
         font-family: Pretendard;
+    }
+
+    body{
+        min-width: ${MIN_WIDTH};
     }
 
     *{

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 const Input = styled.textarea`
@@ -33,10 +33,17 @@ const InputLength = styled.div`
   }
 `;
 
-function TextArea({ length, maxLength, onChange }) {
+function TextArea({ maxLength, name }) {
+  const [length, setLength] = useState(0);
+
+  function onChange(e) {
+    const userInputLength = e.target.value.length;
+    setLength(userInputLength);
+  }
+
   return (
     <>
-      <Input onChange={onChange}></Input>
+      <Input onChange={onChange} name={name} maxLength={maxLength}></Input>
       <InputLength>
         <h3>{length}</h3>
         <p>/{maxLength}</p>

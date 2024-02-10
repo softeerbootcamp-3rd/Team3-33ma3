@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { CONTENT_MAX_WIDTH } from "../../constants/layouts";
 
 const TitleContainer = styled.div`
   display: flex;
@@ -11,10 +12,11 @@ const TitleContainer = styled.div`
 `;
 
 const Title = styled.h1`
-  max-width: 1100px;
+  max-width: ${CONTENT_MAX_WIDTH};
   width: 100%;
   font-size: ${(props) => props.theme.fontSize.title};
   font-weight: 700;
+  padding: 0px 0px 0px 30px;
 `;
 
 function HeadTitle({ title }) {
