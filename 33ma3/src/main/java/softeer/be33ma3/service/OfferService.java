@@ -73,6 +73,24 @@ public class OfferService {
         offerRepository.save(offer);
     }
 
+    // 견적 제시 댓글 삭제
+    public void deleteOffer(Long postId, Long offerId) {
+        // 1. 해당 게시글 가져오기
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
+        // 2. 경매 완료된 게시글인지 검증
+        if(post.isDone())
+            throw new IllegalArgumentException("완료된 게시글");
+        // TODO: 3. 센터 정보 가져오기
+        Center center = null;
+        // 4. 기존 댓글 가져오기
+        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
+        // 5. 댓글 작성자인지 검증
+        if(center.getCenterId() != offer.getCenter().getCenterId())
+            throw new UnauthorizedException("작성자만 삭제 가능합니다.");
+        // 6. 댓글 삭제하기
+        offerRepository.delete(offer);
+    }
+
     // 견적 제시 댓글 목록의 평균 제시 가격 계산하여 반환하기
     public static double calculateAvgPrice(List<Offer> offerList) {
         // 제시 가격의 합계, 개수 구하기

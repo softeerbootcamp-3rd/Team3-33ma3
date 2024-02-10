@@ -80,4 +80,24 @@ public class OfferController {
         offerService.sendAvgPrice2Centers(postId);
         return ResponseEntity.ok(SingleResponse.success("댓글 수정 성공"));
     }
+
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "댓글 삭제 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "401", description = "작성자만 삭제 가능합니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>완료된 게시글" + "<br>존재하지 않는 견적",
+                    content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+    })
+    @Parameter(name = "post_id", description = "게시글 id", required = true, example = "1", in = ParameterIn.PATH)
+    @Parameter(name = "offer_id", description = "offer id", required = true, example = "2", in = ParameterIn.PATH)
+    @Operation(summary = "견적 댓글 삭제하기", description = "견적 댓글 수정하기 메서드 입니다.")
+    @DeleteMapping("/{post_id}/offer/{offer_id}")
+    public ResponseEntity<?> deleteOffer(@PathVariable("post_id") Long postId,
+                                         @PathVariable("offer_id") Long offerId) {
+        offerService.deleteOffer(postId, offerId);
+        // 글 작성자에게 업데이트 된 댓글 리스트 보내기
+        offerService.sendOfferList2Writer(postId);
+        // 댓글 작성자들에게 업데이트된 평균 견적 제시 가격 보내기
+        offerService.sendAvgPrice2Centers(postId);
+        return ResponseEntity.ok(SingleResponse.success("댓글 삭제 성공"));
+    }
 }
