@@ -13,7 +13,9 @@ import softeer.be33ma3.exception.UnauthorizedException;
 import softeer.be33ma3.repository.OfferRepository;
 import softeer.be33ma3.repository.PostRepository;
 
+import java.util.IntSummaryStatistics;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -71,7 +73,20 @@ public class OfferService {
         offerRepository.save(offer);
     }
 
-    // 게시글에 해당하는 견적 제시 댓글 리스트 반환
+    // 견적 제시 댓글 목록의 평균 제시 가격 게산하여 반환하기
+    public static double calculatePriceAvg(List<Offer> offerList) {
+        // 제시 가격의 합계, 개수 구하기
+        IntSummaryStatistics stats = offerList.stream()
+                .collect(Collectors.summarizingInt(Offer::getPrice));
+
+        if(stats.getSum() == 0)
+            return 0;
+        if(stats.getCount() == 0)
+            throw new ArithmeticException("견적 제시 댓글이 없습니다.");
+        return stats.getAverage();
+    }
+
+    // 게시글에 해당하는 견적 제시 댓글 리스트 실시간 전송
     public void sendOfferList2Writer(Long postId) {
         // 1. 해당 게시글 가져오기
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
@@ -80,6 +95,7 @@ public class OfferService {
         // 3. 게시글에 속해있는 댓글 목록 가져오기
         List<Offer> offerList = offerRepository.findByPost_PostId(postId);
         List<OfferDetailDto> offerDetailList = OfferDetailDto.fromEntityList(offerList);
+        // 4. 전송하기
         webSocketHandler.sendData2Client(memberId, offerDetailList);
     }
 }
