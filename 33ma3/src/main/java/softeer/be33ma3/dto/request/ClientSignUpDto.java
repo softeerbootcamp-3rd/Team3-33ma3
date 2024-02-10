@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class MemberSignUpDto {
+public class ClientSignUpDto {
     @Schema(description = "멤버 타입", example = "1")
     @NotNull
     private Integer memberType;

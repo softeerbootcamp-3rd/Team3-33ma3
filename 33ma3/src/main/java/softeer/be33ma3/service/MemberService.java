@@ -8,7 +8,7 @@ import softeer.be33ma3.domain.Center;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.CenterSignUpDto;
 import softeer.be33ma3.dto.request.LoginDto;
-import softeer.be33ma3.dto.request.MemberSignUpDto;
+import softeer.be33ma3.dto.request.ClientSignUpDto;
 import softeer.be33ma3.jwt.JwtService;
 import softeer.be33ma3.jwt.JwtToken;
 import softeer.be33ma3.repository.CenterRepository;
@@ -28,16 +28,16 @@ public class MemberService {
     }
 
     @Transactional
-    public void memberSignUp(MemberSignUpDto memberSignUpDto) {
-        if(memberRepository.findMemberByLoginId(memberSignUpDto.getLoginId()).isPresent()){//아이디가 이미 존재하는 경우
+    public void clientSignUp(ClientSignUpDto clientSignUpDto) {
+        if(memberRepository.findMemberByLoginId(clientSignUpDto.getLoginId()).isPresent()){//아이디가 이미 존재하는 경우
             throw new IllegalArgumentException("이미 존재하는 아이디");
         }
 
-        if(memberSignUpDto.getMemberType() != 1){
+        if(clientSignUpDto.getMemberType() != 1){
             throw new IllegalArgumentException("올바르지 않은 memberType");
         }
 
-        Member member = Member.createMember(memberSignUpDto.getMemberType(), memberSignUpDto.getLoginId(), memberSignUpDto.getPassword());
+        Member member = Member.createMember(clientSignUpDto.getMemberType(), clientSignUpDto.getLoginId(), clientSignUpDto.getPassword());
         memberRepository.save(member);
     }
 

@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import softeer.be33ma3.dto.request.CenterSignUpDto;
 import softeer.be33ma3.dto.request.LoginDto;
-import softeer.be33ma3.dto.request.MemberSignUpDto;
+import softeer.be33ma3.dto.request.ClientSignUpDto;
 import softeer.be33ma3.jwt.JwtService;
 import softeer.be33ma3.jwt.JwtToken;
 import softeer.be33ma3.response.DataResponse;
@@ -35,9 +35,9 @@ public class MemberController {
                     content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "일반 사용자 회원가입", description = "사용자 회원가입 메서드 입니다.")
-    @PostMapping("/member/signUp")
-    public ResponseEntity<?> memberSignUp(@RequestBody @Valid MemberSignUpDto memberSignUpDto){
-        memberService.memberSignUp(memberSignUpDto);
+    @PostMapping("/client/signUp")
+    public ResponseEntity<?> clientSignUp(@RequestBody @Valid ClientSignUpDto clientSignUpDto){
+        memberService.clientSignUp(clientSignUpDto);
 
         return ResponseEntity.ok(SingleResponse.success("회원가입 성공"));
     }
