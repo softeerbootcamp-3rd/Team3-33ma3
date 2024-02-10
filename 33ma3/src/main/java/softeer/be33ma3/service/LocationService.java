@@ -16,7 +16,14 @@ public class LocationService {
     private final CenterRepository centerRepository;
     private final DistanceCalculator distanceCalculator;
 
-    public List<CenterListDto> getCenters(double memberLatitude, double memberLongitude, double radius) {
+    public List<CenterListDto> getAllCenters() {
+        return centerRepository.findAll()
+                .stream()
+                .map(CenterListDto::from)
+                .toList();
+    }
+
+    public List<CenterListDto> getCentersInRadius(double memberLatitude, double memberLongitude, double radius) {
         List<CenterListDto> centerListDtos = new ArrayList<>();
         List<Center> allCenter = centerRepository.findAll();
 
