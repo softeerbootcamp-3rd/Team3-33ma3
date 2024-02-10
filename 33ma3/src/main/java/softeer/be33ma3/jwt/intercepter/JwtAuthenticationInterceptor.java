@@ -38,7 +38,7 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
         }
 
         if(token.startsWith(ACCESS_PREFIX_STRING)){
-            return token.substring(7);
+            return token.substring( ACCESS_PREFIX_STRING.length());
         }
 
         return null;
