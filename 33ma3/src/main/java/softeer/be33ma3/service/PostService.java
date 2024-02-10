@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import softeer.be33ma3.domain.*;
 import softeer.be33ma3.dto.request.PostCreateDto;
+import softeer.be33ma3.dto.response.ImageListDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
 import softeer.be33ma3.dto.response.PostDetailDto;
 import softeer.be33ma3.repository.*;
@@ -28,14 +30,16 @@ public class PostService {
     private final RegionRepository regionRepository;
     private final PostPerCenterRepository postPerCenterRepository;
     private final ImageRepository imageRepository;
+    private final ImageService imageService;
   
     @Transactional
-    public void createPost(PostCreateDto postCreateDto) {
-        long memberId = postCreateDto.getMemberId();
+    public void createPost(PostCreateDto postCreateDto, List<MultipartFile> multipartFiles) {
+        //이미지 저장
+        ImageListDto imageListDto = imageService.saveImage(multipartFiles);
         String location = postCreateDto.getLocation();
 
         //회원이랑 지역 찾기
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
+        Member member = memberRepository.findById(postCreateDto.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
         Region region = regionRepository.findByRegionName(getRegion(location)).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 구"));
 
         Post post = Post.createPost(postCreateDto, region, member);
@@ -45,7 +49,7 @@ public class PostService {
         centerAndPostMapping(postCreateDto, savedPost);
 
         //이미지랑 게시물 매핑하기
-        List<Image> images = imageRepository.findAllById(postCreateDto.getImages());
+        List<Image> images = imageRepository.findAllById(imageListDto.getImageIds());
         images.forEach(image -> image.setPost(savedPost));
     }
 

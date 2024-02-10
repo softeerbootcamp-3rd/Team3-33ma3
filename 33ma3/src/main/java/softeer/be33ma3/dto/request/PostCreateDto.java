@@ -2,7 +2,6 @@ package softeer.be33ma3.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -51,12 +50,8 @@ public class PostCreateDto {
     @NotNull(message = "주위 센터 정보는 필수입니다.")
     private List<Long> centers;
 
-    @Schema(description = "이미지 아이디", example = "[1, 2, 3]")
-    @NotNull
-    private List<Long> images;
-
     @Schema(description = "내용", example = "기스났는데 얼마할까요?")
-    @Length(max=10, message = "내용은 최대 50글자입니다.")
+    @Length(max=500, message = "내용은 최대 500글자입니다.")
     @NotNull
     private String contents;
 }
