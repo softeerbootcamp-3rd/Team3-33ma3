@@ -81,8 +81,6 @@ public class OfferService {
 
         if(stats.getSum() == 0)
             return 0;
-        if(stats.getCount() == 0)
-            throw new ArithmeticException("견적 제시 댓글이 없습니다.");
         return stats.getAverage();
     }
 
