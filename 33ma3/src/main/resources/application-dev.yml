@@ -1,3 +1,6 @@
+jwt:
+  secret: ${jwt-secret}
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -38,7 +41,3 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
-
----
-jwt:
-  secret: ${jwt-secret}
