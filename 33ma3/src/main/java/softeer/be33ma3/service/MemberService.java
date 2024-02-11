@@ -31,7 +31,7 @@ public class MemberService {
             throw new IllegalArgumentException("이미 존재하는 아이디");
         }
 
-        Member member = Member.createMember(CENTER_TYPE, clientSignUpDto.getLoginId(), clientSignUpDto.getPassword());
+        Member member = Member.createMember(CLIENT_TYPE, clientSignUpDto.getLoginId(), clientSignUpDto.getPassword());
         memberRepository.save(member);
     }
 
