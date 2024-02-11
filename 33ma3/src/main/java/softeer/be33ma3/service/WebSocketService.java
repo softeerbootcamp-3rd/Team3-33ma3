@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import softeer.be33ma3.dto.request.PostCreateDto;
@@ -30,8 +31,12 @@ public class WebSocketService {
         Long memberId = MemberService.getMemberId();
         webSocketRepository.save(memberId, session);
     }
-    public void delete(WebSocketSession webSocketSession) {
-        webSocketRepository.delete(webSocketSession);
+    public void closeConnection(Long memberId) throws IOException {
+        WebSocketSession session = webSocketRepository.findById(memberId);
+        if(session == null)
+            return;
+        session.close(CloseStatus.NORMAL);
+        webSocketRepository.delete(memberId);
     }
 
     // 데이터 (클래스 객체) 전송
