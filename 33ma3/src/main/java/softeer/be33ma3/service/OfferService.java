@@ -13,6 +13,7 @@ import softeer.be33ma3.dto.response.OfferDetailDto;
 import softeer.be33ma3.exception.UnauthorizedException;
 import softeer.be33ma3.repository.OfferRepository;
 import softeer.be33ma3.repository.PostRepository;
+import softeer.be33ma3.response.DataResponse;
 
 import java.util.IntSummaryStatistics;
 import java.util.List;
@@ -92,6 +93,34 @@ public class OfferService {
         // 6. 댓글 삭제, 해당 센터와의 실시간 연결 끊기
         offerRepository.delete(offer);
         webSocketHandler.closeConnection(member.getMemberId());
+    }
+
+    // 견적 제시 댓글 낙찰
+    public void selectOffer(Long postId, Long offerId) {
+        // 1. 해당 게시글 가져오기
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
+        // 2. 경매 완료된 게시글인지 검증
+        if(post.isDone())
+            throw new IllegalArgumentException("완료된 게시글");
+        // TODO: 3. 게시글 작성자의 접근인지 검증
+        Member member = null;
+        if(member.getMemberId() != post.getMember().getMemberId())
+            throw new UnauthorizedException("작성자만 낙찰 가능합니다.");
+        // 4. 낙찰을 희망하는 댓글 가져오기
+        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
+        // 5. 댓글 낙찰, 게시글 마감 처리
+        offer.setSelected();
+        offerRepository.save(offer);
+        post.setDone();
+        postRepository.save(post);
+        // 6. 낙찰된 서비스 센터에게 메세지 보내기
+        DataResponse<Long> alertCenter = DataResponse.success("제시한 견적이 낙찰되었습니다.", postId);
+        webSocketHandler.sendData2Client(offer.getCenter().getMember().getMemberId(), alertCenter);
+        // 7. 해당 게시글에 연관되어 있는 모든 유저에 대해 웹 소켓 연결 close (게시글 작성자 + 댓글 작성자들)
+        List<Offer> offerList = offerRepository.findByPost_PostId(postId);
+        List<Long> memberIdsInPost = findMemberIdsWithOfferList(offerList);
+        memberIdsInPost.add(post.getMember().getMemberId());
+        memberIdsInPost.forEach(webSocketHandler::closeConnection);
     }
 
     // 해당 견적을 작성한 서비스 센터들의 member id 목록 반환
