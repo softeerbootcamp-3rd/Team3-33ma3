@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import Camera from "../../../assets/camera.svg";
-import PictureArea from "../../../components/image/PictureArea";
+import ImageUploadCard from "./ImageUploadCard";
 
 const ImageUploadContainer = styled.div`
   display: flex;
@@ -49,7 +49,7 @@ function ImageUpload({ imageFiles }) {
   }
 
   const images = previewImageList.map((image, index) => (
-    <PictureArea size={"small"} img={image} key={index} />
+    <ImageUploadCard image={image} key={index} />
   ));
 
   return (

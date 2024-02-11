@@ -79,7 +79,10 @@ function PostCreatePage() {
       tuneUpService: tuneUpService.current.join(","),
       centers: [1, 2, 3],
       memberId: 1,
+      location: "서울시 강남구",
     };
+
+    console.log(newPost);
 
     // TODO: 에러처리 필요
     if (!validateOptions(newPost)) {
@@ -93,7 +96,7 @@ function PostCreatePage() {
       new Blob([JSON.stringify(newPost)], { type: "application/json" })
     );
 
-    fetch("http://192.168.1.141:8080/post/create", {
+    fetch("http://15.165.162.126:8080/post/create", {
       method: "POST",
       headers: { Accept: "application/json" },
       body: fd,
@@ -101,10 +104,10 @@ function PostCreatePage() {
       .then((response) => {
         if (response.status === 200) {
           console.log("success!");
-          return response.json();
         } else {
           console.log("error");
         }
+        return response.json();
       })
       .then((json) => {
         console.log(json);
