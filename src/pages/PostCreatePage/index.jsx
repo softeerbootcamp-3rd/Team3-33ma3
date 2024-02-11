@@ -7,7 +7,7 @@ import TextArea from "../../components/input/TextArea";
 import SubmitButton from "../../components/button/SubmitButton";
 import ChipButton from "../../components/button/ChipButton";
 import InputRange from "./components/InputRange";
-import Option from "./components/Option";
+import OptionType from "./components/OptionType";
 import OptionItem from "./components/OptionItem";
 import SelectCategory from "./components/SelectCategory";
 import {
@@ -179,7 +179,7 @@ function PostCreatePage() {
       <Form onSubmit={onSubmit}>
         <Content>
           <ImageUpload imageFiles={imageFiles} />
-          <Option title={"차량 정보"}>
+          <OptionType title={"차량 정보"}>
             <Grid>
               <OptionItem title={"모델"}>
                 <InputText size={"small"} name={"modelName"} />
@@ -197,10 +197,10 @@ function PostCreatePage() {
               {Repair}
               {TuneUp}
             </Grid>
-          </Option>
-          <Option title={"세부 정보"}>
+          </OptionType>
+          <OptionType title={"세부 정보"}>
             <TextArea maxLength={"500"} name={"contents"} />
-          </Option>
+          </OptionType>
         </Content>
         <SubmitButton type="submit" disabled={loading}>
           저장하기
