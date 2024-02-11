@@ -11,7 +11,7 @@ import ViewCurrentLocation from "./ViewCurrentLocation";
 import InputText from "./input/InputText";
 import SubmitButton from "./button/SubmitButton";
 
-export const URL = "http://192.168.1.141:8080/";
+export const URL = "http://15.165.162.126:8080/";
 const KM_TO_M_CONVERSION_FACTOR = 1000;
 const MIN_RADIUS = 0;
 const MAX_RADIUS = 10;
@@ -91,7 +91,13 @@ export function searchCoordinateToAddress(latLng, updateAddress) {
   );
 }
 
-export function searchAddressToCoordinate(address, map, marker, circle) {
+export function searchAddressToCoordinate(
+  address,
+  map,
+  marker,
+  circle,
+  markerList
+) {
   naver.maps.Service.geocode(
     {
       query: address ? address : "DEFAULT",
@@ -110,9 +116,35 @@ export function searchAddressToCoordinate(address, map, marker, circle) {
       const point = new naver.maps.Point(Number(item.x), Number(item.y)); // 지도에서 이동할 좌표
       map.setCenter(point);
       marker.setPosition(point);
-      circle.setCenter(point);
+      circle.setCenter(map.getCenter());
+      updateMarkers(map, circle, markerList);
     }
   );
+}
+
+function updateMarkers(map, circle, markers) {
+  const circleBounds = circle.getBounds();
+
+  for (var i = 0; i < markers.length; i++) {
+    const marker = markers[i];
+    const position = marker.getPosition();
+
+    if (circleBounds.hasLatLng(position)) {
+      showMarker(map, marker);
+    } else {
+      hideMarker(map, marker);
+    }
+  }
+}
+
+function showMarker(map, marker) {
+  if (marker.setMap()) return;
+  marker.setMap(map);
+}
+
+function hideMarker(map, marker) {
+  if (!marker.setMap()) return;
+  marker.setMap(null);
 }
 
 const LocationModal = forwardRef(function LocationModal({ props }, ref) {
@@ -128,7 +160,6 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
 
   if (isDragend) {
     setIsDragend(false);
-    const coords = newMarker.position;
     const radius = newCircle.getRadius() / KM_TO_M_CONVERSION_FACTOR;
 
     if (radius < MIN_RADIUS || radius > MAX_RADIUS) {
@@ -136,20 +167,7 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
       return;
     }
 
-    // fetch(
-    //   `${URL}location?latitude=${coords._lat}&longitude=${coords._lng}&radius=${
-    //     radius || MIN_RADIUS
-    //   }`
-    // )
-    //   .then((res) => {
-    //     return res.json();
-    //   })
-    //   .then((data) => {
-    //     const repairCenterList = data.data;
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
+    updateMarkers(newMap, newCircle, markerList);
   }
 
   function handleCloseModal() {
@@ -158,12 +176,17 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
 
   function handleInputAddressChange(e) {
     const inputAddress = e.target.value;
-    searchAddressToCoordinate(inputAddress, newMap, newMarker, newCircle);
+    searchAddressToCoordinate(
+      inputAddress,
+      newMap,
+      newMarker,
+      newCircle,
+      markerList
+    );
   }
 
   function handleInputRadiusChange(e) {
     const inputRadius = e.target.value;
-    const coords = newMarker.position;
 
     if (inputRadius < MIN_RADIUS || inputRadius > MAX_RADIUS) {
       alert("반경은 1이상 10이하까지 입력해주세요.");
@@ -172,20 +195,7 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
 
     newCircle.setRadius(inputRadius * KM_TO_M_CONVERSION_FACTOR);
 
-    // fetch(
-    //   `${URL}location?latitude=${coords._lat}&longitude=${coords._lng}&radius=${
-    //     inputRadius || MIN_RADIUS
-    //   }`
-    // )
-    //   .then((res) => {
-    //     return res.json();
-    //   })
-    //   .then((data) => {
-    //     const repairCenterList = data.data;
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
+    updateMarkers(newMap, newCircle, markerList);
   }
 
   function handleSubmitOnClick() {}
@@ -199,33 +209,36 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
   });
 
   useEffect(() => {
-    fetch(`${URL}center/all`)
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        const repairCenterList = data.data;
-        const markers = repairCenterList.map((element) => {
-          const position = new naver.maps.LatLng(
-            element.latitude,
-            element.longitude
-          );
-          const markerOptions = {
-            map: newMap,
-            position: position,
-            title: element.centerName,
-          };
-          const marker = new naver.maps.Marker(markerOptions);
+    if (newMap) {
+      fetch(`${URL}center/all`)
+        .then((res) => {
+          return res.json();
+        })
+        .then((data) => {
+          const repairCenterList = data.data;
+          const markers = repairCenterList.map((element) => {
+            const position = new naver.maps.LatLng(
+              element.latitude,
+              element.longitude
+            );
+            const markerOptions = {
+              map: newMap,
+              position: position,
+              title: element.centerName,
+            };
+            const marker = new naver.maps.Marker(markerOptions);
+            marker.setMap(null);
 
-          return marker;
+            return marker;
+          });
+
+          setMarkerList(() => markers);
+        })
+        .catch((error) => {
+          console.log(error);
         });
-
-        setMarkerList(() => markers);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
+    }
+  }, [newMap]);
 
   return createPortal(
     <>

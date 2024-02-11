@@ -85,8 +85,6 @@ export default function ViewCurrentLocation({
 
         naver.maps.Event.addListener(map, "dragend", (e) => {
           const currentCoords = map.getCenter();
-          map.setCenter(currentCoords);
-          marker.setPosition(currentCoords);
 
           setDragend(() => true);
           searchCoordinateToAddress(currentCoords, setAddress);
