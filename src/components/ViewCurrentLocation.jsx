@@ -59,7 +59,6 @@ export default function ViewCurrentLocation({
   setMarker,
   setAddress,
   setCircle,
-  setDragend,
 }) {
   const mapElement = useRef();
 
@@ -76,19 +75,6 @@ export default function ViewCurrentLocation({
         setMap(map);
         setMarker(marker);
         setCircle(circle);
-
-        naver.maps.Event.addListener(map, "drag", (e) => {
-          const currentCoords = map.getCenter();
-          marker.setPosition(currentCoords);
-          circle.setCenter(currentCoords);
-        });
-
-        naver.maps.Event.addListener(map, "dragend", (e) => {
-          const currentCoords = map.getCenter();
-
-          setDragend(() => true);
-          searchCoordinateToAddress(currentCoords, setAddress);
-        });
       } catch (error) {
         console.error("Failed to fetch current location:", error);
       }

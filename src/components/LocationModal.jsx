@@ -15,6 +15,7 @@ export const URL = "http://15.165.162.126:8080/";
 const KM_TO_M_CONVERSION_FACTOR = 1000;
 const MIN_RADIUS = 0;
 const MAX_RADIUS = 10;
+const DROP = 2;
 
 const Dialog = styled.dialog`
   padding: 30px;
@@ -154,21 +155,7 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
   const [newCircle, setNewCircle] = useState();
   const [markerList, setMarkerList] = useState([]);
 
-  const [isDragend, setIsDragend] = useState(false);
-
   const dialog = useRef();
-
-  if (isDragend) {
-    setIsDragend(false);
-    const radius = newCircle.getRadius() / KM_TO_M_CONVERSION_FACTOR;
-
-    if (radius < MIN_RADIUS || radius > MAX_RADIUS) {
-      alert("반경은 1이상 10이하까지 입력해주세요.");
-      return;
-    }
-
-    updateMarkers(newMap, newCircle, markerList);
-  }
 
   function handleCloseModal() {
     dialog.current.close();
@@ -225,11 +212,25 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
               map: newMap,
               position: position,
               title: element.centerName,
+              animation: DROP,
+              clickable: true,
             };
             const marker = new naver.maps.Marker(markerOptions);
             marker.setMap(null);
 
             return marker;
+          });
+          naver.maps.Event.addListener(newMap, "drag", (e) => {
+            const currentCoords = newMap.getCenter();
+            newMarker.setPosition(currentCoords);
+            newCircle.setCenter(currentCoords);
+          });
+
+          naver.maps.Event.addListener(newMap, "dragend", (e) => {
+            const currentCoords = newMap.getCenter();
+
+            updateMarkers(newMap, newCircle, markers);
+            searchCoordinateToAddress(currentCoords, setNewAddress);
           });
 
           setMarkerList(() => markers);
@@ -253,7 +254,6 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
             setMarker={setNewMarker}
             setAddress={setNewAddress}
             setCircle={setNewCircle}
-            setDragend={setIsDragend}
           />
           <InputText
             key={generateKeyBasedOnCurrentTime()}
