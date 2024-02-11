@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.controller.WebSocketHandler;
 import softeer.be33ma3.domain.Center;
+import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Offer;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.dto.request.OfferCreateDto;
@@ -81,14 +82,16 @@ public class OfferService {
         if(post.isDone())
             throw new IllegalArgumentException("완료된 게시글");
         // TODO: 3. 센터 정보 가져오기
+        Member member = null;
         Center center = null;
         // 4. 기존 댓글 가져오기
         Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
         // 5. 댓글 작성자인지 검증
         if(center.getCenterId() != offer.getCenter().getCenterId())
             throw new UnauthorizedException("작성자만 삭제 가능합니다.");
-        // 6. 댓글 삭제하기
+        // 6. 댓글 삭제, 해당 센터와의 실시간 연결 끊기
         offerRepository.delete(offer);
+        webSocketHandler.closeConnection(member.getMemberId());
     }
 
     // 견적 제시 댓글 목록의 평균 제시 가격 계산하여 반환하기
