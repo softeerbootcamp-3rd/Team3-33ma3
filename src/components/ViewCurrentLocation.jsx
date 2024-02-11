@@ -7,6 +7,7 @@ const DEFAULT_ZOOM_SCALE = 15;
 const DEFAULT_MAX_ZOOM = 15;
 const DEFAULT_MIN_ZOOM = 11;
 
+// 현재 위치 좌표 반환 함수
 function getCurrentLocation() {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
@@ -26,6 +27,7 @@ function getCurrentLocation() {
   });
 }
 
+// 현재 위치 좌표 기반 map, marker, circle 객체 생성 및 주소 상태 업데이트 함수
 function initMap(latitude, longitude, mapElement, setNewAddress) {
   const center = new naver.maps.LatLng(latitude, longitude);
   searchCoordinateToAddress(center, setNewAddress);
@@ -54,6 +56,7 @@ function initMap(latitude, longitude, mapElement, setNewAddress) {
   return { map, marker, circle };
 }
 
+// Modal의 지도 컴포넌트
 export default function ViewCurrentLocation({
   setMap,
   setMarker,
@@ -63,6 +66,7 @@ export default function ViewCurrentLocation({
   const mapElement = useRef();
 
   useEffect(() => {
+    // 현재 좌표 값 기반 비동기 처리 함수
     async function fetchAndSetLocation() {
       try {
         const currentLocation = await getCurrentLocation();

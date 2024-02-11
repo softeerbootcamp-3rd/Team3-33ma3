@@ -65,12 +65,14 @@ const Wrapper = styled.div`
   flex-direction: column;
 `;
 
+// 날짜 기반 임의 키 생성 함수
 function generateKeyBasedOnCurrentTime() {
   const currentTime = new Date().getTime();
   const key = `key_${currentTime}`;
   return key;
 }
 
+// 좌표 기반 주소, 지번 상태 업데이트 함수
 export function searchCoordinateToAddress(latLng, updateAddress) {
   naver.maps.Service.reverseGeocode(
     {
@@ -92,6 +94,7 @@ export function searchCoordinateToAddress(latLng, updateAddress) {
   );
 }
 
+// 주소 기반 좌표 값으로 map, marker, circle의 center 및 반경 내 marker 업데이트 함수
 export function searchAddressToCoordinate(
   address,
   map,
@@ -123,6 +126,7 @@ export function searchAddressToCoordinate(
   );
 }
 
+// 반경 내의 marker 출력, 그 외는 제외하는 함수
 function updateMarkers(map, circle, markers) {
   const circleBounds = circle.getBounds();
 
@@ -138,16 +142,19 @@ function updateMarkers(map, circle, markers) {
   }
 }
 
+// marker 출력 함수
 function showMarker(map, marker) {
   if (marker.setMap()) return;
   marker.setMap(map);
 }
 
+// marker 미출력 함수
 function hideMarker(map, marker) {
   if (!marker.setMap()) return;
   marker.setMap(null);
 }
 
+// Modal 최상위 컴포넌트
 const LocationModal = forwardRef(function LocationModal({ props }, ref) {
   const [newMap, setNewMap] = useState();
   const [newMarker, setNewMarker] = useState();
