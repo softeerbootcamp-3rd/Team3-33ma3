@@ -92,9 +92,7 @@ export default function ViewCurrentLocation({
           searchCoordinateToAddress(currentCoords, setAddress);
         });
       } catch (error) {
-        console.error(
-          console.error("Failed to fetch current location:", error)
-        );
+        console.error("Failed to fetch current location:", error);
       }
     }
     fetchAndSetLocation();

@@ -120,6 +120,7 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
   const [newMarker, setNewMarker] = useState();
   const [newAddress, setNewAddress] = useState();
   const [newCircle, setNewCircle] = useState();
+  const [markerList, setMarkerList] = useState([]);
 
   const [isDragend, setIsDragend] = useState(false);
 
@@ -198,12 +199,29 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
   });
 
   useEffect(() => {
-    console.log("asd");
     fetch(`${URL}center/all`)
       .then((res) => {
         return res.json();
       })
-      .then((data) => {})
+      .then((data) => {
+        const repairCenterList = data.data;
+        const markers = repairCenterList.map((element) => {
+          const position = new naver.maps.LatLng(
+            element.latitude,
+            element.longitude
+          );
+          const markerOptions = {
+            map: newMap,
+            position: position,
+            title: element.centerName,
+          };
+          const marker = new naver.maps.Marker(markerOptions);
+
+          return marker;
+        });
+
+        setMarkerList(() => markers);
+      })
       .catch((error) => {
         console.log(error);
       });
