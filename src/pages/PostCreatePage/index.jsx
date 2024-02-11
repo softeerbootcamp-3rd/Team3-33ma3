@@ -37,6 +37,7 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: 45px;
+  width: 100%;
 `;
 
 const ServiceList = styled.div`
