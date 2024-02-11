@@ -94,6 +94,13 @@ public class OfferService {
         webSocketHandler.closeConnection(member.getMemberId());
     }
 
+    // 해당 견적을 작성한 서비스 센터들의 member id 목록 반환
+    public List<Long> findMemberIdsWithOfferList(List<Offer> offerList) {
+        return offerList.stream()
+                .map(offer -> offer.getCenter().getMember().getMemberId())
+                .toList();
+    }
+
     // 견적 제시 댓글 목록의 평균 제시 가격 계산하여 반환하기
     public static double calculateAvgPrice(List<Offer> offerList) {
         // 제시 가격의 합계, 개수 구하기
@@ -123,9 +130,7 @@ public class OfferService {
         // 1. 해당 게시글에 달린 모든 견적 가져오기
         List<Offer> offerList = offerRepository.findByPost_PostId(postId);
         // 2. 견적 작성자의 member id 가져오기
-        List<Long> memberList = offerList.stream()
-                .map(offer -> offer.getCenter().getMember().getMemberId())
-                .toList();
+        List<Long> memberList = findMemberIdsWithOfferList(offerList);
         // 3. 평균 견적 가격 계산하기
         double avgPrice = calculateAvgPrice(offerList);
         // 4. 전송하기
