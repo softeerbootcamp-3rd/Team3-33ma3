@@ -30,11 +30,11 @@ const closeImage = {
     "brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(266deg) brightness(107%) contrast(104%)",
 };
 
-function ImageUploadCard({ image, key }) {
+function ImageUploadCard({ image, onClick }) {
   return (
     <ImageContainer>
-      <PictureArea size={"small"} img={image} key={key} />
-      <RemoveImage type="button">
+      <PictureArea size={"small"} img={image} />
+      <RemoveImage type="button" onClick={onClick}>
         <img src={Close} style={closeImage} />
       </RemoveImage>
     </ImageContainer>

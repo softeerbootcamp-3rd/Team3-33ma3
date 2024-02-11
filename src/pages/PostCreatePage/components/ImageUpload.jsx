@@ -6,6 +6,7 @@ import ImageUploadCard from "./ImageUploadCard";
 const ImageUploadContainer = styled.div`
   display: flex;
   width: 100%;
+  height: 195px;
 `;
 
 const ImageUploadButton = styled.button`
@@ -48,8 +49,20 @@ function ImageUpload({ imageFiles }) {
     imageFiles.current = [...imageFiles.current, fileList[0]];
   }
 
+  // 이미지 삭제
+  function deleteImage(key) {
+    setPreviewImageList(previewImageList.filter((img, index) => index !== key));
+    imageFiles.current = imageFiles.current.filter(
+      (file, index) => index !== key
+    );
+  }
+
   const images = previewImageList.map((image, index) => (
-    <ImageUploadCard image={image} key={index} />
+    <ImageUploadCard
+      image={image}
+      key={index}
+      onClick={() => deleteImage(index)}
+    />
   ));
 
   return (
