@@ -25,7 +25,6 @@ const PictureContainer = styled.div`
   width: ${({ size }) => sizeList[size].width};
   height: ${({ size }) => sizeList[size].height};
   overflow: hidden;
-  display: inline-block;
   margin-left: ${(props) => (props.size === "small" ? "40px" : "0px")};
   vertical-align: top;
 `;
