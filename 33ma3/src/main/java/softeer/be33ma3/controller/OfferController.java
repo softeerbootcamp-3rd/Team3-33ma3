@@ -89,7 +89,7 @@ public class OfferController {
     })
     @Parameter(name = "post_id", description = "게시글 id", required = true, example = "1", in = ParameterIn.PATH)
     @Parameter(name = "offer_id", description = "offer id", required = true, example = "2", in = ParameterIn.PATH)
-    @Operation(summary = "견적 댓글 삭제하기", description = "견적 댓글 수정하기 메서드 입니다.")
+    @Operation(summary = "견적 댓글 삭제하기", description = "견적 댓글 삭제하기 메서드 입니다.")
     @DeleteMapping("/{post_id}/offer/{offer_id}")
     public ResponseEntity<?> deleteOffer(@PathVariable("post_id") Long postId,
                                          @PathVariable("offer_id") Long offerId) {
