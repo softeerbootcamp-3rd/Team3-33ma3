@@ -8,10 +8,6 @@ import lombok.Data;
 @Data
 @Schema(description = "센터 회원가입 요청 DTO")
 public class CenterSignUpDto{
-    @Schema(description = "멤버 타입", example = "1")
-    @NotNull
-    private Integer memberType;
-
     @Schema(description = "로그인 아이디", example = "user1")
     @NotBlank(message = "아이디는 필수입니다.")
     private String loginId;

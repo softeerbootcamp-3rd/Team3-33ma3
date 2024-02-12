@@ -4,16 +4,19 @@ jwt:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/threethree?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/threethree?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
     username: ${db-username}
     password: ${db-password}
   jpa:
     open-in-view: true
     hibernate:
+      dialect: org.hibernate.dialect.MySQLDialect
       ddl-auto: create
     show-sql: true
     properties:
       hibernate.format_sql: true
+jwt:
+  secret: ${jwt-secret}
 
 cloud:
   aws:
@@ -21,7 +24,7 @@ cloud:
       bucket: threethree
     credentials:
       access-key: ${s3-access-key}
-      secret-key: ${s3-password-key}
+      secret-key: ${s3-secret-key}
     region:
       static: ap-northeast-2
       auto: false

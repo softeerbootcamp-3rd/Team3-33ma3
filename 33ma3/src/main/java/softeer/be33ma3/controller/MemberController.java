@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import softeer.be33ma3.dto.request.CenterSignUpDto;
 import softeer.be33ma3.dto.request.LoginDto;
-import softeer.be33ma3.dto.request.MemberSignUpDto;
+import softeer.be33ma3.dto.request.ClientSignUpDto;
 import softeer.be33ma3.jwt.JwtService;
 import softeer.be33ma3.jwt.JwtToken;
 import softeer.be33ma3.response.DataResponse;
@@ -35,9 +35,9 @@ public class MemberController {
                     content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "일반 사용자 회원가입", description = "사용자 회원가입 메서드 입니다.")
-    @PostMapping("/member/signUp")
-    public ResponseEntity<?> memberSignUp(@RequestBody @Valid MemberSignUpDto memberSignUpDto){
-        memberService.memberSignUp(memberSignUpDto);
+    @PostMapping("/client/signUp")
+    public ResponseEntity<?> clientSignUp(@RequestBody @Valid ClientSignUpDto clientSignUpDto){
+        memberService.clientSignUp(clientSignUpDto);
 
         return ResponseEntity.ok(SingleResponse.success("회원가입 성공"));
     }
@@ -56,7 +56,7 @@ public class MemberController {
     }
 
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
             @ApiResponse(responseCode = "400", description = "아이디 또는 비밀번호가 일치하지 않음", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "로그인", description = "로그인 메서드 입니다.")
@@ -68,7 +68,7 @@ public class MemberController {
     }
 
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "토큰 재발급 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "200", description = "토큰 재발급 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 회원", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "엑세스 토큰 재발급", description = "엑세스 토큰 재발급 메서드 입니다.")
