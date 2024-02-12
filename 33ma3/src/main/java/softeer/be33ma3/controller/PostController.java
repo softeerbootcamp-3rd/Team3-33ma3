@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.PostCreateDto;
+import softeer.be33ma3.jwt.CurrentUser;
 import softeer.be33ma3.response.DataResponse;
 import softeer.be33ma3.response.SingleResponse;
 import softeer.be33ma3.service.PostService;
@@ -37,8 +38,8 @@ public class PostController {
     })
     @Operation(summary = "게시글 작성", description = "게시글 작성 메서드 입니다.")
     @PostMapping(value = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> createPost(@RequestPart(name = "images") List<MultipartFile> images, @RequestPart(name = "request") PostCreateDto postCreateDto){
-        postService.createPost(postCreateDto, images);
+    public ResponseEntity<?> createPost(@Schema(hidden = true) @CurrentUser Member member, @RequestPart(name = "images") List<MultipartFile> images, @RequestPart(name = "request") PostCreateDto postCreateDto){
+        postService.createPost(member,postCreateDto, images);
 
         return ResponseEntity.ok().body(SingleResponse.success("게시글 작성 성공"));
     }

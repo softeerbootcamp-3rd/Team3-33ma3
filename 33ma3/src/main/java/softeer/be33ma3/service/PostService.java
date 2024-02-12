@@ -34,15 +34,17 @@ public class PostService {
     private final ImageService imageService;
 
     @Transactional
-    public void createPost(PostCreateDto postCreateDto, List<MultipartFile> multipartFiles) {
-        //이미지 저장
-        ImageListDto imageListDto = imageService.saveImage(multipartFiles);
-        String location = postCreateDto.getLocation();
-
+    public void createPost(Member currentMember, PostCreateDto postCreateDto, List<MultipartFile> multipartFiles) {
         //회원이랑 지역 찾기
-        Member member = memberRepository.findById(postCreateDto.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
+        Member member = memberRepository.findById(currentMember.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
+
+        String location = postCreateDto.getLocation();
         Region region = regionRepository.findByRegionName(getRegion(location)).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 구"));
 
+        //이미지 저장
+        ImageListDto imageListDto = imageService.saveImage(multipartFiles);
+
+        //게시글 저장
         Post post = Post.createPost(postCreateDto, region, member);
         Post savedPost = postRepository.save(post);
 
