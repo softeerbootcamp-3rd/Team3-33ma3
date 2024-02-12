@@ -29,8 +29,7 @@ public class OfferController {
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "견적 불러오기 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>존재하지 않는 견적",
-                    content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>존재하지 않는 견적", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Parameter(name = "post_id", description = "게시글 id", required = true, example = "1", in = ParameterIn.PATH)
     @Parameter(name = "offer_id", description = "offer id", required = true, example = "2", in = ParameterIn.PATH)
@@ -44,8 +43,7 @@ public class OfferController {
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "입찰 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>완료된 게시글",
-                    content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>완료된 게시글", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Parameter(name = "post_id", description = "입찰할 게시글 id", required = true, example = "1", in = ParameterIn.PATH)
     @Operation(summary = "입찰 하기", description = "입찰하기 메서드 입니다.")
@@ -63,8 +61,7 @@ public class OfferController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "댓글 수정 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
             @ApiResponse(responseCode = "401", description = "작성자만 수정 가능합니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "400", description = "기존 금액보다 낮은 금액으로만 수정 가능합니다."
-                    + "<br>존재하지 않는 게시글" + "<br>완료된 게시글" + "<br>존재하지 않는 견적",
+            @ApiResponse(responseCode = "400", description = "기존 금액보다 낮은 금액으로만 수정 가능합니다." + "<br>존재하지 않는 게시글" + "<br>완료된 게시글" + "<br>존재하지 않는 견적",
                     content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Parameter(name = "post_id", description = "게시글 id", required = true, example = "1", in = ParameterIn.PATH)

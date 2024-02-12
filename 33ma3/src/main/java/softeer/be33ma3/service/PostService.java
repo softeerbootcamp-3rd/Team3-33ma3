@@ -10,6 +10,7 @@ import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.dto.response.ImageListDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
 import softeer.be33ma3.dto.response.PostDetailDto;
+import softeer.be33ma3.exception.UnauthorizedException;
 import softeer.be33ma3.repository.*;
 
 import java.util.*;
@@ -40,7 +41,7 @@ public class PostService {
 
         //회원이랑 지역 찾기
         Member member = memberRepository.findById(postCreateDto.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
-        Region region = regionRepository.findByRegionName(getRegion(location)).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 구"));
+        Region region = getRegion(location);
 
         Post post = Post.createPost(postCreateDto, region, member);
         Post savedPost = postRepository.save(post);
@@ -53,26 +54,21 @@ public class PostService {
         images.forEach(image -> image.setPost(savedPost));
     }
 
-    private void centerAndPostMapping(PostCreateDto postCreateDto, Post savedPost) {
-        List<Center> centers = centerRepository.findAllById(postCreateDto.getCenters());
+    @Transactional
+    public void editPost(Member member, Long postId, PostCreateDto postCreateDto) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
+        member = memberRepository.findById(postCreateDto.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
 
-        List<PostPerCenter> postPerCenters = centers.stream()
-                .map(center -> new PostPerCenter(center, savedPost))
-                .collect(Collectors.toList());
-
-        postPerCenterRepository.saveAll(postPerCenters);
-    }
-
-    private String getRegion(String location) {
-        // 정규 표현식을 사용하여 "구"로 끝나는 문자열 찾기
-        Pattern pattern = Pattern.compile("\\b([^\\s]+구)\\b");
-        Matcher matcher = pattern.matcher(location);
-
-        if (matcher.find()) {
-            return matcher.group();
+        if(!post.getMember().equals(member)){
+            throw new UnauthorizedException("작성자만 수정 가능합니다.");
         }
 
-        throw new IllegalArgumentException("주소에서 구를 찾을 수 없음");
+        if(offerRepository.findByPost_PostId(postId) == null){  //댓글이 없으면
+            throw new IllegalArgumentException("수정은 경매 시작 전에만 가능합니다.");
+        }
+
+        Region region = getRegion(postCreateDto.getLocation());
+        post.editPost(postCreateDto, region);
     }
 
     // 게시글 세부사항 반환 (로그인 하지 않아도 확인 가능)
@@ -97,6 +93,28 @@ public class PostService {
         // 견적을 작성한 이력이 있는 서비스 센터의 접근일 경우 작성한 견적 가져오기
         OfferDetailDto offerDetailDto = getCenterOffer(postId, member.get());
         return List.of(postDetailDto, avgPrice, offerDetailDto);
+    }
+
+    private void centerAndPostMapping(PostCreateDto postCreateDto, Post savedPost) {
+        List<Center> centers = centerRepository.findAllById(postCreateDto.getCenters());
+
+        List<PostPerCenter> postPerCenters = centers.stream()
+                .map(center -> new PostPerCenter(center, savedPost))
+                .collect(Collectors.toList());
+
+        postPerCenterRepository.saveAll(postPerCenters);
+    }
+
+    private Region getRegion(String location) {
+        // 정규 표현식을 사용하여 "구"로 끝나는 문자열 찾기
+        Pattern pattern = Pattern.compile("\\b([^\\s]+구)\\b");
+        Matcher matcher = pattern.matcher(location);
+
+        if (matcher.find()) {
+            return regionRepository.findByRegionName(matcher.group()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 구"));
+        }
+
+        throw new IllegalArgumentException("주소에서 구를 찾을 수 없음");
     }
 
     // 멤버 정보를 이용하여 견적을 작성한 이력이 있는 서비스 센터일 경우 작성한 견적 반환
