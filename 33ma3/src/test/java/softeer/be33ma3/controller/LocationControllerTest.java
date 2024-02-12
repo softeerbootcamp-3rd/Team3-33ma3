@@ -37,4 +37,15 @@ class LocationControllerTest {
                 .andExpect(jsonPath("$.status").value("SUCCESS"))
                 .andExpect(jsonPath("$.message").value("반경 내 위치한 센터 정보 전송 완료"));
     }
+
+    @DisplayName("회원가입 된 모든 서비스 센터들을 반환한다.")
+    @Test
+    void getAllCenters() throws Exception {
+        //given //when //then
+        mockMvc.perform(get("/center/all"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("모든 센터 정보 전송 완료"));
+    }
 }
