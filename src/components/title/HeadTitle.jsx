@@ -17,6 +17,7 @@ const Title = styled.h1`
   font-size: ${(props) => props.theme.fontSize.title};
   font-weight: 700;
   padding: 0px 0px 0px 30px;
+  box-sizing: border-box;
 `;
 
 function HeadTitle({ title }) {

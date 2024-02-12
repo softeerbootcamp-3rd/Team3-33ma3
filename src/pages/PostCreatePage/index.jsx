@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import HeadTitle from "../../components/title/HeadTitle";
+import Page from "../../components/post/Page";
 import ImageUpload from "./components/ImageUpload";
 import InputText from "../../components/input/InputText";
 import TextArea from "../../components/input/TextArea";
@@ -14,26 +14,16 @@ import {
   REPAIR_SERVICE_OPTIONS,
   TUNEUP_SERVICE_OPTIONS,
 } from "../../constants/options";
-import { CONTENT_MAX_WIDTH } from "../../constants/layouts";
-
-const Page = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
 
 const Form = styled.form`
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 55px;
-  padding: 30px;
-  box-sizing: border-box;
   align-items: center;
 `;
 
-const Content = styled.div`
-  max-width: ${CONTENT_MAX_WIDTH};
+const PostRegister = styled.div`
   display: flex;
   flex-direction: column;
   gap: 45px;
@@ -139,10 +129,9 @@ function PostCreatePage() {
   }
 
   return (
-    <Page>
-      <HeadTitle title={"게시물 작성"} />
+    <Page title={"게시글 작성"}>
       <Form onSubmit={onSubmit}>
-        <Content>
+        <PostRegister>
           <ImageUpload imageFiles={imageFiles} />
           <OptionType title={"차량 정보"}>
             <Grid>
@@ -180,7 +169,7 @@ function PostCreatePage() {
           <OptionType title={"세부 정보"}>
             <TextArea maxLength={"500"} name={"contents"} />
           </OptionType>
-        </Content>
+        </PostRegister>
         <SubmitButton type="submit" disabled={loading}>
           저장하기
         </SubmitButton>

@@ -14,6 +14,7 @@ const InputRangeContainer = styled.div`
 const Range = styled.input`
   width: 100%;
   accent-color: grey;
+  margin: 0;
 `;
 
 const RangeUnit = styled.div`
