@@ -11,6 +11,7 @@ import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.dto.request.OfferCreateDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
 import softeer.be33ma3.exception.UnauthorizedException;
+import softeer.be33ma3.repository.CenterRepository;
 import softeer.be33ma3.repository.OfferRepository;
 import softeer.be33ma3.repository.PostRepository;
 
@@ -25,6 +26,7 @@ public class OfferService {
 
     private final OfferRepository offerRepository;
     private final PostRepository postRepository;
+    private final CenterRepository centerRepository;
     private final WebSocketHandler webSocketHandler;
 
     // 견적 제시 댓글 하나 반환
@@ -38,29 +40,36 @@ public class OfferService {
 
     // 견적 제시 댓글 생성
     @Transactional
-    public void createOffer(Long postId, OfferCreateDto offerCreateDto) {
+    public void createOffer(Long postId, OfferCreateDto offerCreateDto, Member member) {
+        if(member == null)
+            throw new UnauthorizedException("로그인이 필요합니다.");
         // 1. 해당 게시글 가져오기
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
         // 2. 경매 완료된 게시글인지 검증
         if(post.isDone())
             throw new IllegalArgumentException("완료된 게시글");
-        // TODO: 3. 센터 정보 가져오고 작성 가능한지 검증
-        Center center = null;
-        // 4. 댓글 생성하여 저장하기
+        // 3. 센터 정보 가져오기
+        Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 센터"));
+        // 4. 이미 견적을 작성한 센터인지 검증
+        offerRepository.findByPost_PostIdAndCenter_CenterId(postId, center.getCenterId())
+                .ifPresent(offer -> {throw new UnauthorizedException("이미 견적을 작성하였습니다.");});
+        // 5. 댓글 생성하여 저장하기
         Offer offer = offerCreateDto.toEntity(post, center);
         offerRepository.save(offer);
     }
 
     // 견적 제시 댓글 수정
     @Transactional
-    public void updateOffer(Long postId, Long offerId, OfferCreateDto offerCreateDto) {
+    public void updateOffer(Long postId, Long offerId, OfferCreateDto offerCreateDto, Member member) {
+        if(member == null)
+            throw new UnauthorizedException("로그인이 필요합니다.");
         // 1. 해당 게시글 가져오기
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
         // 2. 경매 완료된 게시글인지 검증
         if(post.isDone())
             throw new IllegalArgumentException("완료된 게시글");
-        // TODO: 3. 센터 정보 가져오기
-        Center center = null;
+        // 3. 센터 정보 가져오기
+        Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() ->  new IllegalArgumentException("존재하지 않는 센터"));
         // 4. 기존 댓글 가져오기
         Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
         // 5. 수정 가능한지 검증
@@ -75,15 +84,17 @@ public class OfferService {
     }
 
     // 견적 제시 댓글 삭제
-    public void deleteOffer(Long postId, Long offerId) {
+    @Transactional
+    public void deleteOffer(Long postId, Long offerId, Member member) {
+        if(member == null)
+            throw new UnauthorizedException("로그인이 필요합니다.");
         // 1. 해당 게시글 가져오기
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
         // 2. 경매 완료된 게시글인지 검증
         if(post.isDone())
             throw new IllegalArgumentException("완료된 게시글");
-        // TODO: 3. 센터 정보 가져오기
-        Member member = null;
-        Center center = null;
+        // 3. 센터 정보 가져오기
+        Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 센터"));
         // 4. 기존 댓글 가져오기
         Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
         // 5. 댓글 작성자인지 검증
