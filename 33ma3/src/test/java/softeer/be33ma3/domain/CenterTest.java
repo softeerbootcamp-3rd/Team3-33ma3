@@ -20,7 +20,7 @@ class CenterTest {
     @Test
     void isWithinRadius(){
         //given
-        Center center = new Center("테스트 센터", 37.5,127.0 ,Mockito.mock(Member.class));
+        Center center = Center.createCenter("테스트 센터", 37.5, 127.0, Mockito.mock(Member.class));
         double memberLatitude = 37.509; //0.9차이가 1km 차이
         double memberLongitude = 127.0;
         double radius = 1.0;

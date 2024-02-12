@@ -50,14 +50,19 @@ public class PostDetailDto {
         List<String> repairList = stringCommaParsing(post.getRepairService());
         List<String> tuneUpList = stringCommaParsing(post.getTuneUpService());
         List<String> imageList = post.getImages().stream().map(Image::getLink).toList();
-        int betweenTime = (int)ChronoUnit.DAYS.between(LocalDateTime.now(), post.getCreateTime());
-        LocalTime remainTime = calculateRemainTime(post.getCreateTime());
+        Duration duration = Duration.between(LocalDateTime.now(), post.getCreateTime().plusDays(post.getDeadline()));
+        int dDay = -1;
+        LocalTime remainTime = null;
+        if(!duration.isNegative())        // 아직 마감 시간 전
+            dDay = (int)duration.toDays();
+        if(dDay == 0)
+            remainTime = calculateRemainTime(duration);
 
         return PostDetailDto.builder()
                 .postId(post.getPostId())
                 .carType(post.getCarType())
                 .modelName(post.getModelName())
-                .dDay(post.getDeadline() - betweenTime)
+                .dDay(dDay)
                 .remainTime(remainTime)
                 .regionName(post.getRegion().getRegionName())
                 .contents(post.getContents())
@@ -73,9 +78,12 @@ public class PostDetailDto {
                 .toList();
     }
 
-    // 글 생성 시간과 현재 시간을 비교하여 남은 시간:분:초를 반환
-    private static LocalTime calculateRemainTime(LocalDateTime createTime) {
-        Duration duration = Duration.between(createTime, LocalDateTime.now());
-        return LocalTime.of((int)duration.toHours(), (int)duration.toMinutes()%60, (int)duration.toSeconds()%60);
+    // 마감 시간까지 남은 시간:분:초를 반환
+    private static LocalTime calculateRemainTime(Duration duration) {
+        int hours = (int)duration.toHours();
+        int minutes = duration.toMinutesPart();
+        int seconds = duration.toSecondsPart();
+        return LocalTime.of(hours, minutes, seconds);
     }
 }
+

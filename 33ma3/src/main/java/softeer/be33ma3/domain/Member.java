@@ -21,9 +21,19 @@ public class Member {
 
     private String password;
 
+    private String refreshToken;
+
     public Member(int memberType, String loginId, String password) {
         this.memberType = memberType;
         this.loginId = loginId;
         this.password = password;
+    }
+
+    public static Member createMember(int memberType, String loginId, String password){
+        return new Member(memberType, loginId, password);
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }
