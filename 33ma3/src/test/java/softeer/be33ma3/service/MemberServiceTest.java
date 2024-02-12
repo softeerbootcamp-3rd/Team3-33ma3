@@ -1,6 +1,7 @@
 package softeer.be33ma3.service;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,12 @@ class MemberServiceTest {
     @Autowired private MemberService memberService;
     @Autowired private CenterRepository centerRepository;
 
+    @BeforeEach
+    void setUp(){
+        Member client1 = Member.createMember(1, "client1", "1234");
+        memberRepository.save(client1);
+    }
+
     @AfterEach
     void tearDown(){
         centerRepository.deleteAllInBatch();
@@ -35,25 +42,22 @@ class MemberServiceTest {
     @Test
     void clientSignUp(){
         //given
-        ClientSignUpDto client = new ClientSignUpDto("client1", "1234");
+        ClientSignUpDto client = new ClientSignUpDto("client2", "1234");
 
         // when
         memberService.clientSignUp(client);
 
         //then
-        Member signUpClient = memberRepository.findByLoginIdAndPassword("client1", "1234").get();
+        Member signUpClient = memberRepository.findByLoginIdAndPassword("client2", "1234").get();
         assertThat(signUpClient)
                 .extracting("loginId", "password")
-                .containsExactly("client1", "1234");
+                .containsExactly("client2", "1234");
     }
 
     @DisplayName("동일한 아이디로 회원가입 하는 경우 예외가 발생한다.")
     @Test
     void clientSignUpWithSameId(){
         //given
-        Member client1 = Member.createMember(1, "client1", "1234");
-        memberRepository.save(client1);
-
         ClientSignUpDto client2 = new ClientSignUpDto("client1", "1234");
 
         //when //then
@@ -82,9 +86,6 @@ class MemberServiceTest {
     @Test
     void login(){
         //given
-        Member client1 = Member.createMember(1, "client1", "1234");
-        memberRepository.save(client1);
-
         LoginDto loginDto = new LoginDto("client1", "1234");
 
         //when
@@ -99,9 +100,6 @@ class MemberServiceTest {
     @Test
     void loginWithWrongId(){
         //given
-        Member client1 = Member.createMember(1, "client1", "1234");
-        memberRepository.save(client1);
-
         LoginDto loginDto = new LoginDto("client2", "1234");
 
         //when //then
