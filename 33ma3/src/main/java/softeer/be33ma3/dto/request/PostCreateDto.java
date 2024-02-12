@@ -17,10 +17,6 @@ import java.util.List;
 @NoArgsConstructor
 @Schema(description = "게시글 작성 요청 DTO")
 public class PostCreateDto {
-    @Schema(description = "멤버 아이디", example = "1")
-    @NotNull(message = "멤버 아이디는 필수입니다.")
-    private Long memberId;
-
     @Schema(description = "차종", example = "승용차")
     @NotBlank(message = "차종은 필수입니다.")
     private String carType;
