@@ -8,16 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.CenterSignUpDto;
 import softeer.be33ma3.dto.request.ClientSignUpDto;
 import softeer.be33ma3.dto.request.LoginDto;
 import softeer.be33ma3.jwt.JwtService;
 import softeer.be33ma3.service.MemberService;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
