@@ -31,8 +31,7 @@ public class MemberController {
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "400", description = "이미 존재하는 아이디" + "<br>올바르지 않은 memberType",
-                    content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+            @ApiResponse(responseCode = "400", description = "이미 존재하는 아이디" + "<br>올바르지 않은 memberType", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "일반 사용자 회원가입", description = "사용자 회원가입 메서드 입니다.")
     @PostMapping("/client/signUp")
@@ -44,8 +43,7 @@ public class MemberController {
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "400", description = "이미 존재하는 아이디" + "<br>올바르지 않은 memberType",
-                    content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+            @ApiResponse(responseCode = "400", description = "이미 존재하는 아이디" + "<br>올바르지 않은 memberType", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "센터 회원가입", description = "센터 회원가입 메서드 입니다.")
     @PostMapping("/center/signUp")
