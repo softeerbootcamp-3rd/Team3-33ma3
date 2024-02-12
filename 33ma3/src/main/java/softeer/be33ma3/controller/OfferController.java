@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.OfferCreateDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
 import softeer.be33ma3.response.DataResponse;
@@ -103,7 +104,8 @@ public class OfferController {
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "낙찰 완료, 게시글 마감", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "401", description = "작성자만 낙찰 가능합니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "401", description = "작성자만 낙찰 가능합니다." + "<br>로그인이 필요합니다."
+                    , content = @Content(schema = @Schema(implementation = SingleResponse.class))),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>완료된 게시글" + "<br>존재하지 않는 견적",
                     content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
@@ -112,8 +114,9 @@ public class OfferController {
     @Operation(summary = "견적 댓글 낙찰하기", description = "견적 댓글 낙찰하기 메서드 입니다.")
     @GetMapping("/{post_id}/offer/{offer_id}/select")
     public ResponseEntity<?> selectOffer(@PathVariable("post_id") Long postId,
-                                         @PathVariable("offer_id") Long offerId) {
-        offerService.selectOffer(postId, offerId);
+                                         @PathVariable("offer_id") Long offerId,
+                                         @Schema(hidden = true) @CurrentUser Member member) {
+        offerService.selectOffer(postId, offerId, member);
         return ResponseEntity.ok(SingleResponse.success("낙찰 완료, 게시글 마감"));
     }
 }

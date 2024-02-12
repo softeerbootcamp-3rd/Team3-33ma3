@@ -96,14 +96,15 @@ public class OfferService {
     }
 
     // 견적 제시 댓글 낙찰
-    public void selectOffer(Long postId, Long offerId) {
+    public void selectOffer(Long postId, Long offerId, Member member) {
+        if(member == null)
+            throw new UnauthorizedException("로그인이 필요합니다.");
         // 1. 해당 게시글 가져오기
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
         // 2. 경매 완료된 게시글인지 검증
         if(post.isDone())
             throw new IllegalArgumentException("완료된 게시글");
-        // TODO: 3. 게시글 작성자의 접근인지 검증
-        Member member = null;
+        // 3. 게시글 작성자의 접근인지 검증
         if(member.getMemberId() != post.getMember().getMemberId())
             throw new UnauthorizedException("작성자만 낙찰 가능합니다.");
         // 4. 낙찰을 희망하는 댓글 가져오기
