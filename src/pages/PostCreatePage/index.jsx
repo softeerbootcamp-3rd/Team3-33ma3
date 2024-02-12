@@ -7,8 +7,8 @@ import TextArea from "../../components/input/TextArea";
 import SubmitButton from "../../components/button/SubmitButton";
 import ChipButton from "../../components/button/ChipButton";
 import InputRange from "./components/InputRange";
-import OptionType from "./components/OptionType";
-import OptionItem from "./components/OptionItem";
+import OptionType from "../../components/post/OptionType";
+import OptionItem from "../../components/post/OptionItem";
 import SelectCategory from "./components/SelectCategory";
 import {
   REPAIR_SERVICE_OPTIONS,
