@@ -54,4 +54,8 @@ public class Post extends BaseTimeEntity{
 
         return post;
     }
+
+    public void setDone() {
+        done = true;
+    }
 }

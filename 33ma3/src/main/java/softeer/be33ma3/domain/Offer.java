@@ -42,7 +42,7 @@ public class Offer {
     public void setContents(String contents) {
         this.contents = contents;
     }
-    public void setSelected(boolean selected) {
-        this.selected = selected;
+    public void setSelected() {
+        selected = true;
     }
 }
