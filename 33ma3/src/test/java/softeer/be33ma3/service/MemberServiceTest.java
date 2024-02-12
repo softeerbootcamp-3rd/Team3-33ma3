@@ -8,7 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.domain.Member;
+import softeer.be33ma3.dto.request.CenterSignUpDto;
 import softeer.be33ma3.dto.request.ClientSignUpDto;
+import softeer.be33ma3.repository.CenterRepository;
 import softeer.be33ma3.repository.MemberRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,9 +22,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class MemberServiceTest {
     @Autowired private MemberRepository memberRepository;
     @Autowired private MemberService memberService;
+    @Autowired private CenterRepository centerRepository;
 
     @AfterEach
     void tearDown(){
+        centerRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();
     }
 
@@ -57,4 +61,19 @@ class MemberServiceTest {
                 .hasMessage("이미 존재하는 아이디");
     }
 
+    @DisplayName("센터 회원가입")
+    @Test
+    void centerSignUp(){
+        //given
+        CenterSignUpDto center = new CenterSignUpDto("center", "1234", "테스트 센터 강남점" ,37.1234, 127.1234);
+
+        //when
+        memberService.centerSignUp(center);
+
+        //then
+        Member signUpCenter = memberRepository.findByLoginIdAndPassword("center", "1234").get();
+        assertThat(signUpCenter)
+                .extracting("loginId", "password")
+                .containsExactly("center", "1234");
+    }
 }
