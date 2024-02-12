@@ -5,11 +5,11 @@ import ImageUpload from "./components/ImageUpload";
 import InputText from "../../components/input/InputText";
 import TextArea from "../../components/input/TextArea";
 import SubmitButton from "../../components/button/SubmitButton";
-import ChipButton from "../../components/button/ChipButton";
 import InputRange from "./components/InputRange";
 import OptionType from "../../components/post/OptionType";
 import OptionItem from "../../components/post/OptionItem";
 import SelectCategory from "./components/SelectCategory";
+import ServiceList from "./components/ServiceList";
 import {
   REPAIR_SERVICE_OPTIONS,
   TUNEUP_SERVICE_OPTIONS,
@@ -38,12 +38,6 @@ const Content = styled.div`
   flex-direction: column;
   gap: 45px;
   width: 100%;
-`;
-
-const ServiceList = styled.div`
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
 `;
 
 const Grid = styled.div`
@@ -144,36 +138,6 @@ function PostCreatePage() {
     }
   }
 
-  const Repair = (
-    <OptionItem title={"수리 서비스"} layout={"start"}>
-      <ServiceList>
-        {REPAIR_SERVICE_OPTIONS.map((item, index) => (
-          <ChipButton
-            type={item}
-            key={index}
-            onClick={() => toggle(repairService, item)}
-          />
-        ))}
-      </ServiceList>
-      {formErrors.service && <span>{formErrors.service}</span>}
-    </OptionItem>
-  );
-
-  const TuneUp = (
-    <OptionItem title={"정비 서비스"} layout={"start"}>
-      <ServiceList>
-        {TUNEUP_SERVICE_OPTIONS.map((item, index) => (
-          <ChipButton
-            type={item}
-            key={index}
-            onClick={() => toggle(tuneUpService, item)}
-          />
-        ))}
-      </ServiceList>
-      {formErrors.service && <span>{formErrors.service}</span>}
-    </OptionItem>
-  );
-
   return (
     <Page>
       <HeadTitle title={"게시물 작성"} />
@@ -195,8 +159,22 @@ function PostCreatePage() {
               <OptionItem title={"지역"}>
                 <button type="button">지역과 반경을 선택해주세요</button>
               </OptionItem>
-              {Repair}
-              {TuneUp}
+              <OptionItem title={"수리 서비스"} layout={"start"}>
+                <ServiceList
+                  optionList={REPAIR_SERVICE_OPTIONS}
+                  serviceList={repairService}
+                  onClick={toggle}
+                />
+                {formErrors.service && <span>{formErrors.service}</span>}
+              </OptionItem>
+              <OptionItem title={"정비 서비스"} layout={"start"}>
+                <ServiceList
+                  optionList={TUNEUP_SERVICE_OPTIONS}
+                  serviceList={tuneUpService}
+                  onClick={toggle}
+                />
+                {formErrors.service && <span>{formErrors.service}</span>}
+              </OptionItem>
             </Grid>
           </OptionType>
           <OptionType title={"세부 정보"}>
