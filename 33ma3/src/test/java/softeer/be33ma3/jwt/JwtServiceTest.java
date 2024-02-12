@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Transactional
 class JwtServiceTest {
     @Autowired private JwtService jwtService;
     @Autowired private MemberService memberService;

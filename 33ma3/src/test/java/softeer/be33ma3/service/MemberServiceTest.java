@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-@Transactional
 @ActiveProfiles("test")
 class MemberServiceTest {
     @Autowired private MemberRepository memberRepository;
