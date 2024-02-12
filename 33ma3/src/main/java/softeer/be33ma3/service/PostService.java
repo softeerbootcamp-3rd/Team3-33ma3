@@ -83,8 +83,7 @@ public class PostService {
         // 2. 게시글 세부 사항 가져오기
         PostDetailDto postDetailDto = PostDetailDto.fromEntity(post);
         // 3. 경매가 완료되었거나 글 작성자의 접근일 경우
-        if(post.isDone() ||
-                member!=null && post.getMember().getMemberId() == member.getMemberId()) {
+        if(post.isDone() || (member!=null && post.getMember().equals(member))) {
             List<Offer> offerList = offerRepository.findByPost_PostId(postId);
             List<OfferDetailDto> offerDetailList = OfferDetailDto.fromEntityList(offerList);
             return List.of(postDetailDto, offerDetailList);
