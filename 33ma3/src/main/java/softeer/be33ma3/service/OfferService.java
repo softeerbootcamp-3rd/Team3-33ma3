@@ -99,13 +99,8 @@ public class OfferService {
     // 견적 제시 댓글 낙찰
     @Transactional
     public void selectOffer(Long postId, Long offerId, Member member) {
-        if(member == null)
-            throw new UnauthorizedException("로그인이 필요합니다.");
-        // 1. 해당 게시글 가져오기
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
-        // 2. 경매 완료된 게시글인지 검증
-        if(post.isDone())
-            throw new IllegalArgumentException("완료된 게시글");
+        // 1. 해당 게시글이 마감 전인지 확인
+        Post post = checkNotDonePost(postId);
         // 3. 게시글 작성자의 접근인지 검증
         if(member.getMemberId() != post.getMember().getMemberId())
             throw new UnauthorizedException("작성자만 낙찰 가능합니다.");
@@ -114,14 +109,18 @@ public class OfferService {
         // 5. 댓글 낙찰, 게시글 마감 처리
         offer.setSelected();
         post.setDone();
-        // 6. 낙찰된 서비스 센터에게 메세지 보내기
-        DataResponse<Long> alertCenter = DataResponse.success("제시한 견적이 낙찰되었습니다.", postId);
-        webSocketHandler.sendData2Client(offer.getCenter().getMember().getMemberId(), alertCenter);
-        // 7. 해당 게시글에 연관되어 있는 모든 유저에 대해 웹 소켓 연결 close (게시글 작성자 + 댓글 작성자들)
-        List<Offer> offerList = offerRepository.findByPost_PostId(postId);
-        List<Long> memberIdsInPost = findMemberIdsWithOfferList(offerList);
-        memberIdsInPost.add(member.getMemberId());
-        memberIdsInPost.forEach(webSocketHandler::closeConnection);
+        // 6-1. 서비스 센터들에게 낙찰 또는 경매 마감 메세지 보내기
+        // 6-2. 해당 게시글에 연관되어 있는 모든 유저에 대해 웹 소켓 연결 close (게시글 작성자 + 댓글 작성자들)
+        Long selectedMemberId = offer.getCenter().getMember().getMemberId();
+        sendMessageAfterSelection(postId, member.getMemberId(), selectedMemberId);
+    }
+
+    // 해당 게시글을 가져오고, 마감 전인지 판단
+    private Post checkNotDonePost(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
+        if(post.isDone())
+            throw new IllegalArgumentException("완료된 게시글");
+        return post;
     }
 
     // 해당 견적을 작성한 서비스 센터들의 member id 목록 반환
@@ -165,5 +164,23 @@ public class OfferService {
         double avgPrice = calculateAvgPrice(offerList);
         // 4. 전송하기
         memberList.forEach(memberId -> webSocketHandler.sendData2Client(memberId, avgPrice));
+    }
+
+    // 낙찰 처리 후 서비스 센터들에게 낙찰 메세지, 경매 마감 메세지 전송
+    // 해당 게시글에 연관된 모든 유저들과 웹 소켓 연결 종료
+    private void sendMessageAfterSelection(Long postId, Long clientId, Long selectedMemberId) {
+        // 낙찰 메세지
+        DataResponse<Long> selectAlert = DataResponse.success("제시한 견적이 낙찰되었습니다.", postId);
+        webSocketHandler.sendData2Client(selectedMemberId, selectAlert);
+        // 경매 마감 메세지
+        DataResponse<Long> endAlert = DataResponse.success("견적 미선정으로 경매가 마감되었습니다. 다음 기회를 노려보세요!", postId);
+        List<Offer> offerList = offerRepository.findByPost_PostId(postId);
+        List<Long> memberIdsInPost = findMemberIdsWithOfferList(offerList);
+        memberIdsInPost.stream()
+                .filter(memberId -> !memberId.equals(selectedMemberId))
+                .forEach(memberId -> webSocketHandler.sendData2Client(memberId, endAlert));
+        // 웹 소켓 연결 종료
+        memberIdsInPost.add(clientId);
+        memberIdsInPost.forEach(webSocketHandler::closeConnection);
     }
 }
