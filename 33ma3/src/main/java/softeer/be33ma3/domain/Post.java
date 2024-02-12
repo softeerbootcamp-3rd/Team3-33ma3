@@ -54,7 +54,7 @@ public class Post extends BaseTimeEntity{
 
         return post;
     }
-
+  
     public void editPost(PostCreateDto postCreateDto, Region region) {
         this.carType = postCreateDto.getCarType();
         this.deadline = postCreateDto.getDeadline();
@@ -62,5 +62,9 @@ public class Post extends BaseTimeEntity{
         this.repairService = postCreateDto.getRepairService();
         this.tuneUpService = postCreateDto.getTuneUpService();
         this.region = region;
+    }
+  
+    public void setDone() {
+        done = true;
     }
 }

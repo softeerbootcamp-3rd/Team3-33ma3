@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.domain.Member;
+import softeer.be33ma3.exception.JwtTokenException;
 import softeer.be33ma3.repository.MemberRepository;
 
 @Service
@@ -23,7 +24,7 @@ public class JwtService {
 
     @Transactional
     public String reissue(String refreshToken){   //리프레시 토큰으로 엑세스 토큰 재발급
-        Member member = memberRepository.findMemberByRefreshToken(refreshToken).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
+        Member member = memberRepository.findMemberByRefreshToken(refreshToken).orElseThrow(() -> new JwtTokenException("올바르지 않은 리프레시 토큰"));
 
         //토큰 생성
         String accessToken = jwtProvider.createAccessToken(member.getMemberType(), member.getMemberId(), member.getPassword());

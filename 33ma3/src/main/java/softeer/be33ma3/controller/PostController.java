@@ -37,8 +37,8 @@ public class PostController {
     })
     @Operation(summary = "게시글 작성", description = "게시글 작성 메서드 입니다.")
     @PostMapping(value = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> createPost(@RequestPart(name = "images") List<MultipartFile> images, @RequestPart(name = "request") PostCreateDto postCreateDto){
-        postService.createPost(postCreateDto, images);
+    public ResponseEntity<?> createPost(@Schema(hidden = true) @CurrentUser Member member, @RequestPart(name = "images") List<MultipartFile> images, @RequestPart(name = "request") PostCreateDto postCreateDto){
+        postService.createPost(member,postCreateDto, images);
 
         return ResponseEntity.ok().body(SingleResponse.success("게시글 작성 성공"));
     }
@@ -50,8 +50,9 @@ public class PostController {
     @Operation(summary = "게시글 조회", description = "게시글 조회 메서드 입니다.")
     @Parameter(name = "post_id", description = "조회할 게시글 id", required = true, example = "1", in = ParameterIn.PATH)
     @GetMapping("/{post_id}")
-    public ResponseEntity<?> showPost(@PathVariable("post_id") Long postId) {
-        List<Object> getPostResult = postService.showPost(postId);
+    public ResponseEntity<?> showPost(@PathVariable("post_id") Long postId,
+                                      @Schema(hidden = true) @CurrentUser Member member) {
+        List<Object> getPostResult = postService.showPost(postId, member);
         return ResponseEntity.ok(DataResponse.success("게시글 조회 완료", getPostResult));
     }
 

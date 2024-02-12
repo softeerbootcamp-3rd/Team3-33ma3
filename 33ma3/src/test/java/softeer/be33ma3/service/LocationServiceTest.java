@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.tuple;
 
 @ActiveProfiles("test")
 @SpringBootTest
-@Transactional
 class LocationServiceTest {
     @Autowired private LocationService locationService;
     @Autowired private CenterRepository centerRepository;
