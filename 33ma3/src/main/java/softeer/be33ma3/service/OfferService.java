@@ -120,7 +120,7 @@ public class OfferService {
         // 7. 해당 게시글에 연관되어 있는 모든 유저에 대해 웹 소켓 연결 close (게시글 작성자 + 댓글 작성자들)
         List<Offer> offerList = offerRepository.findByPost_PostId(postId);
         List<Long> memberIdsInPost = findMemberIdsWithOfferList(offerList);
-        memberIdsInPost.add(post.getMember().getMemberId());
+        memberIdsInPost.add(member.getMemberId());
         memberIdsInPost.forEach(webSocketHandler::closeConnection);
     }
 
