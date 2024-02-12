@@ -10,10 +10,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.CenterSignUpDto;
 import softeer.be33ma3.dto.request.ClientSignUpDto;
+import softeer.be33ma3.dto.request.LoginDto;
+import softeer.be33ma3.jwt.JwtService;
 import softeer.be33ma3.service.MemberService;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -26,6 +31,7 @@ class MemberControllerTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
     @MockBean private MemberService memberService;
+    @MockBean private JwtService jwtService;
 
 
     @DisplayName("일반 사용자 회원가입")
@@ -37,8 +43,7 @@ class MemberControllerTest {
         //when //then
         mockMvc.perform(post("/client/signUp")
                         .content(objectMapper.writeValueAsString(request))
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
+                        .contentType(APPLICATION_JSON))
                 .andDo(print()) //자세한 로그 볼 수 있음
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("SUCCESS"))
@@ -54,8 +59,7 @@ class MemberControllerTest {
         //when //then
         mockMvc.perform(post("/client/signUp")
                         .content(objectMapper.writeValueAsString(request))
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
+                        .contentType(APPLICATION_JSON))
                 .andDo(print())   //자세한 로그를 볼 수 있음
                 .andExpect(jsonPath("$.status").value("ERROR"))
                 .andExpect(jsonPath("$.message").value("비밀번호는 필수입니다."));
@@ -70,8 +74,7 @@ class MemberControllerTest {
         //when //then
         mockMvc.perform(post("/center/signUp")
                         .content(objectMapper.writeValueAsString(request))
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
+                        .contentType(APPLICATION_JSON))
                 .andDo(print()) //자세한 로그 볼 수 있음
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("SUCCESS"))
@@ -87,10 +90,25 @@ class MemberControllerTest {
         //when //then
         mockMvc.perform(post("/center/signUp")
                         .content(objectMapper.writeValueAsString(request))
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
+                        .contentType(APPLICATION_JSON))
                 .andDo(print())   //자세한 로그를 볼 수 있음
                 .andExpect(jsonPath("$.status").value("ERROR"))
                 .andExpect(jsonPath("$.message").value("센터이름은 필수입니다."));
+    }
+
+    @DisplayName("센터, 일반 사용자 로그인 기능")
+    @Test
+    void login() throws Exception {
+        //given
+        LoginDto request = new LoginDto("client1", "1234");
+
+        //when //then
+        mockMvc.perform(post("/login")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("로그인 성공"));
+
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.CenterSignUpDto;
 import softeer.be33ma3.dto.request.ClientSignUpDto;
+import softeer.be33ma3.dto.request.LoginDto;
 import softeer.be33ma3.repository.CenterRepository;
 import softeer.be33ma3.repository.MemberRepository;
 
@@ -75,5 +76,37 @@ class MemberServiceTest {
         assertThat(signUpCenter)
                 .extracting("loginId", "password")
                 .containsExactly("center", "1234");
+    }
+
+    @DisplayName("센터와 일반 사용자 로그인 기능")
+    @Test
+    void login(){
+        //given
+        Member client1 = Member.createMember(1, "client1", "1234");
+        memberRepository.save(client1);
+
+        LoginDto loginDto = new LoginDto("client1", "1234");
+
+        //when
+        memberService.login(loginDto);
+
+        //then
+        Member member = memberRepository.findByLoginIdAndPassword("client1", "1234").get();
+        assertThat(member.getRefreshToken()).isNotNull();
+    }
+
+    @DisplayName("아이디 또는 비밀번호가 다르면 예외가 발생한다.")
+    @Test
+    void loginWithWrongId(){
+        //given
+        Member client1 = Member.createMember(1, "client1", "1234");
+        memberRepository.save(client1);
+
+        LoginDto loginDto = new LoginDto("client2", "1234");
+
+        //when //then
+        assertThatThrownBy(() -> memberService.login(loginDto))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("아이디 또는 비밀번호가 일치하지 않음");
     }
 }
