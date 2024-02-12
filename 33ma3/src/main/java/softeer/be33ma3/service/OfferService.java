@@ -125,7 +125,7 @@ public class OfferService {
     }
 
     // 해당 견적을 작성한 서비스 센터들의 member id 목록 반환
-    public List<Long> findMemberIdsWithOfferList(List<Offer> offerList) {
+    private List<Long> findMemberIdsWithOfferList(List<Offer> offerList) {
         return offerList.stream()
                 .map(offer -> offer.getCenter().getMember().getMemberId())
                 .toList();
