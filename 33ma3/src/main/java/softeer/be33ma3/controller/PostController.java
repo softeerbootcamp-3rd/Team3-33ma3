@@ -8,10 +8,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.response.DataResponse;
 import softeer.be33ma3.response.SingleResponse;
@@ -19,7 +21,9 @@ import softeer.be33ma3.service.PostService;
 
 import java.util.List;
 
+
 @Tag(name = "Post", description = "게시글 관련 api")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/post")
@@ -32,9 +36,9 @@ public class PostController {
                     content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "게시글 작성", description = "게시글 작성 메서드 입니다.")
-    @PostMapping("/create")
-    public ResponseEntity<?> createPost(@RequestBody @Valid PostCreateDto postCreateDto){
-        postService.createPost(postCreateDto);
+    @PostMapping(value = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<?> createPost(@RequestPart(name = "images") List<MultipartFile> images, @RequestPart(name = "request") PostCreateDto postCreateDto){
+        postService.createPost(postCreateDto, images);
 
         return ResponseEntity.ok().body(SingleResponse.success("게시글 작성 성공"));
     }
@@ -47,8 +51,9 @@ public class PostController {
     @Operation(summary = "게시글 조회", description = "게시글 조회 메서드 입니다.")
     @Parameter(name = "post_id", description = "조회할 게시글 id", required = true, example = "1", in = ParameterIn.PATH)
     @GetMapping("/{post_id}")
-    public ResponseEntity<?> showPost(@PathVariable("post_id") Long postId) {
-        List<Object> getPostResult = postService.showPost(postId);
+    public ResponseEntity<?> showPost(@PathVariable("post_id") Long postId,
+                                      @Schema(hidden = true) @CurrentUser Member member) {
+        List<Object> getPostResult = postService.showPost(postId, member);
         return ResponseEntity.ok(DataResponse.success("게시글 조회 완료", getPostResult));
     }
 }
