@@ -8,7 +8,7 @@ const OptionContainer = styled.div`
   gap: 20px;
 `;
 
-function Option({ children, title }) {
+function OptionType({ children, title }) {
   return (
     <OptionContainer>
       <OptionTitle title={title} />
@@ -17,4 +17,4 @@ function Option({ children, title }) {
   );
 }
 
-export default Option;
+export default OptionType;

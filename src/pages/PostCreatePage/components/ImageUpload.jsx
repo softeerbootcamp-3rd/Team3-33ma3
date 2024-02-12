@@ -1,11 +1,13 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import Camera from "../../../assets/camera.svg";
-import PictureArea from "../../../components/image/PictureArea";
+import ImageUploadCard from "./ImageUploadCard";
+import { MAX_FILE_COUNT } from "../../../constants/options";
 
 const ImageUploadContainer = styled.div`
   display: flex;
   width: 100%;
+  height: 195px;
 `;
 
 const ImageUploadButton = styled.button`
@@ -42,14 +44,42 @@ function ImageUpload({ imageFiles }) {
   // image 업로드
   function onImageUpload(e) {
     const fileList = e.target.files;
-    const url = URL.createObjectURL(fileList[0]);
 
-    setPreviewImageList([...previewImageList, url]);
-    imageFiles.current = [...imageFiles.current, fileList[0]];
+    if (!validateImageFilesLength(fileList.length)) {
+      return;
+    }
+
+    const newPreviewImages = Array.from(fileList).map((file) =>
+      URL.createObjectURL(file)
+    );
+
+    setPreviewImageList([...previewImageList, ...newPreviewImages]);
+    imageFiles.current = [...imageFiles.current, ...fileList];
+  }
+
+  // 이미지 업로드 5장 이상일 시 업로드 불가능
+  function validateImageFilesLength(newFileLength) {
+    if (imageFiles.current.length + newFileLength > MAX_FILE_COUNT) {
+      alert("사진은 최대 " + MAX_FILE_COUNT + "장까지 업로드 가능합니다.");
+      return false;
+    }
+    return true;
+  }
+
+  // 이미지 삭제
+  function deleteImage(key) {
+    setPreviewImageList(previewImageList.filter((img, index) => index !== key));
+    imageFiles.current = imageFiles.current.filter(
+      (file, index) => index !== key
+    );
   }
 
   const images = previewImageList.map((image, index) => (
-    <PictureArea size={"small"} img={image} key={index} />
+    <ImageUploadCard
+      image={image}
+      key={index}
+      onClick={() => deleteImage(index)}
+    />
   ));
 
   return (
@@ -62,6 +92,7 @@ function ImageUpload({ imageFiles }) {
       </ImageUploadButton>
       <input
         type="file"
+        multiple
         accept="image/jpg, image/jpeg, image/png"
         style={{ display: "none" }}
         ref={imageInputRef}

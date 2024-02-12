@@ -7,7 +7,7 @@ import TextArea from "../../components/input/TextArea";
 import SubmitButton from "../../components/button/SubmitButton";
 import ChipButton from "../../components/button/ChipButton";
 import InputRange from "./components/InputRange";
-import Option from "./components/Option";
+import OptionType from "./components/OptionType";
 import OptionItem from "./components/OptionItem";
 import SelectCategory from "./components/SelectCategory";
 import {
@@ -37,6 +37,7 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: 45px;
+  width: 100%;
 `;
 
 const ServiceList = styled.div`
@@ -79,7 +80,10 @@ function PostCreatePage() {
       tuneUpService: tuneUpService.current.join(","),
       centers: [1, 2, 3],
       memberId: 1,
+      location: "서울시 강남구",
     };
+
+    console.log(newPost);
 
     // TODO: 에러처리 필요
     if (!validateOptions(newPost)) {
@@ -93,7 +97,7 @@ function PostCreatePage() {
       new Blob([JSON.stringify(newPost)], { type: "application/json" })
     );
 
-    fetch("http://192.168.1.141:8080/post/create", {
+    fetch("http://15.165.162.126:8080/post/create", {
       method: "POST",
       headers: { Accept: "application/json" },
       body: fd,
@@ -101,10 +105,10 @@ function PostCreatePage() {
       .then((response) => {
         if (response.status === 200) {
           console.log("success!");
-          return response.json();
         } else {
           console.log("error");
         }
+        return response.json();
       })
       .then((json) => {
         console.log(json);
@@ -176,7 +180,7 @@ function PostCreatePage() {
       <Form onSubmit={onSubmit}>
         <Content>
           <ImageUpload imageFiles={imageFiles} />
-          <Option title={"차량 정보"}>
+          <OptionType title={"차량 정보"}>
             <Grid>
               <OptionItem title={"모델"}>
                 <InputText size={"small"} name={"modelName"} />
@@ -194,10 +198,10 @@ function PostCreatePage() {
               {Repair}
               {TuneUp}
             </Grid>
-          </Option>
-          <Option title={"세부 정보"}>
+          </OptionType>
+          <OptionType title={"세부 정보"}>
             <TextArea maxLength={"500"} name={"contents"} />
-          </Option>
+          </OptionType>
         </Content>
         <SubmitButton type="submit" disabled={loading}>
           저장하기

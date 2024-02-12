@@ -21,3 +21,5 @@ export const CAR_CATEGORY_OPTIONS = [
   "트럭",
   "버스",
 ];
+
+export const MAX_FILE_COUNT = 5;
