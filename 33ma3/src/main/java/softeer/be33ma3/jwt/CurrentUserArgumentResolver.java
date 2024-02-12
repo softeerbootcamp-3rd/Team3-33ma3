@@ -10,6 +10,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import softeer.be33ma3.domain.Member;
+import softeer.be33ma3.exception.JwtTokenException;
 import softeer.be33ma3.repository.MemberRepository;
 
 import static softeer.be33ma3.jwt.JwtProperties.ACCESS_HEADER_STRING;
@@ -37,7 +38,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
         String accessToken = request.getHeader(ACCESS_HEADER_STRING);   //헤더에서 엑세스 토큰 가져오기
 
         if(accessToken == null){    //토큰이 없는 경우
-            return null;
+            throw new JwtTokenException("엑세스 토큰 필요");
         }
 
         Claims claims = jwtProvider.getClaims(accessToken);
