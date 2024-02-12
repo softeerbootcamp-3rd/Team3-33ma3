@@ -76,6 +76,7 @@ public class OfferService {
     }
 
     // 견적 제시 댓글 삭제
+    @Transactional
     public void deleteOffer(Long postId, Long offerId) {
         // 1. 해당 게시글 가져오기
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
@@ -96,6 +97,7 @@ public class OfferService {
     }
 
     // 견적 제시 댓글 낙찰
+    @Transactional
     public void selectOffer(Long postId, Long offerId, Member member) {
         if(member == null)
             throw new UnauthorizedException("로그인이 필요합니다.");
@@ -111,9 +113,7 @@ public class OfferService {
         Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
         // 5. 댓글 낙찰, 게시글 마감 처리
         offer.setSelected();
-        offerRepository.save(offer);
         post.setDone();
-        postRepository.save(post);
         // 6. 낙찰된 서비스 센터에게 메세지 보내기
         DataResponse<Long> alertCenter = DataResponse.success("제시한 견적이 낙찰되었습니다.", postId);
         webSocketHandler.sendData2Client(offer.getCenter().getMember().getMemberId(), alertCenter);
