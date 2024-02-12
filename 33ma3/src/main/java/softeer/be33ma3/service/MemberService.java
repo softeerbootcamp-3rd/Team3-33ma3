@@ -18,8 +18,8 @@ import softeer.be33ma3.repository.MemberRepository;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MemberService {
-    private static final int CLIENT_TYPE = 1;
-    private static final int CENTER_TYPE = 2;
+    public static final int CLIENT_TYPE = 1;
+    public static final int CENTER_TYPE = 2;
 
     private final MemberRepository memberRepository;
     private final CenterRepository centerRepository;
