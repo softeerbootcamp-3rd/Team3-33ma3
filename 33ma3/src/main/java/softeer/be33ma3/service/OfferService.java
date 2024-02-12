@@ -5,11 +5,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.controller.WebSocketHandler;
 import softeer.be33ma3.domain.Center;
+import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Offer;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.dto.request.OfferCreateDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
 import softeer.be33ma3.exception.UnauthorizedException;
+import softeer.be33ma3.repository.CenterRepository;
 import softeer.be33ma3.repository.OfferRepository;
 import softeer.be33ma3.repository.PostRepository;
 
@@ -24,12 +26,13 @@ public class OfferService {
 
     private final OfferRepository offerRepository;
     private final PostRepository postRepository;
+    private final CenterRepository centerRepository;
     private final WebSocketHandler webSocketHandler;
 
     // 견적 제시 댓글 하나 반환
     public OfferDetailDto showOffer(Long postId, Long offerId) {
         // 1. 해당 게시글 가져오기
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
+        postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
         // 2. 해당 댓글 가져오기
         Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
         return OfferDetailDto.fromEntity(offer);
@@ -37,14 +40,14 @@ public class OfferService {
 
     // 견적 제시 댓글 생성
     @Transactional
-    public void createOffer(Long postId, OfferCreateDto offerCreateDto) {
-        // 1. 해당 게시글 가져오기
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
-        // 2. 경매 완료된 게시글인지 검증
-        if(post.isDone())
-            throw new IllegalArgumentException("완료된 게시글");
-        // TODO: 3. 센터 정보 가져오고 작성 가능한지 검증
-        Center center = null;
+    public void createOffer(Long postId, OfferCreateDto offerCreateDto, Member member) {
+        // 1. 해당 게시글이 마감 전인지 확인
+        Post post = checkLoginAndNotDonePost(postId);
+        // 2. 센터 정보 가져오기
+        Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 센터"));
+        // 3. 이미 견적을 작성한 센터인지 검증
+        offerRepository.findByPost_PostIdAndCenter_CenterId(postId, center.getCenterId())
+                .ifPresent(offer -> {throw new UnauthorizedException("이미 견적을 작성하였습니다.");});
         // 4. 댓글 생성하여 저장하기
         Offer offer = offerCreateDto.toEntity(post, center);
         offerRepository.save(offer);
@@ -52,25 +55,46 @@ public class OfferService {
 
     // 견적 제시 댓글 수정
     @Transactional
-    public void updateOffer(Long postId, Long offerId, OfferCreateDto offerCreateDto) {
-        // 1. 해당 게시글 가져오기
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
-        // 2. 경매 완료된 게시글인지 검증
-        if(post.isDone())
-            throw new IllegalArgumentException("완료된 게시글");
-        // TODO: 3. 센터 정보 가져오기
-        Center center = null;
-        // 4. 기존 댓글 가져오기
+    public void updateOffer(Long postId, Long offerId, OfferCreateDto offerCreateDto, Member member) {
+        // 1. 해당 게시글이 마감 전인지 확인
+        checkLoginAndNotDonePost(postId);
+        // 2. 센터 정보 가져오기
+        Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() ->  new IllegalArgumentException("존재하지 않는 센터"));
+        // 3. 기존 댓글 가져오기
         Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
-        // 5. 수정 가능한지 검증
+        // 4. 수정 가능한지 검증
         if(center.getCenterId() != offer.getCenter().getCenterId())
             throw new UnauthorizedException("작성자만 수정 가능합니다.");
         if(offerCreateDto.getPrice() > offer.getPrice())
             throw new IllegalArgumentException("기존 금액보다 낮은 금액으로만 수정 가능합니다.");
-        // 6. 댓글 수정하기
+        // 5. 댓글 수정하기
         offer.setPrice(offerCreateDto.getPrice());
         offer.setContents(offerCreateDto.getContents());
         offerRepository.save(offer);
+    }
+
+    // 견적 제시 댓글 삭제
+    @Transactional
+    public void deleteOffer(Long postId, Long offerId, Member member) {
+        // 1. 해당 게시글이 마감 전인지 확인
+        checkLoginAndNotDonePost(postId);
+        // 2. 센터 정보 가져오기
+        Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 센터"));
+        // 3. 기존 댓글 가져오기
+        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
+        // 4. 댓글 작성자인지 검증
+        if(!offer.getCenter().equals(center))
+            throw new UnauthorizedException("작성자만 삭제 가능합니다.");
+        // 5. 댓글 삭제, 해당 센터와의 실시간 연결 끊기
+        offerRepository.delete(offer);
+        webSocketHandler.closeConnection(member.getMemberId());
+    }
+
+    // 해당 견적을 작성한 서비스 센터들의 member id 목록 반환
+    public List<Long> findMemberIdsWithOfferList(List<Offer> offerList) {
+        return offerList.stream()
+                .map(offer -> offer.getCenter().getMember().getMemberId())
+                .toList();
     }
 
     // 견적 제시 댓글 목록의 평균 제시 가격 계산하여 반환하기
@@ -102,12 +126,18 @@ public class OfferService {
         // 1. 해당 게시글에 달린 모든 견적 가져오기
         List<Offer> offerList = offerRepository.findByPost_PostId(postId);
         // 2. 견적 작성자의 member id 가져오기
-        List<Long> memberList = offerList.stream()
-                .map(offer -> offer.getCenter().getMember().getMemberId())
-                .toList();
+        List<Long> memberList = findMemberIdsWithOfferList(offerList);
         // 3. 평균 견적 가격 계산하기
         double avgPrice = calculateAvgPrice(offerList);
         // 4. 전송하기
         memberList.forEach(memberId -> webSocketHandler.sendData2Client(memberId, avgPrice));
+    }
+
+    // 해당 게시글을 가져오고, 마감 전인지 판단
+    private Post checkLoginAndNotDonePost(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
+        if(post.isDone())
+            throw new IllegalArgumentException("완료된 게시글");
+        return post;
     }
 }

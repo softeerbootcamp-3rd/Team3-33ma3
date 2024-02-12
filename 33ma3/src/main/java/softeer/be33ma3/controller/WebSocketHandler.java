@@ -42,9 +42,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
             super.afterConnectionClosed(session, status);
         } catch(Exception e) {
             log.error("연결 종료 후 에러 발생");
-        } finally {
-            // 연결이 종료된 클라이언트의 세션을 맵에서 제거
-            webSocketService.delete(session);
         }
     }
 
@@ -54,6 +51,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
             webSocketService.sendData(memberId, data);
         } catch(IOException e) {
             log.error("실시간 데이터 전송 에러");
+        }
+    }
+
+    public void closeConnection(Long memberId) {
+        try {
+            webSocketService.closeConnection(memberId);
+        } catch (IOException e) {
+            log.error("연결 종료 에러");
         }
     }
 }

@@ -22,7 +22,7 @@ public class WebSocketRepository {
         return sessions.get(memberId);
     }
 
-    public void delete(WebSocketSession webSocketSession) {
-        sessions.values().remove(webSocketSession);
+    public void delete(Long memberId) {
+        sessions.remove(memberId);
     }
 }
