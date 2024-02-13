@@ -43,6 +43,7 @@ class PostServiceTest {
     void tearDown(){
         postRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();
+        regionRepository.deleteAllInBatch();
     }
 
     @DisplayName("게시글을 수정할 수 있다.")
