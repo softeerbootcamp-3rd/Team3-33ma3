@@ -54,4 +54,8 @@ public class WebSocketService {
         webSocketRepository.deleteMemberInPost(postId, memberId);
         webSocketRepository.deleteSessionWithMemberId(memberId);
     }
+
+    public void deletePostRoom(Long postId) {
+        webSocketRepository.deletePostRoom(postId);
+    }
 }

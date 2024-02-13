@@ -104,10 +104,10 @@ public class OfferService {
         // 5. 댓글 낙찰, 게시글 마감 처리
         offer.setSelected();
         post.setDone();
-        // 6-1. 서비스 센터들에게 낙찰 또는 경매 마감 메세지 보내기
-        // 6-2. 해당 게시글에 연관되어 있는 모든 유저에 대해 웹 소켓 연결 close (게시글 작성자 + 댓글 작성자들)
+        // 6. 서비스 센터들에게 낙찰 또는 경매 마감 메세지 보내기
         Long selectedMemberId = offer.getCenter().getMember().getMemberId();
-        sendMessageAfterSelection(postId, member.getMemberId(), selectedMemberId);
+        sendMessageAfterSelection(postId, selectedMemberId);
+        webSocketHandler.deletePostRoom(postId);
     }
 
     // 해당 게시글을 가져오고, 마감 전인지 판단
@@ -162,8 +162,7 @@ public class OfferService {
     }
   
     // 낙찰 처리 후 서비스 센터들에게 낙찰 메세지, 경매 마감 메세지 전송
-    // 해당 게시글에 연관된 모든 유저들과 웹 소켓 연결 종료
-    private void sendMessageAfterSelection(Long postId, Long clientId, Long selectedMemberId) {
+    private void sendMessageAfterSelection(Long postId, Long selectedMemberId) {
         // 낙찰 메세지
         DataResponse<Long> selectAlert = DataResponse.success("제시한 견적이 낙찰되었습니다.", postId);
         webSocketHandler.sendData2Client(selectedMemberId, selectAlert);

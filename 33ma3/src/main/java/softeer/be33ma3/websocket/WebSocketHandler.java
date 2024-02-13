@@ -60,4 +60,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
             log.error("실시간 데이터 전송 에러");
         }
     }
+
+    public void deletePostRoom(Long postId) {
+        webSocketService.deletePostRoom(postId);
+    }
 }
