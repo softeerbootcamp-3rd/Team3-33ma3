@@ -4,15 +4,15 @@ import styled from "styled-components";
 const OptionItemContainer = styled.div`
   width: 100%;
   display: flex;
-  align-items: ${(props) =>
-    props.$layout === "start" ? "flex-start" : "center"};
+  font-weight: 500;
+  color: ${(props) => props.theme.colors.text_strong};
+  font-size: ${(props) => props.theme.fontSize.regular};
+  align-items: center;
 `;
 
 const ItemTitle = styled.p`
   width: 160px;
-  font-weight: 500;
   color: ${(props) => props.theme.colors.text_default};
-  font-size: ${(props) => props.theme.fontSize.regular};
   margin-right: 30px;
 `;
 
@@ -28,9 +28,9 @@ const ItemContent = styled.div`
   }
 `;
 
-function OptionItem({ title, children, layout }) {
+function OptionItem({ title, children }) {
   return (
-    <OptionItemContainer $layout={layout}>
+    <OptionItemContainer>
       <ItemTitle>{title}</ItemTitle>
       <ItemContent>{children}</ItemContent>
     </OptionItemContainer>

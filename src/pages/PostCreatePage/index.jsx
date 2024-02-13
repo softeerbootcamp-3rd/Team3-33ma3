@@ -148,7 +148,7 @@ function PostCreatePage() {
               <OptionItem title={"지역"}>
                 <button type="button">지역과 반경을 선택해주세요</button>
               </OptionItem>
-              <OptionItem title={"수리 서비스"} layout={"start"}>
+              <OptionItem title={"수리 서비스"}>
                 <ServiceList
                   optionList={REPAIR_SERVICE_OPTIONS}
                   serviceList={repairService}
@@ -156,7 +156,7 @@ function PostCreatePage() {
                 />
                 {formErrors.service && <span>{formErrors.service}</span>}
               </OptionItem>
-              <OptionItem title={"정비 서비스"} layout={"start"}>
+              <OptionItem title={"정비 서비스"}>
                 <ServiceList
                   optionList={TUNEUP_SERVICE_OPTIONS}
                   serviceList={tuneUpService}
