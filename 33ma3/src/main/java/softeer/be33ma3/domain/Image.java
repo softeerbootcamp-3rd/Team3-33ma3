@@ -15,6 +15,8 @@ public class Image {
 
     private String link;
 
+    private String fileName;
+
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
@@ -24,9 +26,10 @@ public class Image {
         post.getImages().add(this);
     }
 
-    public static Image createImage(String link){
+    public static Image createImage(String link, String fileName){
         Image image = new Image();
         image.link = link;
+        image.fileName = fileName;
 
         return image;
     }

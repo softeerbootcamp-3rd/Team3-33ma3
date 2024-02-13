@@ -25,10 +25,23 @@ public class ImageService {
 
         for (MultipartFile file : multipartFiles) {
             String fileName = s3Service.uploadFile(file);
-            images.add(Image.createImage(s3Service.getFileUrl(fileName)));
+            images.add(Image.createImage(s3Service.getFileUrl(fileName), fileName));
         }
 
         List<Image> savedImages = imageRepository.saveAll(images);
         return ImageListDto.create(savedImages);
+    }
+
+    @Transactional
+    public void deleteImage(List<Image> images){
+        List<Long> imageIds = images.stream()
+                .map(Image::getImageId)
+                .toList();
+
+        List<String> fileNames = imageRepository.findFileNamesByImageIds(imageIds);
+
+        for (String fileName : fileNames) {
+            s3Service.deleteFile(fileName);
+        }
     }
 }

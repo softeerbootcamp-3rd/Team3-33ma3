@@ -2,6 +2,7 @@ package softeer.be33ma3.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,11 @@ public class S3Service {
     //이미지 link 가져오기
     public String getFileUrl(String fileName) {
         return amazonS3Client.getUrl(bucket, fileName).toString();
+    }
+
+    //S3에 올라간 이미지 삭제 기능
+    public void deleteFile(String fileName) {
+        amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
     }
 
     //파일 이름 생성 : 이름이 같으면 같은 이름인 이미지를 덮어씌우는 문제가 생기기 때문에 이미지 이름을 생성해서 저장하도록 구현
