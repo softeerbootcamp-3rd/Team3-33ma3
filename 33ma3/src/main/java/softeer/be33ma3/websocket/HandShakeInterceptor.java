@@ -27,6 +27,7 @@ public class HandShakeInterceptor implements HandshakeInterceptor {
                 Long postId = Long.parseLong(parts[3]);
                 Long memberId = Long.parseLong(parts[4]);
                 // WebSocketHandler 에 전달될 속성 추가하기
+                attributes.put("type", parts[2]);
                 attributes.put("postId", postId);
                 attributes.put("memberId", memberId);
                 return true;
