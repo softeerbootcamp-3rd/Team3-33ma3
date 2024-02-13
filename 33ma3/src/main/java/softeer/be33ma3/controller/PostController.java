@@ -51,7 +51,7 @@ public class PostController {
     })
     @Operation(summary = "게시글 조회", description = "게시글 조회 메서드 입니다.")
     @Parameter(name = "post_id", description = "조회할 게시글 id", required = true, example = "1", in = ParameterIn.PATH)
-    @GetMapping("/{post_id}")
+    @GetMapping("/one/{post_id}")
     public ResponseEntity<?> showPost(@PathVariable("post_id") Long postId,
                                       @Schema(hidden = true) @CurrentUser Member member) {
         List<Object> getPostResult = postService.showPost(postId, member);
