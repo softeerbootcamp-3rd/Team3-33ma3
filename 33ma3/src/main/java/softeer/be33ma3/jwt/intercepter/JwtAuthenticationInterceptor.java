@@ -23,11 +23,13 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
 
         String accessToken = getToken(request);
 
-        if(accessToken == null)    //헤더에 토큰이 없는 경우
+        if (accessToken == null) {    //헤더에 토큰이 없는 경우
             throw new JwtTokenException("JWT 토큰 필요");
+        }
 
-        if(StringUtils.hasText(accessToken))   //토큰이 있는 경우
+        if (StringUtils.hasText(accessToken)) {  //토큰이 있는 경우
             return jwtProvider.validationToken(accessToken);    //토큰 검증(마감기한, signature, jwt 형식인지)
+        }
 
         return true;
     }
@@ -35,8 +37,9 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
     private String getToken(HttpServletRequest request) {
         String token = request.getHeader(ACCESS_HEADER_STRING);
 
-        if(StringUtils.hasText(token) && token.startsWith(ACCESS_PREFIX_STRING))
-            return token.substring( ACCESS_PREFIX_STRING.length());
+        if (StringUtils.hasText(token) && token.startsWith(ACCESS_PREFIX_STRING)) {
+            return token.substring(ACCESS_PREFIX_STRING.length());
+        }
 
         return null;
     }

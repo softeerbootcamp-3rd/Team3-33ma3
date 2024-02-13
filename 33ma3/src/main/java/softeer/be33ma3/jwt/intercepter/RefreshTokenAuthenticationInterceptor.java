@@ -25,8 +25,9 @@ public class RefreshTokenAuthenticationInterceptor implements HandlerInterceptor
         if(jwtProvider.validationToken(refreshToken)){  //유효한 리프레시 토큰인 경우
             Claims claims = jwtProvider.getClaims(refreshToken);
 
-            if(claims.get("memberId") == null) //토큰에 memberId가 없는 경우
+            if (claims.get("memberId") == null) { //토큰에 memberId가 없는 경우
                 throw new JwtTokenException("JWT_NOT_VALID");
+            }
 
             Long memberId = Long.valueOf(claims.get("memberId").toString());
             Member member = memberRepository.findMemberByRefreshToken(refreshToken).get();
@@ -39,8 +40,9 @@ public class RefreshTokenAuthenticationInterceptor implements HandlerInterceptor
 
     private String getToken(HttpServletRequest request) {
         String token = request.getHeader(REFRESH_HEADER_STRING);
-        if(!StringUtils.hasText(token))
+        if (!StringUtils.hasText(token)) {
             throw new JwtTokenException("REFRESH TOKEN 필요");
+        }
 
         return token;
     }

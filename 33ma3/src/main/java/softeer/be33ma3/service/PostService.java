@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import softeer.be33ma3.domain.*;
-import softeer.be33ma3.dto.request.LoginDto;
 import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.dto.response.ImageListDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
@@ -115,8 +114,9 @@ public class PostService {
         Pattern pattern = Pattern.compile("\\b([^\\s]+구)\\b");
         Matcher matcher = pattern.matcher(location);
 
-        if (matcher.find())
+        if (matcher.find()) {
             return regionRepository.findByRegionName(matcher.group()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 구"));
+        }
 
         throw new IllegalArgumentException("주소에서 구를 찾을 수 없음");
     }
@@ -135,11 +135,13 @@ public class PostService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
         Member findMember = memberRepository.findById(member.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
 
-        if(!post.getMember().equals(findMember))
+        if (!post.getMember().equals(findMember)) {
             throw new UnauthorizedException("작성자만 가능합니다.");
+        }
 
-        if(!offerRepository.findByPost_PostId(postId).isEmpty())  //댓글이 있는 경우(경매 시작 후)
+        if (!offerRepository.findByPost_PostId(postId).isEmpty()) { //댓글이 있는 경우(경매 시작 후)
             throw new IllegalArgumentException("경매 시작 전에만 가능합니다.");
+        }
 
         return post;
     }
