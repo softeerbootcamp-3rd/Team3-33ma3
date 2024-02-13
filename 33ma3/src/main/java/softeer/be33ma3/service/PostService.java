@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import softeer.be33ma3.domain.*;
+import softeer.be33ma3.dto.request.LoginDto;
 import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.dto.response.ImageListDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
@@ -34,7 +35,7 @@ public class PostService {
     private final ImageService imageService;
 
     @Transactional
-    public void createPost(Member currentMember, PostCreateDto postCreateDto, List<MultipartFile> multipartFiles) {
+    public Long createPost(Member currentMember, PostCreateDto postCreateDto, List<MultipartFile> multipartFiles) {
         //회원이랑 지역 찾기
         Member member = memberRepository.findById(currentMember.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
         Region region = getRegion(postCreateDto.getLocation());
@@ -52,6 +53,8 @@ public class PostService {
         //이미지랑 게시물 매핑하기
         List<Image> images = imageRepository.findAllById(imageListDto.getImageIds());
         images.forEach(image -> image.setPost(savedPost));
+
+        return savedPost.getPostId();
     }
 
 
