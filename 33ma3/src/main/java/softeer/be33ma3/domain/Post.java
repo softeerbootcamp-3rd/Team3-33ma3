@@ -2,6 +2,7 @@ package softeer.be33ma3.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.springframework.scheduling.annotation.Scheduled;
 import softeer.be33ma3.dto.request.PostCreateDto;
 
 import java.util.ArrayList;
@@ -56,6 +57,6 @@ public class Post extends BaseTimeEntity{
     }
 
     public void setDone() {
-        done = true;
+        this.done = true;
     }
 }
