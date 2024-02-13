@@ -19,20 +19,16 @@ public class WebSocketRepository {
     // memberId : WebSocketSession
     private final Map<Long, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
-    public void save(Long postId, Long memberId) {
+    public void saveMemberInPost(Long postId, Long memberId) {
         Set<Long> members = new HashSet<>();
-        System.out.println("here3");
-        if(postRoom.containsKey(postId)) {
+        if(postRoom.containsKey(postId))
             members = postRoom.get(postId);
-        }
-        System.out.println("here1");
         members.add(memberId);
-        System.out.println("here2");
         postRoom.put(postId, members);
         log.info("{}번 게시글에 {}번 유저 입장", postId, memberId);
     }
 
-    public void save(Long memberId, WebSocketSession webSocketSession) {
+    public void saveSessionWithMemberId(Long memberId, WebSocketSession webSocketSession) {
         sessions.put(memberId, webSocketSession);
         log.info("{}번 유저 웹소켓 세션 저장 성공", memberId);
     }
@@ -41,16 +37,21 @@ public class WebSocketRepository {
         return sessions.get(memberId);
     }
 
-//    public void save(Long memberId, WebSocketSession webSocketSession) {
-//        sessions.put(memberId, webSocketSession);
-//        log.info("WebSocketSession db : {}", sessions.size());
-//    }
-//
-//    public WebSocketSession findById(Long memberId) {
-//        return sessions.get(memberId);
-//    }
-//
-//    public void delete(Long memberId) {
-//        sessions.remove(memberId);
-//    }
+    public void deleteMemberInPost(Long postId, Long memberId) {
+        Set<Long> members = postRoom.get(postId);
+        if(members == null)
+            return;
+        members.remove(memberId);
+        if(members.isEmpty())
+            postRoom.remove(postId);
+    }
+
+    public void deleteSessionWithMemberId(Long memberId) {
+        sessions.remove(memberId);
+    }
+
+    // 게시글 만료시 호출
+    public void deletePostRoom(Long postId) {
+        postRoom.remove(postId);
+    }
 }

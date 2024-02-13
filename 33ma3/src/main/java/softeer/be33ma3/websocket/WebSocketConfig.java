@@ -16,7 +16,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     private final HandshakeInterceptor handshakeInterceptor;
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketHandler, "/connect/{type}/{postId}/{memberId}")
+        registry.addHandler(webSocketHandler, "/connect/{type}/{roomId}/{memberId}")
                 .setAllowedOrigins("*")
                 .addInterceptors(handshakeInterceptor);
     }

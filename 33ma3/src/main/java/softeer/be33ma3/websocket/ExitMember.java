@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ExitUser {
+public class ExitMember {
     private String type;
     private Long roomId;
     private Long memberId;

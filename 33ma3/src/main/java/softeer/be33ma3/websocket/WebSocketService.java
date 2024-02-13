@@ -18,24 +18,24 @@ public class WebSocketService {
     private final ObjectMapper objectMapper;
 
     public void receiveMsg(WebSocketSession session, TextMessage message) throws IOException {
-        String msg = message.getPayload();
-        log.info(msg); // 수신한 메세지 log
+        String payload = message.getPayload();
+        // 게시글 관련 웹 소켓 연결이 종료된 유저가 있다고 메세지를 받았을 경우
+        if(payload.contains("post") && payload.contains("memberId")) {
+            ExitMember exitMember = objectMapper.readValue(payload, ExitMember.class);
+            closePostConnection(exitMember.getRoomId(), exitMember.getMemberId());
+        }
+
+
+        log.info("메세지 수신 성공: {}", payload); // 수신한 메세지 log
         TextMessage textMessage = new TextMessage("메세지 수신 성공");
         session.sendMessage(textMessage);
     }
 
     public void save(Long postId, Long memberId, WebSocketSession session) {
-        webSocketRepository.save(postId, memberId);
-        webSocketRepository.save(memberId, session);
+        webSocketRepository.saveMemberInPost(postId, memberId);
+        webSocketRepository.saveSessionWithMemberId(memberId, session);
     }
-//    public void closeConnection(Long memberId) throws IOException {
-//        WebSocketSession session = webSocketRepository.findById(memberId);
-//        if(session == null)
-//            return;
-//        session.close(CloseStatus.NORMAL);
-//        webSocketRepository.delete(memberId);
-//    }
-//
+
     // 데이터 (클래스 객체) 전송
     public void sendData(Long memberId, Object data) throws IOException {
         // 클라이언트에 해당하는 세션 가져오기
@@ -48,5 +48,10 @@ public class WebSocketService {
         String jsonString = objectMapper.writeValueAsString(data);
         // 데이터 전송
         session.sendMessage(new TextMessage(jsonString));
+    }
+
+    private void closePostConnection(Long postId, Long memberId) {
+        webSocketRepository.deleteMemberInPost(postId, memberId);
+        webSocketRepository.deleteSessionWithMemberId(memberId);
     }
 }
