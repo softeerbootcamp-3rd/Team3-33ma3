@@ -36,9 +36,12 @@ const CenterName = styled.p`
   color: ${(props) => props.theme.colors.text_weak};
 `;
 
-function BidPaddle({ price, centerName, isActive }) {
+function BidPaddle({ price, centerName, onClick, isActive }) {
   return (
-    <BidPaddleContainer style={{ transform: isActive ? "scale(1.05)" : "" }}>
+    <BidPaddleContainer
+      onClick={onClick}
+      style={{ transform: isActive ? "scale(1.05)" : "" }}
+    >
       <Paddle>
         <Price>{price}만</Price>
         <img src={ImageBidPaddle} style={{ width: "230px", height: "230px" }} />
