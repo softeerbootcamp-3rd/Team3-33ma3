@@ -23,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PostService {
+    private static final int CLIENT_TYPE = 1;
 
     private final OfferRepository offerRepository;
     private final CenterRepository centerRepository;
@@ -37,6 +38,9 @@ public class PostService {
     public Long createPost(Member currentMember, PostCreateDto postCreateDto, List<MultipartFile> multipartFiles) {
         //회원이랑 지역 찾기
         Member member = memberRepository.findById(currentMember.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
+        if(member.getMemberType() != CLIENT_TYPE){
+            throw new UnauthorizedException("센터는 글 작성이 불가능합니다.");
+        }
         Region region = getRegion(postCreateDto.getLocation());
 
         //이미지 저장

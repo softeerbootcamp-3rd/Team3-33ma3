@@ -32,7 +32,8 @@ public class PostController {
     private final PostService postService;
 
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "게시글 작성 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "200", description = "게시글 작성 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
+            @ApiResponse(responseCode = "401", description = "센터는 글 작성이 불가능합니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>존재하지 않는 회원" + "<br>존재하지 않는 구",
                     content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
