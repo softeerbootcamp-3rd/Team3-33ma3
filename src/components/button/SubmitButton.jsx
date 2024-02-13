@@ -17,16 +17,19 @@ const Button = styled.button`
     background: ${(props) => props.theme.colors.surface_opacity_75.color};
     opacity: ${(props) => props.theme.colors.surface_opacity_75.opacity};
   }
-  &:active {
+
+  &:active,
+  &:disabled,
+  &[disalbed] {
     background: ${(props) => props.theme.colors.surface_opacity_50.color};
     opacity: ${(props) => props.theme.colors.surface_opacity_50.opacity};
   }
 `;
 
-export default function SubmitButton({ size, children, onClick }) {
+export default function SubmitButton({ size, children, onClick, disabled }) {
   return (
     <>
-      <Button size={size} onClick={onClick}>
+      <Button size={size} onClick={onClick} disabled={disabled}>
         {children}
       </Button>
     </>
