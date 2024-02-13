@@ -11,7 +11,7 @@ function AuthenticationPage() {
   );
 }
 
-const URL = "http://15.165.162.126:8080/";
+const tURL = "http://192.168.1.141:8080/";
 
 export default AuthenticationPage;
 
@@ -26,7 +26,7 @@ export async function action({ request }) {
 
   const data = await request.formData();
   const authData = {
-    email: data.get("email"),
+    loginId: data.get("loginId"),
     password: data.get("password"),
   };
 
@@ -38,7 +38,7 @@ export async function action({ request }) {
 
   const urlParameter = mode === "login" ? mode : `${type}/${mode}`;
 
-  const response = await fetch(URL + urlParameter, {
+  const response = await fetch(tURL + urlParameter, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -55,12 +55,13 @@ export async function action({ request }) {
   }
 
   const resData = await response.json();
-  const token = resData.token;
+  if (mode == "login") {
+    const accessToken = resData.data.accessToken;
+    const refreshToken = resData.data.refreshToken;
 
-  localStorage.setItem("token", token);
-  const expiration = new Date();
-  expiration.setHours(expiration.getHours() + 1);
-  localStorage.setItem("expiration", expiration.toISOString());
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+  }
 
   return redirect("/");
 }
