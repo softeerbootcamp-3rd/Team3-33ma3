@@ -19,8 +19,6 @@ public class ImageService {
     private final ImageRepository imageRepository;
     @Transactional
     public ImageListDto saveImage(List<MultipartFile> multipartFiles){
-        //TODO: 로그인 구현하고 존재하는 회원인지 확인하는 로직 추가하기
-
         List<Image> images = new ArrayList<>();
 
         for (MultipartFile file : multipartFiles) {

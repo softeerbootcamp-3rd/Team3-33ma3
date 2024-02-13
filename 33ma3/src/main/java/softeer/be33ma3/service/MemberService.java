@@ -39,8 +39,6 @@ public class MemberService {
         if(memberRepository.findMemberByLoginId(centerSignUpDto.getLoginId()).isPresent())
             throw new IllegalArgumentException("이미 존재하는 아이디");
 
-        //TODO: 센터이름도 중복인지 확인하기
-
         Member member = Member.createMember(CENTER_TYPE, centerSignUpDto.getLoginId(), centerSignUpDto.getPassword());
         member = memberRepository.save(member);
 
