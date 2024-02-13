@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.PostCreateDto;
-import softeer.be33ma3.dto.response.PostWithOffersDto;
 import softeer.be33ma3.jwt.CurrentUser;
 import softeer.be33ma3.response.DataResponse;
 import softeer.be33ma3.response.SingleResponse;

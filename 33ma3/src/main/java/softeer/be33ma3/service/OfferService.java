@@ -3,6 +3,7 @@ package softeer.be33ma3.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import softeer.be33ma3.dto.response.AvgPriceDto;
 import softeer.be33ma3.websocket.WebSocketHandler;
 import softeer.be33ma3.domain.Center;
 import softeer.be33ma3.domain.Member;
@@ -155,9 +156,9 @@ public class OfferService {
         // 2. 견적 작성자의 member id 가져오기
         List<Long> memberList = findMemberIdsWithOfferList(offerList);
         // 3. 평균 견적 가격 계산하기
-        double avgPrice = calculateAvgPrice(offerList);
+        AvgPriceDto avgPriceDto = new AvgPriceDto(calculateAvgPrice(offerList));
         // 4. 전송하기
-        memberList.forEach(memberId -> webSocketHandler.sendData2Client(memberId, avgPrice));
+        memberList.forEach(memberId -> webSocketHandler.sendData2Client(memberId, avgPriceDto));
     }
   
     // 낙찰 처리 후 서비스 센터들에게 낙찰 메세지, 경매 마감 메세지 전송
@@ -173,8 +174,5 @@ public class OfferService {
         memberIdsInPost.stream()
                 .filter(memberId -> !memberId.equals(selectedMemberId))
                 .forEach(memberId -> webSocketHandler.sendData2Client(memberId, endAlert));
-        // TODO: 웹 소켓 연결 종료
-        // memberIdsInPost.add(clientId);
-        // memberIdsInPost.forEach(webSocketHandler::closeConnection);
     }
 }
