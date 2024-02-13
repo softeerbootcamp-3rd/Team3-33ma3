@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.PostCreateDto;
+import softeer.be33ma3.dto.response.PostWithOffersDto;
 import softeer.be33ma3.jwt.CurrentUser;
 import softeer.be33ma3.response.DataResponse;
 import softeer.be33ma3.response.SingleResponse;
@@ -54,7 +55,7 @@ public class PostController {
     @GetMapping("/one/{post_id}")
     public ResponseEntity<?> showPost(@PathVariable("post_id") Long postId,
                                       @Schema(hidden = true) @CurrentUser Member member) {
-        List<Object> getPostResult = postService.showPost(postId, member);
-        return ResponseEntity.ok(DataResponse.success("게시글 조회 완료", getPostResult));
+        Object result = postService.showPost(postId, member);
+        return ResponseEntity.ok(DataResponse.success("게시글 조회 완료", result));
     }
 }
