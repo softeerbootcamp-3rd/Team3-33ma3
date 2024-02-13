@@ -19,9 +19,7 @@ const sizeList = {
 
 const PictureContainer = styled.div`
   border-radius: ${(props) =>
-    props.size === "small"
-      ? props.theme.radiuses.radius_s
-      : props.theme.radiuses.radius_m};
+    props.size === "small" && props.theme.radiuses.radius_s};
   width: ${({ size }) => sizeList[size].width};
   height: ${({ size }) => sizeList[size].height};
   overflow: hidden;
