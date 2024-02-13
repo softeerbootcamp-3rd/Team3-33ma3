@@ -18,8 +18,9 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
     private final JwtProvider jwtProvider;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if(request.getMethod().equals("OPTIONS"))
+        if(CorsUtils.isPreFlightRequest(request)) {
             return true;
+        }
 
         String accessToken = getToken(request);
 
