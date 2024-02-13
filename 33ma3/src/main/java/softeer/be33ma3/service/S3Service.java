@@ -34,8 +34,7 @@ public class S3Service {
 
         //파일 업로드
         try (InputStream inputStream = file.getInputStream()) {
-            amazonS3Client.putObject(
-                    new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
+            amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
                             .withCannedAcl(CannedAccessControlList.PublicReadWrite));
         } catch (IOException e) {
             throw new IllegalArgumentException("파일을 변환할 수 없음");

@@ -27,9 +27,8 @@ public class MemberService {
 
     @Transactional
     public void clientSignUp(ClientSignUpDto clientSignUpDto) {
-        if(memberRepository.findMemberByLoginId(clientSignUpDto.getLoginId()).isPresent()){//아이디가 이미 존재하는 경우
+        if(memberRepository.findMemberByLoginId(clientSignUpDto.getLoginId()).isPresent())  //아이디가 이미 존재하는 경우
             throw new IllegalArgumentException("이미 존재하는 아이디");
-        }
 
         Member member = Member.createMember(CLIENT_TYPE, clientSignUpDto.getLoginId(), clientSignUpDto.getPassword());
         memberRepository.save(member);
@@ -37,9 +36,8 @@ public class MemberService {
 
     @Transactional
     public void centerSignUp(CenterSignUpDto centerSignUpDto) {
-        if(memberRepository.findMemberByLoginId(centerSignUpDto.getLoginId()).isPresent()){
+        if(memberRepository.findMemberByLoginId(centerSignUpDto.getLoginId()).isPresent())
             throw new IllegalArgumentException("이미 존재하는 아이디");
-        }
 
         //TODO: 센터이름도 중복인지 확인하기
 
