@@ -3,7 +3,7 @@ package softeer.be33ma3.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import softeer.be33ma3.controller.WebSocketHandler;
+import softeer.be33ma3.websocket.WebSocketHandler;
 import softeer.be33ma3.domain.Center;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Offer;
@@ -86,9 +86,8 @@ public class OfferService {
         // 4. 댓글 작성자인지 검증
         if(!offer.getCenter().equals(center))
             throw new UnauthorizedException("작성자만 삭제 가능합니다.");
-        // 5. 댓글 삭제, 해당 센터와의 실시간 연결 끊기
+        // 5. 댓글 삭제
         offerRepository.delete(offer);
-        webSocketHandler.closeConnection(member.getMemberId());
     }
 
     // 견적 제시 댓글 낙찰
@@ -174,8 +173,8 @@ public class OfferService {
         memberIdsInPost.stream()
                 .filter(memberId -> !memberId.equals(selectedMemberId))
                 .forEach(memberId -> webSocketHandler.sendData2Client(memberId, endAlert));
-        // 웹 소켓 연결 종료
-        memberIdsInPost.add(clientId);
-        memberIdsInPost.forEach(webSocketHandler::closeConnection);
+        // TODO: 웹 소켓 연결 종료
+        // memberIdsInPost.add(clientId);
+        // memberIdsInPost.forEach(webSocketHandler::closeConnection);
     }
 }

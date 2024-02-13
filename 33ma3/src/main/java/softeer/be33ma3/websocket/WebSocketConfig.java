@@ -1,11 +1,10 @@
-package softeer.be33ma3.config;
+package softeer.be33ma3.websocket;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
-import softeer.be33ma3.controller.WebSocketHandler;
 
 @Configuration
 @EnableWebSocket
@@ -15,6 +14,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
     private final WebSocketHandler webSocketHandler;
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketHandler, "/connect/{postId}/{memberId}").setAllowedOrigins("*");
+        registry.addHandler(webSocketHandler, "/connect/{type}/{postId}/{memberId}").setAllowedOrigins("*");
     }
 }

@@ -1,4 +1,4 @@
-package softeer.be33ma3.repository;
+package softeer.be33ma3.websocket;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -20,12 +20,14 @@ public class WebSocketRepository {
     private final Map<Long, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
     public void save(Long postId, Long memberId) {
-        Set<Long> members;
-        if(postRoom.containsKey(postId))
+        Set<Long> members = new HashSet<>();
+        System.out.println("here3");
+        if(postRoom.containsKey(postId)) {
             members = postRoom.get(postId);
-        else
-            members = new HashSet<>();
+        }
+        System.out.println("here1");
         members.add(memberId);
+        System.out.println("here2");
         postRoom.put(postId, members);
         log.info("{}번 게시글에 {}번 유저 입장", postId, memberId);
     }
@@ -33,6 +35,10 @@ public class WebSocketRepository {
     public void save(Long memberId, WebSocketSession webSocketSession) {
         sessions.put(memberId, webSocketSession);
         log.info("{}번 유저 웹소켓 세션 저장 성공", memberId);
+    }
+
+    public WebSocketSession findSessionByMemberId(Long memberId) {
+        return sessions.get(memberId);
     }
 
 //    public void save(Long memberId, WebSocketSession webSocketSession) {

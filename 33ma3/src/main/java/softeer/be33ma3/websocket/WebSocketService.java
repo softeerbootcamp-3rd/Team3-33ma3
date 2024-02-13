@@ -1,14 +1,11 @@
-package softeer.be33ma3.service;
+package softeer.be33ma3.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
-import softeer.be33ma3.dto.request.PostCreateDto;
-import softeer.be33ma3.repository.WebSocketRepository;
 
 import java.io.IOException;
 
@@ -27,22 +24,26 @@ public class WebSocketService {
         session.sendMessage(textMessage);
     }
 
-    public void save(WebSocketSession session) {
-//        Long memberId = MemberService.getMemberId();
-//        webSocketRepository.save(memberId, session);
+    public void save(Long postId, Long memberId, WebSocketSession session) {
+        webSocketRepository.save(postId, memberId);
+        webSocketRepository.save(memberId, session);
     }
-    public void closeConnection(Long memberId) throws IOException {
-        WebSocketSession session = webSocketRepository.findById(memberId);
-        if(session == null)
-            return;
-        session.close(CloseStatus.NORMAL);
-        webSocketRepository.delete(memberId);
-    }
-
+//    public void closeConnection(Long memberId) throws IOException {
+//        WebSocketSession session = webSocketRepository.findById(memberId);
+//        if(session == null)
+//            return;
+//        session.close(CloseStatus.NORMAL);
+//        webSocketRepository.delete(memberId);
+//    }
+//
     // 데이터 (클래스 객체) 전송
     public void sendData(Long memberId, Object data) throws IOException {
         // 클라이언트에 해당하는 세션 가져오기
-        WebSocketSession session = webSocketRepository.findById(memberId);
+        WebSocketSession session = webSocketRepository.findSessionByMemberId(memberId);
+        if(session == null) {
+            log.info("웹 소켓 연결이 되어있지 않음");
+            return;
+        }
         // data 직렬화
         String jsonString = objectMapper.writeValueAsString(data);
         // 데이터 전송

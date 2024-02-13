@@ -1,4 +1,4 @@
-package softeer.be33ma3.controller;
+package softeer.be33ma3.websocket;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -6,7 +6,6 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import softeer.be33ma3.service.WebSocketService;
 
 import java.io.IOException;
 
@@ -33,7 +32,11 @@ public class WebSocketHandler extends TextWebSocketHandler {
         } catch(Exception e) {
             log.error("연결 수립 후 에러 발생");
         } finally {
-            webSocketService.save(session);
+            // TODO: 올바른 요청 path인지 검증 필요
+            String[] attributes = session.getUri().getPath().split("/");
+            Long postId = Long.parseLong(attributes[2]);
+            Long memberId = Long.parseLong(attributes[3]);
+            webSocketService.save(postId, memberId, session);
         }
     }
     @Override
@@ -53,12 +56,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
             log.error("실시간 데이터 전송 에러");
         }
     }
-
-    public void closeConnection(Long memberId) {
-        try {
-            webSocketService.closeConnection(memberId);
-        } catch (IOException e) {
-            log.error("연결 종료 에러");
-        }
-    }
+//
+//    public void closeConnection(Long memberId) {
+//        try {
+//            webSocketService.closeConnection(memberId);
+//        } catch (IOException e) {
+//            log.error("연결 종료 에러");
+//        }
+//    }
 }
