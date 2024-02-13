@@ -36,8 +36,8 @@ function AuthForm() {
         {(userType || isLogin) && (
           <>
             <p>
-              <label htmlFor="email">Email</label>
-              <input id="email" type="email" name="email" required />
+              <label htmlFor="loginId">Id</label>
+              <input id="loginId" type="text" name="loginId" required />
             </p>
             <p>
               <label htmlFor="password">Password</label>
