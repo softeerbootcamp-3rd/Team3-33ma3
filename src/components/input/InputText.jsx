@@ -22,12 +22,13 @@ const Input = styled.input`
   }
 `;
 
-function InputText({ size, placeholder, onChange, name }) {
+function InputText({ size, placeholder, onChange, defaultValue, name }) {
   return (
     <Input
       size={size}
       placeholder={placeholder}
       onChange={onChange}
+      defaultValue={defaultValue}
       name={name}
     ></Input>
   );

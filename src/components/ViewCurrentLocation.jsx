@@ -1,9 +1,13 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
+import { searchCoordinateToAddress } from "./LocationModal";
 
 const DEFAULT_LATITUDE = 0;
 const DEFAULT_LONGITUDE = 0;
 const DEFAULT_ZOOM_SCALE = 15;
+const DEFAULT_MAX_ZOOM = 15;
+const DEFAULT_MIN_ZOOM = 11;
 
+// 현재 위치 좌표 반환 함수
 function getCurrentLocation() {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
@@ -23,90 +27,74 @@ function getCurrentLocation() {
   });
 }
 
-async function fetchCurrentLocation() {
-  try {
-    const response = await getCurrentLocation();
-    return response;
-  } catch (error) {
-    console.error(error.message);
-    return { latitude: DEFAULT_LATITUDE, longitude: DEFAULT_LONGITUDE };
-  }
-}
-
-function initMap(latitude, longitude, mapElement) {
+// 현재 위치 좌표 기반 map, marker, circle 객체 생성 및 주소 상태 업데이트 함수
+function initMap(latitude, longitude, mapElement, setNewAddress) {
   const center = new naver.maps.LatLng(latitude, longitude);
+  searchCoordinateToAddress(center, setNewAddress);
+
   const mapOptions = {
     center: center,
     zoom: DEFAULT_ZOOM_SCALE,
+    maxZoom: DEFAULT_MAX_ZOOM,
+    minZoom: DEFAULT_MIN_ZOOM,
     scaleControl: false,
   };
   const map = new naver.maps.Map(mapElement, mapOptions);
 
-  const marker = new naver.maps.Marker({
+  const markerOptions = {
     position: map.getCenter(),
     map: map,
-  });
+  };
+  const marker = new naver.maps.Marker(markerOptions);
 
-  naver.maps.Event.addListener(map, "drag", (e) => {
-    marker.setPosition(map.getCenter());
-  });
+  const circleOptions = {
+    map: map,
+    center: center,
+  };
+  const circle = new naver.maps.Circle(circleOptions);
 
-  naver.maps.Event.addListener(map, "dragend", (e) => {
-    const currentCoords = map.getCenter();
-    const currentAddress = searchCoordinateToAddress(currentCoords, map);
-  });
-
-  return map;
+  return { map, marker, circle };
 }
 
-function searchCoordinateToAddress(latLng, setNewAddress) {
-  naver.maps.Service.reverseGeocode(
-    {
-      coords: latLng,
-      orders: [
-        naver.maps.Service.OrderType.ADDR,
-        naver.maps.Service.OrderType.ROAD_ADDR,
-      ].join(","),
-    },
-    function (status, response) {
-      if (status !== naver.maps.Service.Status.OK) {
-        return alert("Something went wrong!");
-      }
-      const address = response.v2.address.roadAddress
-        ? response.v2.address.roadAddress
-        : response.v2.address.jibunAddress;
-      setNewAddress(address);
-    }
-  );
-}
-
-export default function ViewCurrentLocation() {
+// Modal의 지도 컴포넌트
+export default function ViewCurrentLocation({
+  setMap,
+  setMarker,
+  setAddress,
+  setCircle,
+}) {
   const mapElement = useRef();
-  const [newMap, setNewMap] = useState();
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    // 현재 좌표 값 기반 비동기 처리 함수
     async function fetchAndSetLocation() {
-      const currentLocation = await fetchCurrentLocation();
-      const map = initMap(
-        currentLocation.latitude,
-        currentLocation.longitude,
-        mapElement.current
-      );
-      setIsLoading(true);
-      setNewMap(map);
+      try {
+        const currentLocation = await getCurrentLocation();
+        const { map, marker, circle } = initMap(
+          currentLocation.latitude,
+          currentLocation.longitude,
+          mapElement.current,
+          setAddress
+        );
+        setMap(map);
+        setMarker(marker);
+        setCircle(circle);
+      } catch (error) {
+        console.error("Failed to fetch current location:", error);
+      }
     }
     fetchAndSetLocation();
   }, []);
 
   return (
     <div>
-      {!isLoading && <p>Loading.......</p>}
       <div
         ref={mapElement}
         id="map"
-        style={{ width: "400px", height: "400px" }}
-      />
+        style={{ width: "500px", height: "500px" }}
+      >
+        Loading....
+      </div>
     </div>
   );
 }
