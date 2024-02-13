@@ -35,7 +35,7 @@ const Description = styled.p`
   line-height: normal;
 `;
 
-function Comment({ writer, description }) {
+function Comment({ centerName, contents, disabled }) {
   // TODO: 문의 기능 구현
 
   return (
@@ -43,11 +43,11 @@ function Comment({ writer, description }) {
       <WriterContainer>
         <Writer>
           <img src={Logo} style={{ width: "28px", height: "36px" }} />
-          {writer}
+          {centerName ? centerName : "익명"}
         </Writer>
-        <SubmitButton size={"small"} children={"문의"} />
+        {!disabled && <SubmitButton size={"small"} children={"문의"} />}
       </WriterContainer>
-      <Description>{description}</Description>
+      <Description>{contents}</Description>
     </CommentContainer>
   );
 }
