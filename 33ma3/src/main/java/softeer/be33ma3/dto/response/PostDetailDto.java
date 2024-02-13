@@ -55,7 +55,7 @@ public class PostDetailDto {
         Duration duration = Duration.between(LocalDateTime.now(), post.getCreateTime().plusDays(post.getDeadline()));
         int dDay = -1;
         LocalTime remainTime = null;
-        if(!duration.isNegative())        // 아직 마감 시간 전
+        if(!post.isDone() && !duration.isNegative())        // 아직 마감 시간 전
             dDay = (int)duration.toDays();
         if(dDay == 0)
             remainTime = calculateRemainTime(duration);
