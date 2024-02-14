@@ -32,6 +32,7 @@ const StyledSlider = styled(Slider)`
 
     & > li {
       width: 40px;
+      height: 40px;
       filter: brightness(0.5);
 
       &.slick-active {
@@ -48,6 +49,12 @@ const StyledSlider = styled(Slider)`
   }
 `;
 
+const Image = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
 function Carousel({ imgList, thumbnail, size }) {
   const settings = {
     dots: true,
@@ -60,8 +67,8 @@ function Carousel({ imgList, thumbnail, size }) {
       thumbnail &&
       function (i) {
         return (
-          <a>
-            <img src={imgList[i]} style={{ width: "40px", height: "40px" }} />
+          <a style={{ width: "40px", height: "40px" }}>
+            <Image src={imgList[i]} />
           </a>
         );
       },
