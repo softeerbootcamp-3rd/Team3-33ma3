@@ -91,7 +91,6 @@ public class PostService {
         // 해당 게시글의 견적 모두 가져오기
         List<Offer> offerList = offerRepository.findByPost_PostId(postId);
         double avgPrice = OfferService.calculateAvgPrice(offerList);
-        avgPrice = Math.round(avgPrice * 10) / 10.0;      // 소수점 첫째 자리까지 반올림
         PostWithAvgPriceDto postWithAvgPriceDto = new PostWithAvgPriceDto(postDetailDto, avgPrice);
         // 견적을 작성한 이력이 있는 서비스 센터의 접근일 경우 작성한 견적 가져오기
         OfferDetailDto offerDetailDto = getCenterOffer(postId, member);

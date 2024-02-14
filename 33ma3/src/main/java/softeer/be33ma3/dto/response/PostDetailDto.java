@@ -74,7 +74,7 @@ public class PostDetailDto {
     }
 
     // 구분자 콤마로 문자열 파싱 후 각각의 토큰에서 공백 제거 후 리스트 반환
-    private static List<String> stringCommaParsing(String inputString) {
+    public static List<String> stringCommaParsing(String inputString) {
         if(inputString.isEmpty())
             return List.of();
         return Arrays.stream(inputString.split(","))
@@ -82,14 +82,14 @@ public class PostDetailDto {
                 .toList();
     }
 
-    private static Duration calculateDuration(Post post) {
+    public static Duration calculateDuration(Post post) {
         LocalDateTime endTime = post.getCreateTime().plusDays(post.getDeadline());
         endTime = endTime.withHour(23).withMinute(59).withSecond(59);
         return Duration.between(LocalDateTime.now(), endTime);
     }
 
-    // 마감 시간까지 남은 시간:분:초를 반환
-    private static int calculateRemainTime(Duration duration) {
+    // 마감 시간까지 남은 시간을 초 단위로 반환
+    public static int calculateRemainTime(Duration duration) {
         return (int) duration.toSeconds();
     }
 }

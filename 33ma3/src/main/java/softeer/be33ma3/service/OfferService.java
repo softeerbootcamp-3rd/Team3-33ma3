@@ -133,7 +133,7 @@ public class OfferService {
 
         if(stats.getSum() == 0)
             return 0;
-        return stats.getAverage();
+        return Math.round(stats.getAverage() * 10) / 10.0;      // 소수점 첫째 자리까지 반올림
     }
 
     // 게시글에 해당하는 견적 제시 댓글 리스트 실시간 전송
