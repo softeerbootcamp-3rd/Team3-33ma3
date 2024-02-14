@@ -52,7 +52,7 @@ public class PostDetailDto {
         List<String> repairList = stringCommaParsing(post.getRepairService());
         List<String> tuneUpList = stringCommaParsing(post.getTuneUpService());
         List<String> imageList = post.getImages().stream().map(Image::getLink).toList();
-        Duration duration = Duration.between(LocalDateTime.now(), post.getCreateTime().plusDays(post.getDeadline()));
+        Duration duration = calculateDuration(post);
         int dDay = -1;
         LocalTime remainTime = null;
         if(!post.isDone() && !duration.isNegative())        // 아직 마감 시간 전
@@ -75,9 +75,17 @@ public class PostDetailDto {
 
     // 구분자 콤마로 문자열 파싱 후 각각의 토큰에서 공백 제거 후 리스트 반환
     private static List<String> stringCommaParsing(String inputString) {
+        if(inputString.isEmpty())
+            return List.of();
         return Arrays.stream(inputString.split(","))
                 .map(String::strip)
                 .toList();
+    }
+
+    private static Duration calculateDuration(Post post) {
+        LocalDateTime endTime = post.getCreateTime().plusDays(post.getDeadline());
+        endTime = endTime.withHour(23).withMinute(59).withSecond(59);
+        return Duration.between(LocalDateTime.now(), endTime);
     }
 
     // 마감 시간까지 남은 시간:분:초를 반환

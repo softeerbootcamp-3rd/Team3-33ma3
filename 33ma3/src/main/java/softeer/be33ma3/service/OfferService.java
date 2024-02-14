@@ -3,7 +3,8 @@ package softeer.be33ma3.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import softeer.be33ma3.controller.WebSocketHandler;
+import softeer.be33ma3.dto.response.AvgPriceDto;
+import softeer.be33ma3.websocket.WebSocketHandler;
 import softeer.be33ma3.domain.Center;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Offer;
@@ -86,9 +87,8 @@ public class OfferService {
         // 4. 댓글 작성자인지 검증
         if(!offer.getCenter().equals(center))
             throw new UnauthorizedException("작성자만 삭제 가능합니다.");
-        // 5. 댓글 삭제, 해당 센터와의 실시간 연결 끊기
+        // 5. 댓글 삭제
         offerRepository.delete(offer);
-        webSocketHandler.closeConnection(member.getMemberId());
     }
 
     // 견적 제시 댓글 낙찰
@@ -104,10 +104,10 @@ public class OfferService {
         // 5. 댓글 낙찰, 게시글 마감 처리
         offer.setSelected();
         post.setDone();
-        // 6-1. 서비스 센터들에게 낙찰 또는 경매 마감 메세지 보내기
-        // 6-2. 해당 게시글에 연관되어 있는 모든 유저에 대해 웹 소켓 연결 close (게시글 작성자 + 댓글 작성자들)
+        // 6. 서비스 센터들에게 낙찰 또는 경매 마감 메세지 보내기
         Long selectedMemberId = offer.getCenter().getMember().getMemberId();
-        sendMessageAfterSelection(postId, member.getMemberId(), selectedMemberId);
+        sendMessageAfterSelection(postId, selectedMemberId);
+        webSocketHandler.deletePostRoom(postId);
     }
 
     // 해당 게시글을 가져오고, 마감 전인지 판단
@@ -156,14 +156,13 @@ public class OfferService {
         // 2. 견적 작성자의 member id 가져오기
         List<Long> memberList = findMemberIdsWithOfferList(offerList);
         // 3. 평균 견적 가격 계산하기
-        double avgPrice = calculateAvgPrice(offerList);
+        AvgPriceDto avgPriceDto = new AvgPriceDto(calculateAvgPrice(offerList));
         // 4. 전송하기
-        memberList.forEach(memberId -> webSocketHandler.sendData2Client(memberId, avgPrice));
+        memberList.forEach(memberId -> webSocketHandler.sendData2Client(memberId, avgPriceDto));
     }
   
     // 낙찰 처리 후 서비스 센터들에게 낙찰 메세지, 경매 마감 메세지 전송
-    // 해당 게시글에 연관된 모든 유저들과 웹 소켓 연결 종료
-    private void sendMessageAfterSelection(Long postId, Long clientId, Long selectedMemberId) {
+    private void sendMessageAfterSelection(Long postId, Long selectedMemberId) {
         // 낙찰 메세지
         DataResponse<Long> selectAlert = DataResponse.success("제시한 견적이 낙찰되었습니다.", postId);
         webSocketHandler.sendData2Client(selectedMemberId, selectAlert);
@@ -174,8 +173,5 @@ public class OfferService {
         memberIdsInPost.stream()
                 .filter(memberId -> !memberId.equals(selectedMemberId))
                 .forEach(memberId -> webSocketHandler.sendData2Client(memberId, endAlert));
-        // 웹 소켓 연결 종료
-        memberIdsInPost.add(clientId);
-        memberIdsInPost.forEach(webSocketHandler::closeConnection);
     }
 }

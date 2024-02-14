@@ -55,8 +55,8 @@ public class PostController {
     @GetMapping("/one/{post_id}")
     public ResponseEntity<?> showPost(@PathVariable("post_id") Long postId,
                                       @Schema(hidden = true) @CurrentUser Member member) {
-        List<Object> getPostResult = postService.showPost(postId, member);
-        return ResponseEntity.ok(DataResponse.success("게시글 조회 완료", getPostResult));
+        Object result = postService.showPost(postId, member);
+        return ResponseEntity.ok(DataResponse.success("게시글 조회 완료", result));
     }
 
     @ApiResponses({

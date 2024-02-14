@@ -77,7 +77,7 @@ public class OfferController {
     @PatchMapping("/{post_id}/offer/{offer_id}")
     public ResponseEntity<?> updateOffer(@PathVariable("post_id") Long postId,
                                          @PathVariable("offer_id") Long offerId,
-                                         @RequestBody OfferCreateDto offerCreateDto,
+                                         @RequestBody @Valid OfferCreateDto offerCreateDto,
                                          @Schema(hidden = true) @CurrentUser Member member) {
         offerService.updateOffer(postId, offerId, offerCreateDto, member);
         // 글 작성자에게 업데이트 된 댓글 리스트 보내기

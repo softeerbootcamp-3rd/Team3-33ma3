@@ -1,4 +1,4 @@
-package softeer.be33ma3.controller;
+package softeer.be33ma3.websocket;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -6,9 +6,9 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import softeer.be33ma3.service.WebSocketService;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -33,7 +33,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
         } catch(Exception e) {
             log.error("연결 수립 후 에러 발생");
         } finally {
-            webSocketService.save(session);
+            Map<String, Object> attributes = session.getAttributes();
+            String type = (String) attributes.get("type");
+            // 게시글 조회 관련 실시간 통신 요청일 경우
+            if(type.equals("post")) {
+                Long postId = (Long) attributes.get("postId");
+                Long memberId = (Long) attributes.get("memberId");
+                webSocketService.save(postId, memberId, session);
+            }
         }
     }
     @Override
@@ -54,11 +61,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    public void closeConnection(Long memberId) {
-        try {
-            webSocketService.closeConnection(memberId);
-        } catch (IOException e) {
-            log.error("연결 종료 에러");
-        }
+    public void deletePostRoom(Long postId) {
+        webSocketService.deletePostRoom(postId);
     }
 }

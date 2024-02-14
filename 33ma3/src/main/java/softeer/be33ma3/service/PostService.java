@@ -7,9 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import softeer.be33ma3.domain.*;
 import softeer.be33ma3.dto.request.PostCreateDto;
-import softeer.be33ma3.dto.response.ImageListDto;
-import softeer.be33ma3.dto.response.OfferDetailDto;
-import softeer.be33ma3.dto.response.PostDetailDto;
+import softeer.be33ma3.dto.response.*;
 import softeer.be33ma3.exception.UnauthorizedException;
 import softeer.be33ma3.repository.*;
 
@@ -80,7 +78,7 @@ public class PostService {
     }
 
     // 게시글 세부사항 반환 (로그인 하지 않아도 확인 가능)
-    public List<Object> showPost(Long postId, Member member) {
+    public Object showPost(Long postId, Member member) {
         // 1. 게시글 존재 유무 판단
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
         // 2. 게시글 세부 사항 가져오기
@@ -88,16 +86,19 @@ public class PostService {
         // 3. 경매가 완료되었거나 글 작성자의 접근일 경우
         if(post.isDone() || (member!=null && post.getMember().equals(member))) {
             List<Offer> offerList = offerRepository.findByPost_PostId(postId);
-            List<OfferDetailDto> offerDetailList = OfferDetailDto.fromEntityList(offerList);
-            return List.of(postDetailDto, offerDetailList);
+            List<OfferDetailDto> offerDetailDtos = OfferDetailDto.fromEntityList(offerList);
+            return new PostWithOffersDto(postDetailDto, offerDetailDtos);
         }
         // 4. 경매가 진행 중이고 작성자가 아닌 유저의 접근일 경우
         // 해당 게시글의 견적 모두 가져오기
         List<Offer> offerList = offerRepository.findByPost_PostId(postId);
         double avgPrice = OfferService.calculateAvgPrice(offerList);
+        avgPrice = Math.round(avgPrice * 10) / 10.0;      // 소수점 첫째 자리까지 반올림
+        PostWithAvgPriceDto postWithAvgPriceDto = new PostWithAvgPriceDto(postDetailDto, avgPrice);
         // 견적을 작성한 이력이 있는 서비스 센터의 접근일 경우 작성한 견적 가져오기
         OfferDetailDto offerDetailDto = getCenterOffer(postId, member);
-        return (offerDetailDto == null) ? List.of(postDetailDto, avgPrice) : List.of(postDetailDto, avgPrice, offerDetailDto);
+        postWithAvgPriceDto.setOfferDetailDto(offerDetailDto);
+        return postWithAvgPriceDto;
     }
 
     // 멤버 정보를 이용하여 견적을 작성한 이력이 있는 서비스 센터일 경우 작성한 견적 반환
