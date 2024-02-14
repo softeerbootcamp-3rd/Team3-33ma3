@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import SubmitButton from "./button/SubmitButton";
-import Logo from "../assets/33MA3_logo.png";
+import SubmitButton from "../button/SubmitButton";
+import Logo from "../../assets/33MA3_logo.png";
 
 const CommentContainer = styled.div`
   width: 100%;
