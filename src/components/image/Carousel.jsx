@@ -6,7 +6,7 @@ import PictureArea from "./PictureArea";
 import styled from "styled-components";
 
 const SilderContainer = styled.div`
-  height: 530px;
+  height: ${({ size }) => (size === "large" ? "530px" : "290px")};
 `;
 const StyledSlider = styled(Slider)`
   position: relative;
@@ -14,6 +14,9 @@ const StyledSlider = styled(Slider)`
   .slick-next::before {
     font-size: 40px;
     display: none;
+  }
+  .slick-slider {
+    width: ${({ size }) => (size === "medium" ? "100%" : "480px")};
   }
   .slick-list {
     border-radius: ${(props) => props.theme.radiuses.radius_m};
@@ -75,8 +78,8 @@ function Carousel({ imgList, thumbnail, size }) {
   };
 
   return (
-    <SilderContainer>
-      <StyledSlider {...settings} style={{ width: "480px" }}>
+    <SilderContainer size={size}>
+      <StyledSlider {...settings}>
         {imgList.map((i) => {
           return <PictureArea img={i} size={size} key={i} />;
         })}

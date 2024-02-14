@@ -6,7 +6,7 @@ const Button = styled.button`
   font-size: ${(props) => props.theme.fontSize.regular};
   font-weight: 500;
 
-  padding: 4px 14px;
+  padding: 2px 14px;
   border-radius: ${(props) => props.theme.radiuses.radius_m};
   box-shadow: 0px 0px 0px 1.5px ${(props) => props.theme.colors.border_strong};
   background: ${(props) => props.theme.colors.surface_default};
@@ -31,15 +31,13 @@ export default function ChipButton({ type, block, onClick }) {
   }
 
   return (
-    <>
-      <Button
-        type="button"
-        className={isActive ? "active" : ""}
-        onClick={handleOnclick}
-        $block={block}
-      >
-        {type}
-      </Button>
-    </>
+    <Button
+      type="button"
+      className={isActive ? "active" : ""}
+      onClick={handleOnclick}
+      $block={block}
+    >
+      {type}
+    </Button>
   );
 }
