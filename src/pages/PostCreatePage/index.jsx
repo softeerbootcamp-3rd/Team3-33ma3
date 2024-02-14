@@ -50,6 +50,7 @@ function PostCreatePage() {
   const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [address, setAddress] = useState("");
+  const [centerList, setCenterList] = useState([]);
 
   // Form 제출 버튼 클릭 시 실행
   function onSubmit(e) {
@@ -68,7 +69,7 @@ function PostCreatePage() {
       ...Object.fromEntries(formData.entries()),
       repairService: repairService.current.join(","),
       tuneUpService: tuneUpService.current.join(","),
-      centers: [1, 2, 3],
+      centers: centerList.map((item) => item.centerId),
       memberId: 1,
       location: address,
     };
@@ -145,9 +146,17 @@ function PostCreatePage() {
     setAddress(address);
   }
 
+  function handleSaveCenterList(centerList) {
+    setCenterList(centerList);
+  }
+
   return (
     <>
-      <LocationModal ref={modal} onSave={handleSaveAddress} />
+      <LocationModal
+        ref={modal}
+        onSave={handleSaveAddress}
+        onSaveList={handleSaveCenterList}
+      />
       <Page title={"게시글 작성"}>
         <Form onSubmit={onSubmit}>
           <PostRegister>

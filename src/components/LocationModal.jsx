@@ -131,7 +131,7 @@ function updateMarkers(map, circle, markers) {
   const circleBounds = circle.getBounds();
 
   for (var i = 0; i < markers.length; i++) {
-    const marker = markers[i];
+    const marker = markers[i].marker;
     const position = marker.getPosition();
 
     if (circleBounds.hasLatLng(position)) {
@@ -144,18 +144,21 @@ function updateMarkers(map, circle, markers) {
 
 // marker 출력 함수
 function showMarker(map, marker) {
-  if (marker.setMap()) return;
+  if (marker.getMap()) return;
   marker.setMap(map);
 }
 
 // marker 미출력 함수
 function hideMarker(map, marker) {
-  if (!marker.setMap()) return;
+  if (!marker.getMap()) return;
   marker.setMap(null);
 }
 
 // Modal 최상위 컴포넌트
-const LocationModal = forwardRef(function LocationModal({ onSave }, ref) {
+const LocationModal = forwardRef(function LocationModal(
+  { onSave, onSaveList },
+  ref
+) {
   const [newMap, setNewMap] = useState();
   const [newMarker, setNewMarker] = useState();
   const [newAddress, setNewAddress] = useState();
@@ -193,7 +196,9 @@ const LocationModal = forwardRef(function LocationModal({ onSave }, ref) {
   }
 
   function handleSubmitOnClick() {
+    const centerList = markerList.filter((data) => data.marker.getMap());
     onSave(newAddress);
+    onSaveList(centerList);
   }
 
   useImperativeHandle(ref, () => {
@@ -227,7 +232,7 @@ const LocationModal = forwardRef(function LocationModal({ onSave }, ref) {
             const marker = new naver.maps.Marker(markerOptions);
             marker.setMap(null);
 
-            return marker;
+            return { centerId: element.centerId, marker: marker };
           });
           naver.maps.Event.addListener(newMap, "drag", (e) => {
             const currentCoords = newMap.getCenter();
