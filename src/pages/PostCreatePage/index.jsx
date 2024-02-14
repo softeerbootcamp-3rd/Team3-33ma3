@@ -41,6 +41,13 @@ const Grid = styled.div`
   grid-row-gap: 25px;
 `;
 
+const Button = styled.button`
+  display: flex;
+  align-items: start;
+  font-size: ${(props) => props.theme.fontSize.regular};
+  font-weight: 500;
+`;
+
 function PostCreatePage() {
   const repairService = useRef([]);
   const tuneUpService = useRef([]);
@@ -174,9 +181,9 @@ function PostCreatePage() {
                   <InputRange name={"deadline"} />
                 </OptionItem>
                 <OptionItem title={"지역"}>
-                  <button type="button" onClick={handleModal}>
+                  <Button type="button" onClick={handleModal}>
                     {address ? address : "지역과 반경을 선택해주세요."}
-                  </button>
+                  </Button>
                 </OptionItem>
                 <OptionItem title={"수리 서비스"}>
                   <ServiceList
