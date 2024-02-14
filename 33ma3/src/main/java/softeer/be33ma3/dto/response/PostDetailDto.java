@@ -29,8 +29,8 @@ public class PostDetailDto {
     @Schema(description = "남은 기한", example = "3")
     private int dDay;
 
-    @Schema(description = "당일 남은 시간", example = "11:32:51")
-    private LocalTime remainTime;
+    @Schema(description = "당일 남은 시간 (초)", example = "12345")
+    private int remainTime;
 
     @Schema(description = "지역 명", example = "강남구")
     private String regionName;
@@ -54,7 +54,7 @@ public class PostDetailDto {
         List<String> imageList = post.getImages().stream().map(Image::getLink).toList();
         Duration duration = calculateDuration(post);
         int dDay = -1;
-        LocalTime remainTime = null;
+        int remainTime = 0;
         if(!post.isDone() && !duration.isNegative())        // 아직 마감 시간 전
             dDay = (int)duration.toDays();
         if(dDay == 0)
@@ -89,11 +89,8 @@ public class PostDetailDto {
     }
 
     // 마감 시간까지 남은 시간:분:초를 반환
-    private static LocalTime calculateRemainTime(Duration duration) {
-        int hours = (int)duration.toHours();
-        int minutes = duration.toMinutesPart();
-        int seconds = duration.toSecondsPart();
-        return LocalTime.of(hours, minutes, seconds);
+    private static int calculateRemainTime(Duration duration) {
+        return (int) duration.toSeconds();
     }
 }
 
