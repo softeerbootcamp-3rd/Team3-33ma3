@@ -36,7 +36,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
 
         String accessToken = request.getHeader(ACCESS_HEADER_STRING);   //헤더에서 엑세스 토큰 가져오기
 
-        if(accessToken == null){    //토큰이 없는 경우
+        if (accessToken == null) {   //토큰이 없는 경우
             return null;
         }
 

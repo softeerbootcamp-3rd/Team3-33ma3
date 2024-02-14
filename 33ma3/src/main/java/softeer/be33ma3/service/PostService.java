@@ -23,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PostService {
+    private static final int CLIENT_TYPE = 1;
 
     private final OfferRepository offerRepository;
     private final CenterRepository centerRepository;
@@ -34,12 +35,13 @@ public class PostService {
     private final ImageService imageService;
 
     @Transactional
-    public void createPost(Member currentMember, PostCreateDto postCreateDto, List<MultipartFile> multipartFiles) {
+    public Long createPost(Member currentMember, PostCreateDto postCreateDto, List<MultipartFile> multipartFiles) {
         //회원이랑 지역 찾기
         Member member = memberRepository.findById(currentMember.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
-
-        String location = postCreateDto.getLocation();
-        Region region = regionRepository.findByRegionName(getRegion(location)).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 구"));
+        if(member.getMemberType() != CLIENT_TYPE){
+            throw new UnauthorizedException("센터는 글 작성이 불가능합니다.");
+        }
+        Region region = getRegion(postCreateDto.getLocation());
 
         //이미지 저장
         ImageListDto imageListDto = imageService.saveImage(multipartFiles);
@@ -54,28 +56,27 @@ public class PostService {
         //이미지랑 게시물 매핑하기
         List<Image> images = imageRepository.findAllById(imageListDto.getImageIds());
         images.forEach(image -> image.setPost(savedPost));
+
+        return savedPost.getPostId();
     }
 
-    private void centerAndPostMapping(PostCreateDto postCreateDto, Post savedPost) {
-        List<Center> centers = centerRepository.findAllById(postCreateDto.getCenters());
 
-        List<PostPerCenter> postPerCenters = centers.stream()
-                .map(center -> new PostPerCenter(center, savedPost))
-                .collect(Collectors.toList());
+    @Transactional
+    public void editPost(Member member, Long postId, PostCreateDto postCreateDto) {
+        Post post = validPostAndMember(member, postId);
 
-        postPerCenterRepository.saveAll(postPerCenters);
+        Region region = getRegion(postCreateDto.getLocation());
+        post.editPost(postCreateDto, region);
     }
-
-    private String getRegion(String location) {
-        // 정규 표현식을 사용하여 "구"로 끝나는 문자열 찾기
-        Pattern pattern = Pattern.compile("\\b([^\\s]+구)\\b");
-        Matcher matcher = pattern.matcher(location);
-
-        if (matcher.find()) {
-            return matcher.group();
-        }
-
-        throw new IllegalArgumentException("주소에서 구를 찾을 수 없음");
+    @Transactional
+    public void deletePost(Member member, Long postId) {
+        Post post = validPostAndMember(member, postId);
+        //이미지 삭제
+        List<Image> images = post.getImages();
+        imageService.deleteImage(images);   //S3에서 이미지 삭제
+        imageRepository.deleteAll(images);  //db에 저장된 이미지 삭제
+        //게시글 삭제
+        postRepository.delete(post);
     }
 
     // 게시글 세부사항 반환 (로그인 하지 않아도 확인 가능)
@@ -110,5 +111,42 @@ public class PostService {
         // 해당 게시글에 해당 센터가 작성한 견적 찾기
         Optional<Offer> offer = offerRepository.findByPost_PostIdAndCenter_CenterId(postId, center.getCenterId());
         return (offer.isEmpty() ? null : OfferDetailDto.fromEntity(offer.get()));
+    }
+
+    private Region getRegion(String location) {
+        // 정규 표현식을 사용하여 "구"로 끝나는 문자열 찾기
+        Pattern pattern = Pattern.compile("\\b([^\\s]+구)\\b");
+        Matcher matcher = pattern.matcher(location);
+
+        if (matcher.find()) {
+            return regionRepository.findByRegionName(matcher.group()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 구"));
+        }
+
+        throw new IllegalArgumentException("주소에서 구를 찾을 수 없음");
+    }
+
+    private void centerAndPostMapping(PostCreateDto postCreateDto, Post savedPost) {
+        List<Center> centers = centerRepository.findAllById(postCreateDto.getCenters());
+
+        List<PostPerCenter> postPerCenters = centers.stream()
+                .map(center -> new PostPerCenter(center, savedPost))
+                .collect(Collectors.toList());
+
+        postPerCenterRepository.saveAll(postPerCenters);
+    }
+
+    private Post validPostAndMember(Member member, Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
+        Member findMember = memberRepository.findById(member.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
+
+        if (!post.getMember().equals(findMember)) {
+            throw new UnauthorizedException("작성자만 가능합니다.");
+        }
+
+        if (!offerRepository.findByPost_PostId(postId).isEmpty()) { //댓글이 있는 경우(경매 시작 후)
+            throw new IllegalArgumentException("경매 시작 전에만 가능합니다.");
+        }
+
+        return post;
     }
 }
