@@ -127,14 +127,24 @@ export function searchAddressToCoordinate(
 }
 
 // 반경 내의 marker 출력, 그 외는 제외하는 함수
-function updateMarkers(map, circle, markers) {
-  const circleBounds = circle.getBounds();
+async function updateMarkers(map, circle, markers) {
+  const response = await fetch(
+    `${URL}location?latitude=${map.center._lat}&longitude=${
+      map.center._lng
+    }&radius=${circle.getRadius() / 1000}`
+  );
+
+  const jsonData = await response.json();
+  const centerList = jsonData.data;
 
   for (var i = 0; i < markers.length; i++) {
     const marker = markers[i].marker;
-    const position = marker.getPosition();
+    const markerId = markers[i].centerId;
 
-    if (circleBounds.hasLatLng(position)) {
+    const centerExists = centerList.some((obj) =>
+      Object.values(obj).includes(Number(markerId))
+    );
+    if (centerExists) {
       showMarker(map, marker);
     } else {
       hideMarker(map, marker);
@@ -204,6 +214,7 @@ const LocationModal = forwardRef(function LocationModal(
     onSaveList(centerList);
     onSaveRadius(newCircle.getRadius());
     setNewAddress(userInputAddress);
+    dialog.current.close();
   }
 
   useImperativeHandle(ref, () => {
