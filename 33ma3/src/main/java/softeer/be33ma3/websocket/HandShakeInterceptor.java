@@ -1,6 +1,7 @@
 package softeer.be33ma3.websocket;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,8 @@ public class HandShakeInterceptor implements HandshakeInterceptor {
         String[] parts = request.getURI().getPath().split("/");
         if(parts.length != 5) {
             log.error("잘못된 웹소켓 연결 요청");
+            response.setStatusCode(HttpStatus.FORBIDDEN);
+            response.getBody().write("웹소켓 연결 실패, 엔드포인트를 다시 확인해주세요.".getBytes());
             return false;
         }
         // 게시글 조회 관련 실시간 통신 요청일 경우
@@ -32,7 +35,9 @@ public class HandShakeInterceptor implements HandshakeInterceptor {
                 attributes.put("memberId", memberId);
                 return true;
             } catch(NumberFormatException e) {
-                log.error("게시글 아이디, 멤버 아이디가 포함되어야 합니다.");
+                log.error("웹소켓 연결 실패: 게시글 아이디, 멤버 아이디가 포함되어야 합니다.");
+                response.setStatusCode(HttpStatus.FORBIDDEN);
+                response.getBody().write("웹소켓 연결 실패, 게시글 아이디와 멤버 아이디를 포함해주세요.".getBytes());
                 return false;
             }
         }
