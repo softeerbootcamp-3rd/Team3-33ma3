@@ -187,6 +187,7 @@ const LocationModal = forwardRef(function LocationModal(
 
     if (inputRadius < MIN_RADIUS || inputRadius > MAX_RADIUS) {
       alert("반경은 1이상 10이하까지 입력해주세요.");
+      e.target.value = 0;
       return;
     }
 
