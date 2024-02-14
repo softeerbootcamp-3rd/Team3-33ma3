@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.PostCreateDto;
+import softeer.be33ma3.dto.response.PostThumbnailDto;
 import softeer.be33ma3.jwt.CurrentUser;
 import softeer.be33ma3.response.DataResponse;
 import softeer.be33ma3.response.SingleResponse;
@@ -31,6 +32,19 @@ import java.util.List;
 @RequestMapping("/post")
 public class PostController {
     private final PostService postService;
+
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게시글 목록 조회 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 센터", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+    })
+    @Operation(summary = "게시글 목록 조회", description = "게시글 목록 조회 메서드 입니다.")
+    @GetMapping("")
+    public ResponseEntity<?> showPosts(@Schema(hidden = true) @CurrentUser Member member) {
+        List<PostThumbnailDto> postThumbnailDtos = postService.showPosts(member);
+        return ResponseEntity.ok().body(DataResponse.success("게시글 목록 조회 성공", postThumbnailDtos));
+    }
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시글 작성 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
