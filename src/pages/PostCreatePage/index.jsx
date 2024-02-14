@@ -14,6 +14,7 @@ import {
   REPAIR_SERVICE_OPTIONS,
   TUNEUP_SERVICE_OPTIONS,
 } from "../../constants/options";
+import { BASE_URL } from "../../constants/url";
 
 const Form = styled.form`
   width: 100%;
@@ -81,9 +82,13 @@ function PostCreatePage() {
       new Blob([JSON.stringify(newPost)], { type: "application/json" })
     );
 
-    fetch("http://15.165.162.126:8080/post/create", {
+    fetch(BASE_URL + "post/create", {
       method: "POST",
-      headers: { Accept: "application/json" },
+      headers: {
+        Authorization:
+          "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibWVtYmVyVHlwZSI6MSwibWVtYmVySWQiOjEsImxvZ2luSWQiOiJ1c2VyMSIsImV4cCI6MTcwNzgxNTcyNX0._l5jHGQnmK8KzdDe118G8lzfx3z5CQzq4h0JaDB5c0s",
+        Accept: "application/json",
+      },
       body: fd,
     })
       .then((response) => {
