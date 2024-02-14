@@ -17,16 +17,15 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.List;
 
+import static softeer.be33ma3.service.MemberService.CENTER_TYPE;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PostService {
-    private static final int CLIENT_TYPE = 1;
-
     private final OfferRepository offerRepository;
     private final CenterRepository centerRepository;
     private final PostRepository postRepository;
-    private final MemberRepository memberRepository;
     private final RegionRepository regionRepository;
     private final PostPerCenterRepository postPerCenterRepository;
     private final ImageRepository imageRepository;
@@ -35,8 +34,7 @@ public class PostService {
     @Transactional
     public Long createPost(Member currentMember, PostCreateDto postCreateDto, List<MultipartFile> multipartFiles) {
         //회원이랑 지역 찾기
-        Member member = memberRepository.findById(currentMember.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
-        if(member.getMemberType() != CLIENT_TYPE){
+        if(currentMember.getMemberType() == CENTER_TYPE){
             throw new UnauthorizedException("센터는 글 작성이 불가능합니다.");
         }
         Region region = getRegion(postCreateDto.getLocation());
@@ -45,7 +43,7 @@ public class PostService {
         ImageListDto imageListDto = imageService.saveImage(multipartFiles);
 
         //게시글 저장
-        Post post = Post.createPost(postCreateDto, region, member);
+        Post post = Post.createPost(postCreateDto, region, currentMember);
         Post savedPost = postRepository.save(post);
 
         //정비소랑 게시물 매핑하기
@@ -138,9 +136,8 @@ public class PostService {
 
     private Post validPostAndMember(Member member, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
-        Member findMember = memberRepository.findById(member.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
 
-        if (!post.getMember().equals(findMember)) {
+        if (!post.getMember().equals(member)) {
             throw new UnauthorizedException("작성자만 가능합니다.");
         }
 

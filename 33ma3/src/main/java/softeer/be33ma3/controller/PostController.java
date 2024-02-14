@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -67,7 +68,7 @@ public class PostController {
     @Operation(summary = "게시글 수정", description = "게시글 수정 메서드 입니다.")
     @Parameter(name = "post_id", description = "수정할 게시글 id", required = true, example = "1", in = ParameterIn.PATH)
     @PutMapping("/{post_id}")
-    public ResponseEntity<?> editPost(@Schema(hidden = true) @CurrentUser Member member,  @PathVariable("post_id") Long postId, @RequestBody PostCreateDto postCreateDto){
+    public ResponseEntity<?> editPost(@Schema(hidden = true) @CurrentUser Member member,  @PathVariable("post_id") Long postId, @RequestBody @Valid PostCreateDto postCreateDto){
         postService.editPost(member, postId, postCreateDto);
 
         return ResponseEntity.ok().body(SingleResponse.success("게시글 수정 성공"));
