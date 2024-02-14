@@ -28,8 +28,14 @@ const TextContainer = styled.div`
 `;
 
 const ChildContainer = styled.div`
+  max-height: 0px;
   width: 100%;
   overflow: hidden;
+  transition: max-height 0.4s ease-in-out;
+
+  &.active {
+    max-height: 100px;
+  }
 `;
 
 const ArcodainButtonChild = styled.div`
@@ -70,15 +76,15 @@ function DropDownButton({ title, number, children }) {
     setIsActive(!isActive);
   }
 
-  useEffect(() => {
-    if (isActive) {
-      setVisibilityAnimation(true);
-    } else {
-      setTimeout(() => {
-        setVisibilityAnimation(false);
-      }, 400);
-    }
-  }, [isActive]);
+  // useEffect(() => {
+  //   if (isActive) {
+  //     setVisibilityAnimation(true);
+  //   } else {
+  //     setTimeout(() => {
+  //       setVisibilityAnimation(false);
+  //     }, 400);
+  //   }
+  // }, [isActive]);
 
   return (
     <>
@@ -89,13 +95,9 @@ function DropDownButton({ title, number, children }) {
         </TextContainer>
         <img src={isActive ? SlideIn : SlideOut} style={imgSize} />
       </Button>
-      {visibilityAnimation && (
-        <ChildContainer>
-          <ArcodainButtonChild isActive={isActive}>
-            {children}
-          </ArcodainButtonChild>
-        </ChildContainer>
-      )}
+      <ChildContainer className={isActive ? "active" : ""}>
+        {children}
+      </ChildContainer>
     </>
   );
 }
