@@ -19,7 +19,7 @@ public class OfferDetailDto implements Comparable<OfferDetailDto> {
     @Schema(description = "센터 이름", example = "현대자동차 강남점")
     private String centerName;
 
-    @Schema(description = "멤버 아이디", example = "1")
+    @Schema(description = "견적 제시 가격", example = "1")
     private int price;
 
     @Schema(description = "견적 내용", example = "사진상으로는 10만원에 가능할듯 합니다.")
