@@ -25,7 +25,6 @@ public class WebSocketService {
             closePostConnection(exitMember.getRoomId(), exitMember.getMemberId());
         }
 
-
         log.info("메세지 수신 성공: {}", payload); // 수신한 메세지 log
         TextMessage textMessage = new TextMessage("메세지 수신 성공");
         session.sendMessage(textMessage);
