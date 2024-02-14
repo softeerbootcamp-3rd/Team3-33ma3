@@ -127,14 +127,24 @@ export function searchAddressToCoordinate(
 }
 
 // 반경 내의 marker 출력, 그 외는 제외하는 함수
-function updateMarkers(map, circle, markers) {
-  const circleBounds = circle.getBounds();
+async function updateMarkers(map, circle, markers) {
+  const response = await fetch(
+    `${URL}location?latitude=${map.center._lat}&longitude=${
+      map.center._lng
+    }&radius=${circle.getRadius() / 1000}`
+  );
+
+  const jsonData = await response.json();
+  const centerList = jsonData.data;
 
   for (var i = 0; i < markers.length; i++) {
-    const marker = markers[i];
-    const position = marker.getPosition();
+    const marker = markers[i].marker;
+    const markerId = markers[i].centerId;
 
-    if (circleBounds.hasLatLng(position)) {
+    const centerExists = centerList.some((obj) =>
+      Object.values(obj).includes(Number(markerId))
+    );
+    if (centerExists) {
       showMarker(map, marker);
     } else {
       hideMarker(map, marker);
@@ -144,18 +154,21 @@ function updateMarkers(map, circle, markers) {
 
 // marker 출력 함수
 function showMarker(map, marker) {
-  if (marker.setMap()) return;
+  if (marker.getMap()) return;
   marker.setMap(map);
 }
 
 // marker 미출력 함수
 function hideMarker(map, marker) {
-  if (!marker.setMap()) return;
+  if (!marker.getMap()) return;
   marker.setMap(null);
 }
 
 // Modal 최상위 컴포넌트
-const LocationModal = forwardRef(function LocationModal({ props }, ref) {
+const LocationModal = forwardRef(function LocationModal(
+  { onSave, onSaveList, onSaveRadius },
+  ref
+) {
   const [newMap, setNewMap] = useState();
   const [newMarker, setNewMarker] = useState();
   const [newAddress, setNewAddress] = useState();
@@ -163,6 +176,7 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
   const [markerList, setMarkerList] = useState([]);
 
   const dialog = useRef();
+  const inputAddress = useRef();
 
   function handleCloseModal() {
     dialog.current.close();
@@ -184,6 +198,7 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
 
     if (inputRadius < MIN_RADIUS || inputRadius > MAX_RADIUS) {
       alert("반경은 1이상 10이하까지 입력해주세요.");
+      e.target.value = 0;
       return;
     }
 
@@ -192,7 +207,15 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
     updateMarkers(newMap, newCircle, markerList);
   }
 
-  function handleSubmitOnClick() {}
+  function handleSubmitOnClick() {
+    const userInputAddress = inputAddress.current.value;
+    const centerList = markerList.filter((data) => data.marker.getMap());
+    onSave(userInputAddress);
+    onSaveList(centerList);
+    onSaveRadius(newCircle.getRadius());
+    setNewAddress(userInputAddress);
+    dialog.current.close();
+  }
 
   useImperativeHandle(ref, () => {
     return {
@@ -225,7 +248,7 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
             const marker = new naver.maps.Marker(markerOptions);
             marker.setMap(null);
 
-            return marker;
+            return { centerId: element.centerId, marker: marker };
           });
           naver.maps.Event.addListener(newMap, "drag", (e) => {
             const currentCoords = newMap.getCenter();
@@ -263,6 +286,7 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
             setCircle={setNewCircle}
           />
           <InputText
+            ref={inputAddress}
             key={generateKeyBasedOnCurrentTime()}
             defaultValue={newAddress}
             size={"small"}

@@ -14,7 +14,9 @@ import {
   REPAIR_SERVICE_OPTIONS,
   TUNEUP_SERVICE_OPTIONS,
 } from "../../constants/options";
+
 import { BASE_URL } from "../../constants/url";
+import LocationModal from "../../components/LocationModal";
 
 const Form = styled.form`
   width: 100%;
@@ -39,12 +41,26 @@ const Grid = styled.div`
   grid-row-gap: 25px;
 `;
 
+const Button = styled.button`
+  display: flex;
+  align-items: start;
+  font-size: ${(props) => props.theme.fontSize.regular};
+  font-weight: 500;
+  flex-direction: column;
+  gap: 10px;
+`;
+
 function PostCreatePage() {
   const repairService = useRef([]);
   const tuneUpService = useRef([]);
   const imageFiles = useRef([]);
+  const modal = useRef();
+
   const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [address, setAddress] = useState("");
+  const [centerList, setCenterList] = useState([]);
+  const [radius, setRadius] = useState(0);
 
   // Form 제출 버튼 클릭 시 실행
   function onSubmit(e) {
@@ -63,9 +79,9 @@ function PostCreatePage() {
       ...Object.fromEntries(formData.entries()),
       repairService: repairService.current.join(","),
       tuneUpService: tuneUpService.current.join(","),
-      centers: [1, 2, 3],
+      centers: centerList.map((item) => item.centerId),
       memberId: 1,
-      location: "서울시 강남구",
+      location: address,
     };
 
     console.log(newPost);
@@ -121,6 +137,21 @@ function PostCreatePage() {
       errors.modelName = "모델명을 입력해주세요.";
     }
 
+    // 지역을 설정하지 않았을 경우 경우
+    if (post.location.length < 1) {
+      errors.location = "현재 위치를 설정해주세요.";
+    }
+
+    // 반경을 설정하지 않았을 경우 경우
+    if (radius <= 0) {
+      errors.radius = "반경을 1이상 10 이하로 설정해주세요.";
+    }
+
+    // 반경을 설정하지 않았을 경우 경우
+    if (errors.location && errors.radius) {
+      errors.locationRadius = "위치와 반경을 설정해주세요.";
+    }
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   }
@@ -132,54 +163,89 @@ function PostCreatePage() {
       state.current = [...state.current, value];
     }
   }
+  function handleModal() {
+    modal.current.open();
+  }
+
+  function handleSaveAddress(address) {
+    setAddress(address);
+  }
+
+  function handleSaveCenterList(centerList) {
+    setCenterList(centerList);
+  }
+
+  function handleSaveRadius(radius) {
+    setRadius(radius);
+  }
 
   return (
-    <Page title={"게시글 작성"}>
-      <Form onSubmit={onSubmit}>
-        <PostRegister>
-          <ImageUpload imageFiles={imageFiles} />
-          <OptionType title={"차량 정보"}>
-            <Grid>
-              <OptionItem title={"모델"}>
-                <InputText size={"small"} name={"modelName"} />
-                {formErrors.modelName && <span>{formErrors.modelName}</span>}
-              </OptionItem>
-              <OptionItem title={"차종"}>
-                <SelectCategory name={"carType"} />
-              </OptionItem>
-              <OptionItem title={"마감 기한"}>
-                <InputRange name={"deadline"} />
-              </OptionItem>
-              <OptionItem title={"지역"}>
-                <button type="button">지역과 반경을 선택해주세요</button>
-              </OptionItem>
-              <OptionItem title={"수리 서비스"}>
-                <ServiceList
-                  optionList={REPAIR_SERVICE_OPTIONS}
-                  serviceList={repairService}
-                  onClick={toggle}
-                />
-                {formErrors.service && <span>{formErrors.service}</span>}
-              </OptionItem>
-              <OptionItem title={"정비 서비스"}>
-                <ServiceList
-                  optionList={TUNEUP_SERVICE_OPTIONS}
-                  serviceList={tuneUpService}
-                  onClick={toggle}
-                />
-                {formErrors.service && <span>{formErrors.service}</span>}
-              </OptionItem>
-            </Grid>
-          </OptionType>
-          <OptionType title={"세부 정보"}>
-            <TextArea maxLength={"500"} name={"contents"} />
-          </OptionType>
-        </PostRegister>
-        <SubmitButton type="submit" disabled={loading}>
-          저장하기
-        </SubmitButton>
-      </Form>
-    </Page>
+    <>
+      <LocationModal
+        ref={modal}
+        onSave={handleSaveAddress}
+        onSaveList={handleSaveCenterList}
+        onSaveRadius={handleSaveRadius}
+      />
+      <Page title={"게시글 작성"}>
+        <Form onSubmit={onSubmit}>
+          <PostRegister>
+            <ImageUpload imageFiles={imageFiles} />
+            <OptionType title={"차량 정보"}>
+              <Grid>
+                <OptionItem title={"모델"}>
+                  <InputText size={"small"} name={"modelName"} />
+                  {formErrors.modelName && <span>{formErrors.modelName}</span>}
+                </OptionItem>
+                <OptionItem title={"차종"}>
+                  <SelectCategory name={"carType"} />
+                </OptionItem>
+                <OptionItem title={"마감 기한"}>
+                  <InputRange name={"deadline"} />
+                </OptionItem>
+                <OptionItem title={"지역"}>
+                  <Button type="button" onClick={handleModal}>
+                    <p>{address ? address : "지역과 반경을 선택해주세요."}</p>
+                    <p>{radius !== 0 && `반경 ${radius / 1000}km 이내`}</p>
+                  </Button>
+                  {formErrors.locationRadius && (
+                    <span>{formErrors.locationRadius}</span>
+                  )}
+                  {!formErrors.locationRadius && formErrors.location && (
+                    <span>{formErrors.location}</span>
+                  )}
+                  {!formErrors.locationRadius && formErrors.radius && (
+                    <span>{formErrors.radius}</span>
+                  )}
+                </OptionItem>
+                <OptionItem title={"수리 서비스"}>
+                  <ServiceList
+                    optionList={REPAIR_SERVICE_OPTIONS}
+                    serviceList={repairService}
+                    onClick={toggle}
+                  />
+                  {formErrors.service && <span>{formErrors.service}</span>}
+                </OptionItem>
+                <OptionItem title={"정비 서비스"}>
+                  <ServiceList
+                    optionList={TUNEUP_SERVICE_OPTIONS}
+                    serviceList={tuneUpService}
+                    onClick={toggle}
+                  />
+                  {formErrors.service && <span>{formErrors.service}</span>}
+                </OptionItem>
+              </Grid>
+            </OptionType>
+            <OptionType title={"세부 정보"}>
+              <TextArea maxLength={"500"} name={"contents"} />
+            </OptionType>
+          </PostRegister>
+          <SubmitButton type="submit" disabled={loading}>
+            저장하기
+          </SubmitButton>
+        </Form>
+      </Page>
+    </>
   );
 }
 

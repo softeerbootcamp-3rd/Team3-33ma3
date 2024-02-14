@@ -28,6 +28,10 @@ const GlobalStyle = createGlobalStyle`
         overflow:visible;
         cursor:pointer
     }
+
+    dialog {
+        border: 0px;
+    }
 `;
 
 export default GlobalStyle;

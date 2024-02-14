@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import styled from "styled-components";
 
 const Input = styled.input`
@@ -22,9 +22,13 @@ const Input = styled.input`
   }
 `;
 
-function InputText({ size, placeholder, onChange, defaultValue, name }) {
+const InputText = forwardRef(function InputText(
+  { size, placeholder, onChange, defaultValue, name },
+  ref
+) {
   return (
     <Input
+      ref={ref}
       size={size}
       placeholder={placeholder}
       onChange={onChange}
@@ -32,6 +36,6 @@ function InputText({ size, placeholder, onChange, defaultValue, name }) {
       name={name}
     ></Input>
   );
-}
+});
 
 export default InputText;
