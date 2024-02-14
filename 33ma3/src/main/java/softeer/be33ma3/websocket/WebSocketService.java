@@ -31,9 +31,14 @@ public class WebSocketService {
         session.sendMessage(textMessage);
     }
 
-    public void save(Long postId, Long memberId, WebSocketSession session) {
+    public void saveInPost(Long postId, Long memberId, WebSocketSession session) {
         webSocketRepository.saveMemberInPost(postId, memberId);
         webSocketRepository.saveSessionWithMemberId(memberId, session);
+    }
+
+    public void saveInChat(Long roomId, Long receiverId, WebSocketSession session) {
+        webSocketRepository.saveMemberInChat(roomId, receiverId);
+        webSocketRepository.saveSessionWithMemberId(receiverId, session);
     }
 
     // 데이터 (클래스 객체) 전송
@@ -58,4 +63,5 @@ public class WebSocketService {
     public void deletePostRoom(Long postId) {
         webSocketRepository.deletePostRoom(postId);
     }
+
 }

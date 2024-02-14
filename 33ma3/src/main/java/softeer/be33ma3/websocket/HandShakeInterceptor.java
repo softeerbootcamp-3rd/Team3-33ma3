@@ -24,8 +24,8 @@ public class HandShakeInterceptor implements HandshakeInterceptor {
             return false;
         }
         // 게시글 조회 관련 실시간 통신 요청일 경우
-        if(parts[2].equals("post")) {
-            try {
+        try {
+            if (parts[2].equals("post")) {
                 // 연결 요청 엔드 포인트에서 데이터 파싱
                 Long postId = Long.parseLong(parts[3]);
                 Long memberId = Long.parseLong(parts[4]);
@@ -33,14 +33,25 @@ public class HandShakeInterceptor implements HandshakeInterceptor {
                 attributes.put("type", parts[2]);
                 attributes.put("postId", postId);
                 attributes.put("memberId", memberId);
-                return true;
-            } catch(NumberFormatException e) {
-                log.error("웹소켓 연결 실패: 게시글 아이디, 멤버 아이디가 포함되어야 합니다.");
-                response.setStatusCode(HttpStatus.FORBIDDEN);
-                response.getBody().write("웹소켓 연결 실패, 게시글 아이디와 멤버 아이디를 포함해주세요.".getBytes());
-                return false;
             }
+
+            if(parts[2].equals("chat")) {
+                // 연결 요청 엔드 포인트에서 데이터 파싱
+                Long roomId = Long.parseLong(parts[3]);
+                Long memberId = Long.parseLong(parts[4]);
+                // WebSocketHandler 에 전달될 속성 추가하기
+                attributes.put("type", parts[2]);
+                attributes.put("roomId", roomId);
+                attributes.put("memberId", memberId);
+                return true;
+            }
+        } catch (NumberFormatException e) {
+            log.error("웹소켓 연결 실패: 게시글 아이디, 멤버 아이디가 포함되어야 합니다.");
+            response.setStatusCode(HttpStatus.FORBIDDEN);
+            response.getBody().write("웹소켓 연결 실패, 게시글 아이디와 멤버 아이디를 포함해주세요.".getBytes());
+            return false;
         }
+
         return false;
     }
 
