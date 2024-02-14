@@ -1,49 +1,34 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import HeadTitle from "../../components/title/HeadTitle";
+import Page from "../../components/post/Page";
 import ImageUpload from "./components/ImageUpload";
 import InputText from "../../components/input/InputText";
 import TextArea from "../../components/input/TextArea";
 import SubmitButton from "../../components/button/SubmitButton";
-import ChipButton from "../../components/button/ChipButton";
 import InputRange from "./components/InputRange";
-import OptionType from "./components/OptionType";
-import OptionItem from "./components/OptionItem";
+import OptionType from "../../components/post/OptionType";
+import OptionItem from "../../components/post/OptionItem";
 import SelectCategory from "./components/SelectCategory";
+import ServiceList from "./components/ServiceList";
 import {
   REPAIR_SERVICE_OPTIONS,
   TUNEUP_SERVICE_OPTIONS,
 } from "../../constants/options";
-import { CONTENT_MAX_WIDTH } from "../../constants/layouts";
-
-const Page = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
+import { BASE_URL } from "../../constants/url";
 
 const Form = styled.form`
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 55px;
-  padding: 30px;
-  box-sizing: border-box;
   align-items: center;
 `;
 
-const Content = styled.div`
-  max-width: ${CONTENT_MAX_WIDTH};
+const PostRegister = styled.div`
   display: flex;
   flex-direction: column;
   gap: 45px;
   width: 100%;
-`;
-
-const ServiceList = styled.div`
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
 `;
 
 const Grid = styled.div`
@@ -97,9 +82,13 @@ function PostCreatePage() {
       new Blob([JSON.stringify(newPost)], { type: "application/json" })
     );
 
-    fetch("http://15.165.162.126:8080/post/create", {
+    fetch(BASE_URL + "post/create", {
       method: "POST",
-      headers: { Accept: "application/json" },
+      headers: {
+        Authorization:
+          "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibWVtYmVyVHlwZSI6MSwibWVtYmVySWQiOjEsImxvZ2luSWQiOiJ1c2VyMSIsImV4cCI6MTcwNzgxNTcyNX0._l5jHGQnmK8KzdDe118G8lzfx3z5CQzq4h0JaDB5c0s",
+        Accept: "application/json",
+      },
       body: fd,
     })
       .then((response) => {
@@ -144,41 +133,10 @@ function PostCreatePage() {
     }
   }
 
-  const Repair = (
-    <OptionItem title={"수리 서비스"} layout={"start"}>
-      <ServiceList>
-        {REPAIR_SERVICE_OPTIONS.map((item, index) => (
-          <ChipButton
-            type={item}
-            key={index}
-            onClick={() => toggle(repairService, item)}
-          />
-        ))}
-      </ServiceList>
-      {formErrors.service && <span>{formErrors.service}</span>}
-    </OptionItem>
-  );
-
-  const TuneUp = (
-    <OptionItem title={"정비 서비스"} layout={"start"}>
-      <ServiceList>
-        {TUNEUP_SERVICE_OPTIONS.map((item, index) => (
-          <ChipButton
-            type={item}
-            key={index}
-            onClick={() => toggle(tuneUpService, item)}
-          />
-        ))}
-      </ServiceList>
-      {formErrors.service && <span>{formErrors.service}</span>}
-    </OptionItem>
-  );
-
   return (
-    <Page>
-      <HeadTitle title={"게시물 작성"} />
+    <Page title={"게시글 작성"}>
       <Form onSubmit={onSubmit}>
-        <Content>
+        <PostRegister>
           <ImageUpload imageFiles={imageFiles} />
           <OptionType title={"차량 정보"}>
             <Grid>
@@ -195,14 +153,28 @@ function PostCreatePage() {
               <OptionItem title={"지역"}>
                 <button type="button">지역과 반경을 선택해주세요</button>
               </OptionItem>
-              {Repair}
-              {TuneUp}
+              <OptionItem title={"수리 서비스"}>
+                <ServiceList
+                  optionList={REPAIR_SERVICE_OPTIONS}
+                  serviceList={repairService}
+                  onClick={toggle}
+                />
+                {formErrors.service && <span>{formErrors.service}</span>}
+              </OptionItem>
+              <OptionItem title={"정비 서비스"}>
+                <ServiceList
+                  optionList={TUNEUP_SERVICE_OPTIONS}
+                  serviceList={tuneUpService}
+                  onClick={toggle}
+                />
+                {formErrors.service && <span>{formErrors.service}</span>}
+              </OptionItem>
             </Grid>
           </OptionType>
           <OptionType title={"세부 정보"}>
             <TextArea maxLength={"500"} name={"contents"} />
           </OptionType>
-        </Content>
+        </PostRegister>
         <SubmitButton type="submit" disabled={loading}>
           저장하기
         </SubmitButton>

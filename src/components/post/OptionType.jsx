@@ -1,5 +1,5 @@
 import React from "react";
-import OptionTitle from "../../../components/title/OptionTitle";
+import OptionTitle from "../title/OptionTitle";
 import styled from "styled-components";
 
 const OptionContainer = styled.div`

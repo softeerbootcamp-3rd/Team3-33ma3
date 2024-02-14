@@ -13,9 +13,10 @@ const HeaderContainer = styled.header`
   box-sizing: border-box;
   background: linear-gradient(
     180deg,
-    #0e1d4f 0%,
-    #515975 50%,
-    #878ea5 73%,
+    #161e3b 0%,
+    #212840 23.5%,
+    #2b303e 50%,
+    #676c7e 73%,
     #fff 100%
   );
 `;
