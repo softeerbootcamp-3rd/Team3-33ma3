@@ -7,7 +7,7 @@ import Comment from "../assets/comment.svg";
 import Timer from "./Timer";
 import DeadLineComplete from "../assets/deadline_completed.svg";
 
-const CarCardContainer = styled.div`
+const CarCardContainer = styled.button`
   display: flex;
   flex-direction: column;
   padding: 30px;
@@ -15,6 +15,11 @@ const CarCardContainer = styled.div`
   background-color: ${({ theme }) => theme.colors.surface_white_weak};
   border-radius: ${({ theme }) => theme.radiuses.radius_m};
   gap: 23px;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: scale(1.01);
+  }
 `;
 
 const CardHeader = styled.div`
@@ -22,12 +27,14 @@ const CardHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 23px;
+  width: 100%;
 `;
 
 const HeaderContext = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  align-items: flex-start;
 `;
 
 const ModelName = styled.p`
@@ -68,7 +75,12 @@ const CommentButton = styled.button`
   align-items: center;
 `;
 
+const CarouselContainer = styled.div`
+  width: 100%;
+`;
+
 const CardFooter = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -117,11 +129,13 @@ function CarCardItem({ cardInfo }) {
           ) : cardInfo.dDay > 0 ? (
             <p>D-{cardInfo.dDay}</p>
           ) : (
-            <Timer remainTime={60} />
+            <Timer remainTime={cardInfo.remainTime} />
           )}
         </RemainTime>
       </CardHeader>
-      <Carousel imgList={images} size={"medium"} />
+      <CarouselContainer>
+        <Carousel imgList={images} size={"medium"} />
+      </CarouselContainer>
       <CardFooter>
         <Services>
           <ServiceList>{repairServices}</ServiceList>
