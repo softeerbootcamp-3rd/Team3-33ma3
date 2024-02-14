@@ -1,6 +1,17 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 
+const Button = styled.button`
+  width: 100%;
+  color: ${(props) => props.theme.colors.text_strong};
+  font-size: ${(props) => props.theme.fontSize.regular};
+  font-weight: 700;
+  padding: 10px 10px 10px 0px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
 const ToggleSwitch = styled.label`
   position: relative;
   display: inline-block;
@@ -54,7 +65,7 @@ const CheckBox = styled.input`
   }
 `;
 
-function ToggleButton({ onClick }) {
+function ToggleButton({ title, onClick }) {
   const [isActive, setIsActive] = useState();
 
   function toggle() {
@@ -63,10 +74,13 @@ function ToggleButton({ onClick }) {
   }
 
   return (
-    <ToggleSwitch>
-      <CheckBox type="checkbox" checked={isActive} onChange={toggle} />
-      <ToggleSlider />
-    </ToggleSwitch>
+    <Button>
+      <p>{title}</p>
+      <ToggleSwitch>
+        <CheckBox type="checkbox" checked={isActive} onChange={toggle} />
+        <ToggleSlider />
+      </ToggleSwitch>
+    </Button>
   );
 }
 
