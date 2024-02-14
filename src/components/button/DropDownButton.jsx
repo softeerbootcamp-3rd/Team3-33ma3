@@ -34,7 +34,7 @@ const ChildContainer = styled.div`
   transition: max-height 0.4s ease-in-out;
 
   &.active {
-    max-height: 100px;
+    max-height: 1000px;
   }
 `;
 

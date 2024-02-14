@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import { CONTENT_MAX_WIDTH } from "../../constants/layouts";
+import { SIDE_BAR_WIDTH } from "../../constants/layouts";
 
 const SideBar = styled.div`
-  width: ${CONTENT_MAX_WIDTH};
+  width: ${SIDE_BAR_WIDTH};
   display: flex;
   flex-direction: column;
 `;
@@ -11,6 +11,7 @@ const SideBar = styled.div`
 const SideBarTitle = styled.h1`
   font-size: ${({ theme }) => theme.fontSize.medium};
   color: ${({ theme }) => theme.colors.text_strong};
+  font-weight: 700;
   margin-bottom: 80px;
 `;
 

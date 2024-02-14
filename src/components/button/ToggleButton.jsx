@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 
-const Button = styled.button`
+const ToggleContainer = styled.div`
   width: 100%;
   color: ${(props) => props.theme.colors.text_strong};
   font-size: ${(props) => props.theme.fontSize.regular};
@@ -15,8 +15,8 @@ const Button = styled.button`
 const ToggleSwitch = styled.label`
   position: relative;
   display: inline-block;
-  width: 47.7px;
-  height: 23.33px;
+  width: 45.7px;
+  height: 20.33px;
 `;
 
 const ToggleSlider = styled.span`
@@ -34,8 +34,8 @@ const ToggleSlider = styled.span`
   &:before {
     position: absolute;
     content: "";
-    height: 15px;
-    width: 15px;
+    height: 13px;
+    width: 13px;
     left: 4px;
     bottom: 4px;
     background-color: white;
@@ -74,13 +74,13 @@ function ToggleButton({ title, onClick }) {
   }
 
   return (
-    <Button>
+    <ToggleContainer>
       <p>{title}</p>
       <ToggleSwitch>
         <CheckBox type="checkbox" checked={isActive} onChange={toggle} />
         <ToggleSlider />
       </ToggleSwitch>
-    </Button>
+    </ToggleContainer>
   );
 }
 
