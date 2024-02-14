@@ -155,7 +155,7 @@ function hideMarker(map, marker) {
 }
 
 // Modal 최상위 컴포넌트
-const LocationModal = forwardRef(function LocationModal({ props }, ref) {
+const LocationModal = forwardRef(function LocationModal({ onSave }, ref) {
   const [newMap, setNewMap] = useState();
   const [newMarker, setNewMarker] = useState();
   const [newAddress, setNewAddress] = useState();
@@ -192,7 +192,9 @@ const LocationModal = forwardRef(function LocationModal({ props }, ref) {
     updateMarkers(newMap, newCircle, markerList);
   }
 
-  function handleSubmitOnClick() {}
+  function handleSubmitOnClick() {
+    onSave(newAddress);
+  }
 
   useImperativeHandle(ref, () => {
     return {

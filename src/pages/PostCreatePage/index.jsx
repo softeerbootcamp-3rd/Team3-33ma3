@@ -14,7 +14,9 @@ import {
   REPAIR_SERVICE_OPTIONS,
   TUNEUP_SERVICE_OPTIONS,
 } from "../../constants/options";
+
 import { BASE_URL } from "../../constants/url";
+import LocationModal from "../../components/LocationModal";
 
 const Form = styled.form`
   width: 100%;
@@ -43,8 +45,11 @@ function PostCreatePage() {
   const repairService = useRef([]);
   const tuneUpService = useRef([]);
   const imageFiles = useRef([]);
+  const modal = useRef();
+
   const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [address, setAddress] = useState("");
 
   // Form 제출 버튼 클릭 시 실행
   function onSubmit(e) {
@@ -65,7 +70,7 @@ function PostCreatePage() {
       tuneUpService: tuneUpService.current.join(","),
       centers: [1, 2, 3],
       memberId: 1,
-      location: "서울시 강남구",
+      location: address,
     };
 
     console.log(newPost);
@@ -132,54 +137,66 @@ function PostCreatePage() {
       state.current = [...state.current, value];
     }
   }
+  function handleModal() {
+    modal.current.open();
+  }
+
+  function handleSaveAddress(address) {
+    setAddress(address);
+  }
 
   return (
-    <Page title={"게시글 작성"}>
-      <Form onSubmit={onSubmit}>
-        <PostRegister>
-          <ImageUpload imageFiles={imageFiles} />
-          <OptionType title={"차량 정보"}>
-            <Grid>
-              <OptionItem title={"모델"}>
-                <InputText size={"small"} name={"modelName"} />
-                {formErrors.modelName && <span>{formErrors.modelName}</span>}
-              </OptionItem>
-              <OptionItem title={"차종"}>
-                <SelectCategory name={"carType"} />
-              </OptionItem>
-              <OptionItem title={"마감 기한"}>
-                <InputRange name={"deadline"} />
-              </OptionItem>
-              <OptionItem title={"지역"}>
-                <button type="button">지역과 반경을 선택해주세요</button>
-              </OptionItem>
-              <OptionItem title={"수리 서비스"}>
-                <ServiceList
-                  optionList={REPAIR_SERVICE_OPTIONS}
-                  serviceList={repairService}
-                  onClick={toggle}
-                />
-                {formErrors.service && <span>{formErrors.service}</span>}
-              </OptionItem>
-              <OptionItem title={"정비 서비스"}>
-                <ServiceList
-                  optionList={TUNEUP_SERVICE_OPTIONS}
-                  serviceList={tuneUpService}
-                  onClick={toggle}
-                />
-                {formErrors.service && <span>{formErrors.service}</span>}
-              </OptionItem>
-            </Grid>
-          </OptionType>
-          <OptionType title={"세부 정보"}>
-            <TextArea maxLength={"500"} name={"contents"} />
-          </OptionType>
-        </PostRegister>
-        <SubmitButton type="submit" disabled={loading}>
-          저장하기
-        </SubmitButton>
-      </Form>
-    </Page>
+    <>
+      <LocationModal ref={modal} onSave={handleSaveAddress} />
+      <Page title={"게시글 작성"}>
+        <Form onSubmit={onSubmit}>
+          <PostRegister>
+            <ImageUpload imageFiles={imageFiles} />
+            <OptionType title={"차량 정보"}>
+              <Grid>
+                <OptionItem title={"모델"}>
+                  <InputText size={"small"} name={"modelName"} />
+                  {formErrors.modelName && <span>{formErrors.modelName}</span>}
+                </OptionItem>
+                <OptionItem title={"차종"}>
+                  <SelectCategory name={"carType"} />
+                </OptionItem>
+                <OptionItem title={"마감 기한"}>
+                  <InputRange name={"deadline"} />
+                </OptionItem>
+                <OptionItem title={"지역"}>
+                  <button type="button" onClick={handleModal}>
+                    {address ? address : "지역과 반경을 선택해주세요."}
+                  </button>
+                </OptionItem>
+                <OptionItem title={"수리 서비스"}>
+                  <ServiceList
+                    optionList={REPAIR_SERVICE_OPTIONS}
+                    serviceList={repairService}
+                    onClick={toggle}
+                  />
+                  {formErrors.service && <span>{formErrors.service}</span>}
+                </OptionItem>
+                <OptionItem title={"정비 서비스"}>
+                  <ServiceList
+                    optionList={TUNEUP_SERVICE_OPTIONS}
+                    serviceList={tuneUpService}
+                    onClick={toggle}
+                  />
+                  {formErrors.service && <span>{formErrors.service}</span>}
+                </OptionItem>
+              </Grid>
+            </OptionType>
+            <OptionType title={"세부 정보"}>
+              <TextArea maxLength={"500"} name={"contents"} />
+            </OptionType>
+          </PostRegister>
+          <SubmitButton type="submit" disabled={loading}>
+            저장하기
+          </SubmitButton>
+        </Form>
+      </Page>
+    </>
   );
 }
 
