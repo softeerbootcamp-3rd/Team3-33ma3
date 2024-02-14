@@ -166,6 +166,7 @@ const LocationModal = forwardRef(function LocationModal(
   const [markerList, setMarkerList] = useState([]);
 
   const dialog = useRef();
+  const inputAddress = useRef();
 
   function handleCloseModal() {
     dialog.current.close();
@@ -197,10 +198,12 @@ const LocationModal = forwardRef(function LocationModal(
   }
 
   function handleSubmitOnClick() {
+    const userInputAddress = inputAddress.current.value;
     const centerList = markerList.filter((data) => data.marker.getMap());
-    onSave(newAddress);
+    onSave(userInputAddress);
     onSaveList(centerList);
     onSaveRadius(newCircle.getRadius());
+    setNewAddress(userInputAddress);
   }
 
   useImperativeHandle(ref, () => {
@@ -272,6 +275,7 @@ const LocationModal = forwardRef(function LocationModal(
             setCircle={setNewCircle}
           />
           <InputText
+            ref={inputAddress}
             key={generateKeyBasedOnCurrentTime()}
             defaultValue={newAddress}
             size={"small"}
