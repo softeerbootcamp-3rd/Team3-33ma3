@@ -16,6 +16,9 @@ public class OfferDetailDto implements Comparable<OfferDetailDto> {
     @Schema(description = "견적 아이디", example = "1")
     private Long offerId;
 
+    @Schema(description = "견적을 작성한 센터의 멤버 아이디", example = "1")
+    private Long memberId;
+
     @Schema(description = "센터 이름", example = "현대자동차 강남점")
     private String centerName;
 
@@ -32,6 +35,7 @@ public class OfferDetailDto implements Comparable<OfferDetailDto> {
     public static OfferDetailDto fromEntity(Offer offer) {
         return OfferDetailDto.builder()
                 .offerId(offer.getOfferId())
+                .memberId(offer.getCenter().getMember().getMemberId())
                 .centerName(offer.getCenter().getCenterName())
                 .price(offer.getPrice())
                 .contents(offer.getContents())
