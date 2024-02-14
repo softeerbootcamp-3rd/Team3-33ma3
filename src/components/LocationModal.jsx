@@ -156,7 +156,7 @@ function hideMarker(map, marker) {
 
 // Modal 최상위 컴포넌트
 const LocationModal = forwardRef(function LocationModal(
-  { onSave, onSaveList },
+  { onSave, onSaveList, onSaveRadius },
   ref
 ) {
   const [newMap, setNewMap] = useState();
@@ -199,6 +199,7 @@ const LocationModal = forwardRef(function LocationModal(
     const centerList = markerList.filter((data) => data.marker.getMap());
     onSave(newAddress);
     onSaveList(centerList);
+    onSaveRadius(newCircle.getRadius());
   }
 
   useImperativeHandle(ref, () => {

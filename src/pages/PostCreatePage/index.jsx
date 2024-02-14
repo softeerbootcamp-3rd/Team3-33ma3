@@ -46,6 +46,8 @@ const Button = styled.button`
   align-items: start;
   font-size: ${(props) => props.theme.fontSize.regular};
   font-weight: 500;
+  flex-direction: column;
+  gap: 10px;
 `;
 
 function PostCreatePage() {
@@ -58,6 +60,7 @@ function PostCreatePage() {
   const [loading, setLoading] = useState(false);
   const [address, setAddress] = useState("");
   const [centerList, setCenterList] = useState([]);
+  const [radius, setRadius] = useState(0);
 
   // Form 제출 버튼 클릭 시 실행
   function onSubmit(e) {
@@ -134,6 +137,21 @@ function PostCreatePage() {
       errors.modelName = "모델명을 입력해주세요.";
     }
 
+    // 지역을 설정하지 않았을 경우 경우
+    if (post.location.length < 1) {
+      errors.location = "현재 위치를 설정해주세요.";
+    }
+
+    // 반경을 설정하지 않았을 경우 경우
+    if (radius <= 0) {
+      errors.radius = "반경을 1이상 10 이하로 설정해주세요.";
+    }
+
+    // 반경을 설정하지 않았을 경우 경우
+    if (errors.location && errors.radius) {
+      errors.locationRadius = "위치와 반경을 설정해주세요.";
+    }
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   }
@@ -157,12 +175,17 @@ function PostCreatePage() {
     setCenterList(centerList);
   }
 
+  function handleSaveRadius(radius) {
+    setRadius(radius);
+  }
+
   return (
     <>
       <LocationModal
         ref={modal}
         onSave={handleSaveAddress}
         onSaveList={handleSaveCenterList}
+        onSaveRadius={handleSaveRadius}
       />
       <Page title={"게시글 작성"}>
         <Form onSubmit={onSubmit}>
@@ -182,8 +205,18 @@ function PostCreatePage() {
                 </OptionItem>
                 <OptionItem title={"지역"}>
                   <Button type="button" onClick={handleModal}>
-                    {address ? address : "지역과 반경을 선택해주세요."}
+                    <p>{address ? address : "지역과 반경을 선택해주세요."}</p>
+                    <p>{radius !== 0 && `반경 ${radius / 1000}km 이내`}</p>
                   </Button>
+                  {formErrors.locationRadius && (
+                    <span>{formErrors.locationRadius}</span>
+                  )}
+                  {!formErrors.locationRadius && formErrors.location && (
+                    <span>{formErrors.location}</span>
+                  )}
+                  {!formErrors.locationRadius && formErrors.radius && (
+                    <span>{formErrors.radius}</span>
+                  )}
                 </OptionItem>
                 <OptionItem title={"수리 서비스"}>
                   <ServiceList
