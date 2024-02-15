@@ -11,6 +11,7 @@ import styled from "styled-components";
 import SubmitButton from "./button/SubmitButton";
 import ClientImage from "../assets/client_mode.svg";
 import CenterImage from "../assets/center_mode.svg";
+import { generateKeyBasedOnCurrentTime } from "./LocationModal";
 
 const AuthInputContainer = styled.div`
   display: flex;
@@ -90,11 +91,16 @@ function searchAddressToCoordinate(address) {
 }
 
 function AuthForm() {
+  const [autoCompleteKey, setAutoCompleteKey] = useState(
+    generateKeyBasedOnCurrentTime()
+  );
   const [centerInformation, setCenterInformation] = useState();
+  const [autoCompleteAddress, setAutoCompleteAddress] = useState("");
+  const [checkAddress, setCheckAddress] = useState(false);
+  const [searchParams] = useSearchParams();
   const data = useActionData();
   const navigation = useNavigation();
 
-  const [searchParams] = useSearchParams();
   const isLogin = searchParams.get("mode") === "login";
   const userType = searchParams.get("type");
   const isSubmitting = navigation.state === "submitting";
@@ -103,7 +109,8 @@ function AuthForm() {
     searchAddressToCoordinate(e.target.value)
       .then((res) => {
         if (res !== null) {
-          setCenterInformation();
+          setCenterInformation(res.roadAddress);
+          setCheckAddress(true);
         }
         console.log(res); // 성공적으로 주소 정보를 받아왔을 때의 처리
       })
@@ -112,6 +119,11 @@ function AuthForm() {
       });
   }
 
+  function handleAutoComplete(e) {
+    setAutoCompleteAddress(e.target.innerHTML);
+    setCheckAddress(false);
+    setAutoCompleteKey(generateKeyBasedOnCurrentTime());
+  }
   return (
     <>
       <Form method="post">
@@ -178,8 +190,13 @@ function AuthForm() {
                     onChange={handleInputCenterName}
                     placeholder="위치"
                     size="small"
+                    key={autoCompleteKey}
+                    defaultValue={autoCompleteAddress}
                     required
                   />
+                  {checkAddress && (
+                    <div onClick={handleAutoComplete}>{centerInformation}</div>
+                  )}
                 </>
               )}
             </AuthInputContainer>
