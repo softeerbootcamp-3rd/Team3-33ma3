@@ -33,11 +33,19 @@ function SideBar() {
   return (
     <SideBarContainer title={"검색 조건"}>
       <ToggleButton title={"수리 완료 여부"} />
-      <DropDownButton title={"지역"}>{districts}</DropDownButton>
-      <DropDownButton title={"정비 서비스"}>
+      <DropDownButton title={"지역"} number={DISTRICTS.length}>
+        {districts}
+      </DropDownButton>
+      <DropDownButton
+        title={"정비 서비스"}
+        number={REPAIR_SERVICE_OPTIONS.length}
+      >
         <ServiceList>{repairServices}</ServiceList>
       </DropDownButton>
-      <DropDownButton title={"수리 서비스"}>
+      <DropDownButton
+        title={"수리 서비스"}
+        number={TUNEUP_SERVICE_OPTIONS.length}
+      >
         <ServiceList>{tuneUpServices}</ServiceList>
       </DropDownButton>
     </SideBarContainer>
