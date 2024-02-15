@@ -11,6 +11,7 @@ import {
 } from "../components/LocationModal";
 import { useEffect, useRef } from "react";
 import styled from "styled-components";
+import { BASE_URL } from "../constants/url";
 
 const AuthDialog = styled(Dialog)`
   width: 400px;
@@ -62,8 +63,6 @@ function AuthenticationPage() {
   );
 }
 
-const tURL = "http://192.168.1.141:8080/";
-
 export default AuthenticationPage;
 
 export async function action({ request }) {
@@ -82,14 +81,14 @@ export async function action({ request }) {
   };
 
   if (type === "center") {
-    authData[centerName] = data.get("centerName");
-    authData[latitude] = data.get("latitude");
-    authData[longitude] = data.get("longitude");
+    authData.centerName = data.get("centerName");
+    authData.latitude = data.get("latitude");
+    authData.longitude = data.get("longitude");
   }
 
   const urlParameter = mode === "login" ? mode : `${type}/${mode}`;
 
-  const response = await fetch(tURL + urlParameter, {
+  const response = await fetch(BASE_URL + urlParameter, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -106,6 +105,7 @@ export async function action({ request }) {
   }
 
   const resData = await response.json();
+  console.log(resData);
   if (mode == "login") {
     const accessToken = resData.data.accessToken;
     const refreshToken = resData.data.refreshToken;

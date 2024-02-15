@@ -97,6 +97,8 @@ function AuthForm() {
   const [centerInformation, setCenterInformation] = useState();
   const [autoCompleteAddress, setAutoCompleteAddress] = useState("");
   const [checkAddress, setCheckAddress] = useState(false);
+  const [latitude, setLatitude] = useState(0);
+  const [longitude, setLongitude] = useState(0);
   const [searchParams] = useSearchParams();
   const data = useActionData();
   const navigation = useNavigation();
@@ -111,6 +113,8 @@ function AuthForm() {
         if (res !== null) {
           setCenterInformation(res.roadAddress);
           setCheckAddress(true);
+          setLatitude(res.y);
+          setLongitude(res.x);
         }
         console.log(res); // 성공적으로 주소 정보를 받아왔을 때의 처리
       })
@@ -124,6 +128,7 @@ function AuthForm() {
     setCheckAddress(false);
     setAutoCompleteKey(generateKeyBasedOnCurrentTime());
   }
+
   return (
     <>
       <Form method="post">
@@ -174,6 +179,8 @@ function AuthForm() {
 
               {userType === "center" && (
                 <>
+                  <input type="hidden" name="latitude" value={latitude} />
+                  <input type="hidden" name="longitude" value={longitude} />
                   <InputText
                     id="centerName"
                     type="text"
@@ -182,7 +189,6 @@ function AuthForm() {
                     size="small"
                     required
                   />
-
                   <InputText
                     id="address"
                     type="text"
@@ -204,7 +210,6 @@ function AuthForm() {
               <AuthLink to={`?mode=${isLogin ? "signUp" : "login"}`}>
                 {isLogin ? "회원가입" : "로그인"}
               </AuthLink>
-
               <div>
                 <SubmitButton disabled={isSubmitting}>
                   {isSubmitting ? "전송중..." : isLogin ? "로그인" : "가입"}
