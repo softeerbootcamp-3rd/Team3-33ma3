@@ -32,6 +32,10 @@ const GlobalStyle = createGlobalStyle`
     dialog {
         border: 0px;
     }
+
+    a {
+        text-decoration: none; 
+    }
 `;
 
 export default GlobalStyle;
