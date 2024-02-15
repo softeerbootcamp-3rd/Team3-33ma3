@@ -4,11 +4,11 @@ import styled from "styled-components";
 const Button = styled.button`
   width: 100%;
   color: ${(props) =>
-    props.isActive
+    props.$isActive
       ? props.theme.colors.text_strong
       : props.theme.colors.text_weak};
   font-size: ${(props) => props.theme.fontSize.regular};
-  font-weight: ${(props) => (props.isActive ? 700 : 500)};
+  font-weight: ${(props) => (props.i$sActive ? 700 : 500)};
   padding: 10px 10px 10px 20px;
   display: flex;
   align-items: center;
@@ -24,7 +24,7 @@ function DropDownItemButton({ content, onClick }) {
   }
 
   return (
-    <Button onClick={toggle} isActive={isActive}>
+    <Button onClick={toggle} $isActive={isActive}>
       {content}
     </Button>
   );

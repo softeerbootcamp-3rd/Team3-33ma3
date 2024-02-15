@@ -11,7 +11,8 @@ const CarCardContainer = styled.button`
   display: flex;
   flex-direction: column;
   padding: 30px;
-  width: 100%;
+  max-width: 450px;
+  min-width: 350px;
   background-color: ${({ theme }) => theme.colors.surface_white_weak};
   border-radius: ${({ theme }) => theme.radiuses.radius_m};
   gap: 23px;
@@ -92,6 +93,7 @@ const Services = styled.div`
   width: 0;
   flex: 1;
   overflow-x: auto;
+  white-space: nowrap;
   -ms-overflow-style: none;
   scrollbar-width: none;
 
@@ -106,15 +108,10 @@ const ButtonContainer = styled.div`
 
 function CarCardItem({ cardInfo }) {
   const images = [Car, Car];
-  console.log(cardInfo.dDay);
 
-  const repairServices = cardInfo.repairService.map((service) => (
-    <ChipButton type={service} block />
-  ));
-
-  const tuneUpServices = cardInfo.tuneUpService.map((service) => (
-    <ChipButton type={service} block />
-  ));
+  const serviceList = [...cardInfo.repairList, ...cardInfo.tuneUpList].map(
+    (service, index) => <ChipButton type={service} block key={index} />
+  );
 
   return (
     <CarCardContainer>
@@ -124,10 +121,10 @@ function CarCardItem({ cardInfo }) {
           <CreateTime>{cardInfo.createTime}</CreateTime>
         </HeaderContext>
         <RemainTime>
-          {cardInfo.dDay === -1 ? (
+          {cardInfo.dday === -1 ? (
             <img src={DeadLineComplete} />
-          ) : cardInfo.dDay > 0 ? (
-            <p>D-{cardInfo.dDay}</p>
+          ) : cardInfo.dday > 0 ? (
+            <p>D-{cardInfo.dday}</p>
           ) : (
             <Timer remainTime={cardInfo.remainTime} />
           )}
@@ -138,8 +135,7 @@ function CarCardItem({ cardInfo }) {
       </CarouselContainer>
       <CardFooter>
         <Services>
-          <ServiceList>{repairServices}</ServiceList>
-          <ServiceList>{tuneUpServices}</ServiceList>
+          <ServiceList>{serviceList}</ServiceList>
         </Services>
         <ButtonContainer>
           <CommentButton>

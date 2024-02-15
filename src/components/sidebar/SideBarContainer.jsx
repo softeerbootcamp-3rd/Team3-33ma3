@@ -4,6 +4,7 @@ import { SIDE_BAR_WIDTH } from "../../constants/layouts";
 
 const SideBar = styled.div`
   width: ${SIDE_BAR_WIDTH};
+  min-width: ${SIDE_BAR_WIDTH};
   display: flex;
   flex-direction: column;
 `;

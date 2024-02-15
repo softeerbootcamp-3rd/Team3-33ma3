@@ -28,39 +28,10 @@ const TextContainer = styled.div`
 `;
 
 const ChildContainer = styled.div`
-  max-height: 0px;
+  max-height: ${({ $isActive }) => ($isActive ? "4000px" : "0px")};
   width: 100%;
   overflow: hidden;
   transition: max-height 0.4s ease-in-out;
-
-  &.active {
-    max-height: 1000px;
-  }
-`;
-
-const ArcodainButtonChild = styled.div`
-  width: 100%;
-  animation: ${({ isActive }) =>
-      isActive ? "slide-in-dropdown" : "slide-out-dropdown"}
-    0.4s ease;
-
-  @keyframes slide-in-dropdown {
-    0% {
-      transform: translateY(-100%);
-    }
-    100% {
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes slide-out-dropdown {
-    0% {
-      transform: translateY(0);
-    }
-    100% {
-      transform: translateY(-100%);
-    }
-  }
 `;
 
 const imgSize = {
@@ -70,21 +41,10 @@ const imgSize = {
 
 function DropDownButton({ title, number, children }) {
   const [isActive, setIsActive] = useState(false);
-  const [visibilityAnimation, setVisibilityAnimation] = useState(false);
 
   function toggle() {
     setIsActive(!isActive);
   }
-
-  // useEffect(() => {
-  //   if (isActive) {
-  //     setVisibilityAnimation(true);
-  //   } else {
-  //     setTimeout(() => {
-  //       setVisibilityAnimation(false);
-  //     }, 400);
-  //   }
-  // }, [isActive]);
 
   return (
     <>
@@ -95,9 +55,7 @@ function DropDownButton({ title, number, children }) {
         </TextContainer>
         <img src={isActive ? SlideIn : SlideOut} style={imgSize} />
       </Button>
-      <ChildContainer className={isActive ? "active" : ""}>
-        {children}
-      </ChildContainer>
+      <ChildContainer $isActive={isActive}>{children}</ChildContainer>
     </>
   );
 }
