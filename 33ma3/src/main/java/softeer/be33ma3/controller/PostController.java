@@ -40,7 +40,7 @@ public class PostController {
                     content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "게시글 목록 조회", description = "게시글 목록 조회 메서드 입니다.")
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<?> showPosts(@Schema(hidden = true) @CurrentUser Member member) {
         List<PostThumbnailDto> postThumbnailDtos = postService.showPosts(member);
         return ResponseEntity.ok().body(DataResponse.success("게시글 목록 조회 성공", postThumbnailDtos));
