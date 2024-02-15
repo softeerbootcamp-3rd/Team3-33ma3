@@ -1,14 +1,9 @@
 import React from "react";
-import Header from "./components/header/header";
-import PostCreatePage from "./pages/PostCreatePage";
+import router from "./utils/router";
+import { RouterProvider } from "react-router-dom";
 
 function App() {
-  return (
-    <>
-      <Header />
-      <PostCreatePage />
-    </>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

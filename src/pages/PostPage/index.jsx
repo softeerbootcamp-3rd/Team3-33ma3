@@ -29,13 +29,13 @@ const FullColumn = styled.div`
   grid-column: 1/3;
 `;
 
-function PostPage({ postId }) {
+function PostPage() {
   const [postData, setPostData] = useState();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(BASE_URL + "post/one/" + postId)
+    fetch(BASE_URL + "post/one/1")
       .then((res) => res.json())
       .then((json) => {
         console.log(json.data);

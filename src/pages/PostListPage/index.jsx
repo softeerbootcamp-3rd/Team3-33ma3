@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Page from "../../components/post/Page";
 import SideBar from "./components/SideBar";
 import CarCardItem from "../../components/CarCardItem";
+import { BASE_URL } from "../../constants/url";
 
 const Content = styled.div`
   display: flex;
@@ -31,13 +32,13 @@ const CardList = styled.div`
   grid-gap: 25px;
 `;
 
-function PostPageList({}) {
+function PostListPage() {
   const [thumnailList, setThumnailList] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setIsLoading(true);
-    fetch("http://192.168.1.192:8080/post")
+    fetch(`${BASE_URL}post`)
       .then((res) => res.json())
       .then((json) => {
         setThumnailList(json.data);
@@ -74,4 +75,4 @@ function PostPageList({}) {
   );
 }
 
-export default PostPageList;
+export default PostListPage;
