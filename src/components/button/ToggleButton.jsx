@@ -69,7 +69,7 @@ function ToggleButton({ title, onClick }) {
   const [isActive, setIsActive] = useState();
 
   function toggle() {
-    setIsActive(!isActive);
+    setIsActive(() => !isActive);
     onClick();
   }
 
