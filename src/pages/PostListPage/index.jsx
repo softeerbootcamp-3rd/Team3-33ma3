@@ -4,6 +4,7 @@ import Page from "../../components/post/Page";
 import SideBar from "./components/SideBar";
 import CarCardItem from "../../components/CarCardItem";
 import { BASE_URL } from "../../constants/url";
+import { Link } from "react-router-dom";
 
 const Content = styled.div`
   display: flex;
@@ -50,8 +51,10 @@ function PostListPage() {
 
   const carList =
     !isLoading &&
-    thumnailList.map((item, index) => (
-      <CarCardItem cardInfo={item} key={index} />
+    thumnailList.map((item) => (
+      <Link to={`/post/info/?post_id=${item.postId}`} key={item.postId}>
+        <CarCardItem cardInfo={item} />
+      </Link>
     ));
 
   return (
