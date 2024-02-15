@@ -30,8 +30,6 @@ public class ChatService {
             throw new UnauthorizedException("작성자만 문의할 수 있습니다.");
         }
 
-        //이미 존재하는지 확인하고 내용 보내주기
-
         ChatRoom chatRoom = ChatRoom.createCenter(client, center);
         return chatRoomRepository.save(chatRoom).getChatRoomId();
     }
@@ -45,9 +43,8 @@ public class ChatService {
 
         if(webSocketRepository.findSessionByMemberId(receiver.getMemberId()) == null){  //채팅룸에 상대방이 존재하지 않을 경우
             chatMessage.setReadDoneFalse();   //안읽음 처리
-            Alert alert = Alert.createAlert(contents, chatRoom.getChatRoomId(), receiver);  //알림 테이블에 저장
+            Alert alert = Alert.createAlert(chatRoom.getChatRoomId(), receiver);  //알림 테이블에 저장
             alertRepository.save(alert);
-
             return;
         }
 
@@ -55,4 +52,3 @@ public class ChatService {
         webSocketHandler.sendData2Client(receiver.getMemberId(), chatMessageDto);
     }
 }
-
