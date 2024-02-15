@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 public class Alert extends BaseTimeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long AlertId;
+    private Long alertId;
 
     private String contents;
 
