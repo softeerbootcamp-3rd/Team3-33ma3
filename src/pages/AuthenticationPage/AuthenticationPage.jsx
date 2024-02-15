@@ -1,6 +1,5 @@
 import AuthForm from "../../components/AuthForm";
 import { redirect, useSearchParams } from "react-router-dom";
-import Header from "../../components/header/header";
 import { createPortal } from "react-dom";
 import {
   CloseButton,
@@ -9,10 +8,9 @@ import {
   TopContainer,
   Wrapper,
 } from "../../components/LocationModal";
-import { useEffect, useRef } from "react";
+import { forwardRef, useImperativeHandle, useRef } from "react";
 import styled from "styled-components";
 import { BASE_URL } from "../../constants/url";
-import { forwardRef, useImperativeHandle } from "react";
 
 const AuthDialog = styled(Dialog)`
   width: 400px;
@@ -27,7 +25,7 @@ const AuthWrapper = styled(Wrapper)`
   width: 400px;
 `;
 
-const AuthenticationModal = forwardRef(function AuthenticationPage(
+const AuthenticationModal = forwardRef(function AuthenticationModal(
   { props },
   ref
 ) {
@@ -119,6 +117,5 @@ export async function action({ request }) {
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
   }
-
   return redirect("/");
 }
