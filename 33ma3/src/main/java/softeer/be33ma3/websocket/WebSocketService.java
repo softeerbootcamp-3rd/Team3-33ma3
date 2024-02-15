@@ -8,6 +8,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +25,6 @@ public class WebSocketService {
             ExitMember exitMember = objectMapper.readValue(payload, ExitMember.class);
             closePostConnection(exitMember.getRoomId(), exitMember.getMemberId());
         }
-
 
         log.info("메세지 수신 성공: {}", payload); // 수신한 메세지 log
         TextMessage textMessage = new TextMessage("메세지 수신 성공");
@@ -57,5 +57,10 @@ public class WebSocketService {
 
     public void deletePostRoom(Long postId) {
         webSocketRepository.deletePostRoom(postId);
+    }
+
+    // 해당 게시글에 접속해있는 유저 목록 반환
+    public Set<Long> findAllMemberInPost(Long postId) {
+        return webSocketRepository.findAllMemberInPost(postId);
     }
 }

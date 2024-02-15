@@ -31,6 +31,35 @@ public class PostService {
     private final ImageRepository imageRepository;
     private final ImageService imageService;
 
+    // 게시글 목록 조회
+    public List<PostThumbnailDto> showPosts(Member member) {
+        // 1. 로그인하지 않았거나 서비스 센터가 아닌 유저일 경우
+        if(member == null || member.getMemberType() == MemberService.CLIENT_TYPE) {
+            List<Post> posts = postRepository.findAll();
+            return fromPostList(posts);
+        }
+        // 2. 서비스 센터일 경우 -> 센터에 해당하는 게시글만 가져오기
+        Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 센터"));
+        List<Post> posts = postPerCenterRepository.findPostsByCenter_CenterId(center.getCenterId());
+        return fromPostList(posts);
+    }
+
+    // List<Post> -> List<PostThumbnailDto>로 변환
+    private List<PostThumbnailDto> fromPostList(List<Post> posts) {
+        List<PostThumbnailDto> postThumbnailDtos = new ArrayList<>(posts.stream()
+                .map(post -> {
+                    int offerCount = countOfferNum(post.getPostId());
+                    return PostThumbnailDto.fromEntity(post, offerCount);
+                }).toList());
+        Collections.sort(postThumbnailDtos);
+        return postThumbnailDtos;
+    }
+
+    // 해당 게시글에 달린 댓글 개수 반환
+    private int countOfferNum(Long postId) {
+        return offerRepository.findByPost_PostId(postId).size();
+    }
+
     @Transactional
     public Long createPost(Member currentMember, PostCreateDto postCreateDto, List<MultipartFile> multipartFiles) {
         //회원이랑 지역 찾기
@@ -91,7 +120,6 @@ public class PostService {
         // 해당 게시글의 견적 모두 가져오기
         List<Offer> offerList = offerRepository.findByPost_PostId(postId);
         double avgPrice = OfferService.calculateAvgPrice(offerList);
-        avgPrice = Math.round(avgPrice * 10) / 10.0;      // 소수점 첫째 자리까지 반올림
         PostWithAvgPriceDto postWithAvgPriceDto = new PostWithAvgPriceDto(postDetailDto, avgPrice);
         // 견적을 작성한 이력이 있는 서비스 센터의 접근일 경우 작성한 견적 가져오기
         OfferDetailDto offerDetailDto = getCenterOffer(postId, member);

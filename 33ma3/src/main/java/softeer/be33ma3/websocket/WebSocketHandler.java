@@ -9,6 +9,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -63,5 +64,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     public void deletePostRoom(Long postId) {
         webSocketService.deletePostRoom(postId);
+    }
+    public Set<Long> findAllMemberInPost(Long postId) {
+        return webSocketService.findAllMemberInPost(postId);
     }
 }
