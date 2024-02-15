@@ -6,7 +6,7 @@ import Comment from "../assets/comment.svg";
 import Timer from "./Timer";
 import DeadLineComplete from "../assets/deadline_completed.svg";
 
-const CarCardContainer = styled.button`
+const CarCardContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 30px;
@@ -49,7 +49,7 @@ const CreateTime = styled.p`
   color: ${(props) => props.theme.colors.text_strong};
 `;
 
-const RemainTime = styled.p`
+const RemainTime = styled.div`
   font-size: ${(props) => props.theme.fontSize.large};
   font-weight: 700;
   color: ${(props) => props.theme.colors.text_red};
@@ -62,7 +62,7 @@ const ServiceList = styled.div`
   gap: 5px;
 `;
 
-const CommentButton = styled.button`
+const CommentChip = styled.div`
   color: ${(props) => props.theme.colors.text_white_default};
   font-size: ${(props) => props.theme.fontSize.regular};
   font-weight: 500;
@@ -135,10 +135,10 @@ function CarCardItem({ cardInfo }) {
           <ServiceList>{serviceList}</ServiceList>
         </Services>
         <ButtonContainer>
-          <CommentButton>
+          <CommentChip>
             <img src={Comment} />
             <p>{cardInfo.offerCount}</p>
-          </CommentButton>
+          </CommentChip>
         </ButtonContainer>
       </CardFooter>
     </CarCardContainer>
