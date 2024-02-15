@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import Alarm from "../../assets/alarm.png";
+import { Link } from "react-router-dom";
 
 const NavList = styled.div`
   display: flex;
@@ -8,7 +8,7 @@ const NavList = styled.div`
   align-items: center;
 `;
 
-const Link = styled.a`
+const NavTitle = styled.p`
   justify-content: center;
   align-items: center;
   color: ${(props) => props.theme.colors.text_white_default};
@@ -17,18 +17,18 @@ const Link = styled.a`
 `;
 
 function NavItem() {
-  const navItemList = ["견적 문의", "센터 후기", "로그인"];
+  const navItemList = [
+    { title: "견적 문의", link: "/post/create" },
+    { title: "센터 후기", link: "/center-review/info" },
+  ];
 
   const navItems = navItemList.map((navItem, index) => (
-    <Link key={index}>{navItem}</Link>
+    <Link to={navItem.link} key={index}>
+      <NavTitle>{navItem.title}</NavTitle>
+    </Link>
   ));
 
-  return (
-    <NavList>
-      {navItems}
-      <img src={Alarm} style={{ width: "30px", height: "30px" }} />
-    </NavList>
-  );
+  return <NavList>{navItems}</NavList>;
 }
 
 export default NavItem;

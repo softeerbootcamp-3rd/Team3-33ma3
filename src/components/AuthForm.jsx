@@ -129,6 +129,8 @@ function AuthForm() {
     setAutoCompleteKey(generateKeyBasedOnCurrentTime());
   }
 
+  function handleChangeMode() {}
+
   return (
     <>
       <Form method="post">
