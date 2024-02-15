@@ -3,13 +3,12 @@ package softeer.be33ma3.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import softeer.be33ma3.domain.ChatMessage;
-import softeer.be33ma3.domain.ChatRoom;
-import softeer.be33ma3.domain.Member;
-import softeer.be33ma3.domain.Post;
+import softeer.be33ma3.domain.*;
+import softeer.be33ma3.dto.response.ChatMessageDto;
 import softeer.be33ma3.exception.UnauthorizedException;
 import softeer.be33ma3.repository.*;
 import softeer.be33ma3.websocket.WebSocketHandler;
+import softeer.be33ma3.websocket.WebSocketRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +18,8 @@ public class ChatService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final WebSocketHandler webSocketHandler;
+    private final WebSocketRepository webSocketRepository;
+    private final AlertRepository alertRepository;
 
     @Transactional
     public Long createRoom(Member client, Long centerId, Long postId) {
@@ -29,23 +30,29 @@ public class ChatService {
             throw new UnauthorizedException("작성자만 문의할 수 있습니다.");
         }
 
+        //이미 존재하는지 확인하고 내용 보내주기
+
         ChatRoom chatRoom = ChatRoom.createCenter(client, center);
         return chatRoomRepository.save(chatRoom).getChatRoomId();
     }
 
     @Transactional
-    public void createMessage(Member sender, Long roomId, String contents) {
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅 룸"));
-        ChatMessage chatMessage = ChatMessage.createChatMessage(sender, chatRoom, contents);
-
-        chatMessageRepository.save(chatMessage);
-    }
-
-    public void sendMessage(Long roomId, Long receiverId, String contents) {
+    public void sendMessage(Member sender, Long roomId, Long receiverId, String contents) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅 룸"));
         Member receiver = memberRepository.findById(receiverId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
+        ChatMessage chatMessage = ChatMessage.createChatMessage(sender, chatRoom, contents);
+        chatMessage = chatMessageRepository.save(chatMessage);
 
-        webSocketHandler.sendData2Client(receiver.getMemberId(), contents);
+        if(webSocketRepository.findSessionByMemberId(receiver.getMemberId()) == null){  //채팅룸에 상대방이 존재하지 않을 경우
+            chatMessage.setReadDoneFalse();   //안읽음 처리
+            Alert alert = Alert.createAlert(contents, chatRoom.getChatRoomId(), receiver);  //알림 테이블에 저장
+            alertRepository.save(alert);
+
+            return;
+        }
+
+        ChatMessageDto chatMessageDto = ChatMessageDto.createChatMessage(chatMessage);
+        webSocketHandler.sendData2Client(receiver.getMemberId(), chatMessageDto);
     }
 }
 

@@ -30,8 +30,7 @@ public class ChatController {
     @PostMapping("/chat/{room_id}/{receiver_id}")
     public ResponseEntity<?> chat(@Schema(hidden = true) @CurrentUser Member sender, @PathVariable("room_id") Long roomId,
                                   @PathVariable("receiver_id") Long receiverId, @RequestBody @Valid ChatMessageDto chatMessageDto){
-        chatService.createMessage(sender, roomId, chatMessageDto.getMessage());
-        chatService.sendMessage(roomId, receiverId, chatMessageDto.getMessage());
+        chatService.sendMessage(sender, roomId, receiverId, chatMessageDto.getMessage());
 
         return ResponseEntity.ok().body(SingleResponse.success("전송 성공"));
     }

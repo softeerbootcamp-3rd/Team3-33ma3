@@ -20,12 +20,19 @@ public class ChatMessage extends BaseTimeEntity{
 
     private String contents;
 
+    private boolean readDone;
+
     public static ChatMessage createChatMessage(Member member, ChatRoom chatRoom, String contents) {
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.sender = member;
         chatMessage.chatRoom = chatRoom;
         chatMessage.contents = contents;
+        chatMessage.readDone = true;
 
         return chatMessage;
+    }
+
+    public void setReadDoneFalse() {
+        this.readDone = false;
     }
 }

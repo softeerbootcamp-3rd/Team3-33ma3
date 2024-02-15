@@ -9,7 +9,6 @@ import softeer.be33ma3.domain.Post;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 
@@ -96,4 +95,3 @@ public class PostDetailDto {
         return LocalTime.of(hours, minutes, seconds);
     }
 }
-
