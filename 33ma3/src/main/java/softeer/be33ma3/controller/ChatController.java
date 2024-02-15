@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import softeer.be33ma3.domain.Member;
-import softeer.be33ma3.dto.request.ChatMessageDto;
+import softeer.be33ma3.dto.request.ChatMessageRequestDto;
 import softeer.be33ma3.jwt.CurrentUser;
 import softeer.be33ma3.response.DataResponse;
 import softeer.be33ma3.response.SingleResponse;
@@ -26,8 +26,8 @@ public class ChatController {
 
     @PostMapping("/chat/{room_id}/{receiver_id}")
     public ResponseEntity<?> chat(@Schema(hidden = true) @CurrentUser Member sender, @PathVariable("room_id") Long roomId,
-                                  @PathVariable("receiver_id") Long receiverId, @RequestBody @Valid ChatMessageDto chatMessageDto){
-        chatService.sendMessage(sender, roomId, receiverId, chatMessageDto.getMessage());
+                                  @PathVariable("receiver_id") Long receiverId, @RequestBody @Valid ChatMessageRequestDto chatMessageRequestDto){
+        chatService.sendMessage(sender, roomId, receiverId, chatMessageRequestDto.getMessage());
 
         return ResponseEntity.ok().body(SingleResponse.success("전송 성공"));
     }

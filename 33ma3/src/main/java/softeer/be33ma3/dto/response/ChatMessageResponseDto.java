@@ -8,12 +8,12 @@ import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-public class ChatMessageDto{
+public class ChatMessageResponseDto {
     private String contents;
     private LocalDateTime createTime;
 
-    public static ChatMessageDto createChatMessage(ChatMessage chatMessage){
-        return new ChatMessageDto(chatMessage.getContents(), chatMessage.getCreateTime());
+    public static ChatMessageResponseDto createChatMessage(ChatMessage chatMessage){
+        return new ChatMessageResponseDto(chatMessage.getContents(), chatMessage.getCreateTime());
     }
 }
 

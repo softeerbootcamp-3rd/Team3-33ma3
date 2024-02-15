@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.domain.*;
-import softeer.be33ma3.dto.response.ChatMessageDto;
+import softeer.be33ma3.dto.response.ChatMessageResponseDto;
 import softeer.be33ma3.exception.UnauthorizedException;
 import softeer.be33ma3.repository.*;
 import softeer.be33ma3.websocket.WebSocketHandler;
@@ -48,7 +48,7 @@ public class ChatService {
             return;
         }
 
-        ChatMessageDto chatMessageDto = ChatMessageDto.createChatMessage(chatMessage);
-        webSocketHandler.sendData2Client(receiver.getMemberId(), chatMessageDto);
+        ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.createChatMessage(chatMessage);
+        webSocketHandler.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);
     }
 }
