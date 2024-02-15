@@ -39,7 +39,7 @@ function PostPage({ postId }) {
       .then((res) => res.json())
       .then((json) => {
         console.log(json.data);
-        setPostData(json.data[0]);
+        setPostData(json.data.postDetail);
         setIsLoading(false);
       });
   }, []);

@@ -5,7 +5,6 @@ function Timer({ remainTime }) {
   const hours = Math.floor(leftTime / 60 / 60);
   const minutes = Math.floor(leftTime / 60) % 60;
   const seconds = leftTime % 60;
-  console.log(leftTime);
 
   useEffect(() => {
     const timer = setInterval(() => {
