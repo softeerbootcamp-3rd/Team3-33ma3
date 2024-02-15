@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import Carousel from "./image/Carousel";
 import ChipButton from "./button/ChipButton";
-import Car from "../assets/person.svg";
 import Comment from "../assets/comment.svg";
 import Timer from "./Timer";
 import DeadLineComplete from "../assets/deadline_completed.svg";
@@ -107,8 +106,6 @@ const ButtonContainer = styled.div`
 `;
 
 function CarCardItem({ cardInfo }) {
-  const images = [Car, Car];
-
   const serviceList = [...cardInfo.repairList, ...cardInfo.tuneUpList].map(
     (service, index) => <ChipButton type={service} block key={index} />
   );
@@ -131,7 +128,7 @@ function CarCardItem({ cardInfo }) {
         </RemainTime>
       </CardHeader>
       <CarouselContainer>
-        <Carousel imgList={images} size={"medium"} />
+        <Carousel imgList={cardInfo.imageList} size={"medium"} />
       </CarouselContainer>
       <CardFooter>
         <Services>

@@ -14,6 +14,7 @@ const Content = styled.div`
 const CardListContainer = styled.div`
   display: flex;
   flex-direction: column;
+  flex: 1;
   gap: 15px;
 `;
 
