@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import Alarm from "../../assets/alarm.png";
 import { Link } from "react-router-dom";
 
 const NavList = styled.div`
@@ -9,7 +8,7 @@ const NavList = styled.div`
   align-items: center;
 `;
 
-const NavTitle = styled.a`
+const NavTitle = styled.p`
   justify-content: center;
   align-items: center;
   color: ${(props) => props.theme.colors.text_white_default};
@@ -29,12 +28,7 @@ function NavItem() {
     </Link>
   ));
 
-  return (
-    <NavList>
-      {navItems}
-      <img src={Alarm} style={{ width: "30px", height: "30px" }} />
-    </NavList>
-  );
+  return <NavList>{navItems}</NavList>;
 }
 
 export default NavItem;

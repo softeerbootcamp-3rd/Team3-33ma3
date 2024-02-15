@@ -1,6 +1,6 @@
-import AuthForm from "../components/AuthForm";
+import AuthForm from "../../components/AuthForm";
 import { redirect, useSearchParams } from "react-router-dom";
-import Header from "../components/header/header";
+import Header from "../../components/header/header";
 import { createPortal } from "react-dom";
 import {
   CloseButton,
@@ -8,10 +8,11 @@ import {
   Title,
   TopContainer,
   Wrapper,
-} from "../components/LocationModal";
+} from "../../components/LocationModal";
 import { useEffect, useRef } from "react";
 import styled from "styled-components";
-import { BASE_URL } from "../constants/url";
+import { BASE_URL } from "../../constants/url";
+import { forwardRef, useImperativeHandle } from "react";
 
 const AuthDialog = styled(Dialog)`
   width: 400px;
@@ -26,7 +27,10 @@ const AuthWrapper = styled(Wrapper)`
   width: 400px;
 `;
 
-function AuthenticationPage() {
+const AuthenticationModal = forwardRef(function AuthenticationPage(
+  { props },
+  ref
+) {
   const [searchParams] = useSearchParams();
 
   const isLogin = searchParams.get("mode") === "login";
@@ -38,15 +42,16 @@ function AuthenticationPage() {
     dialog.current.close();
   }
 
-  useEffect(() => {
-    if (isLogin || isSignUp) {
-      dialog.current.showModal();
-    }
-  }, []);
+  useImperativeHandle(ref, () => {
+    return {
+      open() {
+        dialog.current.showModal();
+      },
+    };
+  });
 
   return createPortal(
     <>
-      <Header />
       <AuthDialog ref={dialog} className={"auth-modal"}>
         <AuthWrapper>
           <TopContainer>
@@ -61,9 +66,9 @@ function AuthenticationPage() {
     </>,
     document.getElementById("auth-modal")
   );
-}
+});
 
-export default AuthenticationPage;
+export default AuthenticationModal;
 
 // AuthForm의 사용자 입력을 처리하고 서버에 데이터를 전송하는 함수
 export async function action({ request }) {
