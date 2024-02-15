@@ -43,8 +43,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
             }
             if(type.equals("chat")){
                 Long roomId = (Long) attributes.get("roomId");
-                Long receiverId = (Long) attributes.get("receiverId");
-                webSocketService.saveInChat(roomId, receiverId, session);
+                Long senderId = (Long) attributes.get("memberId");
+                webSocketService.saveInChat(roomId, senderId, session);
             }
         }
     }

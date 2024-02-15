@@ -1,7 +1,6 @@
 package softeer.be33ma3.websocket;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -27,14 +26,14 @@ public class WebSocketRepository {
         log.info("{}번 게시글에 {}번 유저 입장", postId, memberId);
     }
 
-    public void saveMemberInChat(Long roomId, Long receiverId) {
+    public void saveMemberInChat(Long roomId, Long memberId) {
         Set<Long> members = new HashSet<>();
         if(chatRoom.containsKey(roomId)){
             members = chatRoom.get(roomId);
         }
-        members.add(receiverId);
+        members.add(memberId);
         chatRoom.put(roomId, members);
-        log.info("{}번 채팅방에 {}번 유저 입장",  roomId, receiverId);
+        log.info("{}번 채팅방에 {}번 유저 입장",  roomId, memberId);
     }
 
     public void saveSessionWithMemberId(Long memberId, WebSocketSession webSocketSession) {
@@ -62,5 +61,15 @@ public class WebSocketRepository {
     // 게시글 만료시 호출
     public void deletePostRoom(Long postId) {
         postRoom.remove(postId);
+    }
+
+    public void deleteMemberInChatRoom(Long roomId, Long memberId) {
+        Set<Long> members = chatRoom.get(roomId);
+        if (members != null) {
+            members.remove(memberId);
+            if (members.isEmpty()) {
+                chatRoom.remove(roomId);
+            }
+        }
     }
 }

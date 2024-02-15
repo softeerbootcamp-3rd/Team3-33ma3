@@ -25,6 +25,10 @@ public class WebSocketService {
             closePostConnection(exitMember.getRoomId(), exitMember.getMemberId());
         }
 
+        if(payload.contains("chat") && payload.contains("memberId")) {
+            ExitMember exitMember = objectMapper.readValue(payload, ExitMember.class);
+            closeChatConnection(exitMember.getRoomId(), exitMember.getMemberId());
+        }
 
         log.info("메세지 수신 성공: {}", payload); // 수신한 메세지 log
         TextMessage textMessage = new TextMessage("메세지 수신 성공");
@@ -57,6 +61,11 @@ public class WebSocketService {
 
     private void closePostConnection(Long postId, Long memberId) {
         webSocketRepository.deleteMemberInPost(postId, memberId);
+        webSocketRepository.deleteSessionWithMemberId(memberId);
+    }
+
+    private void closeChatConnection(Long roomId, Long memberId) {
+        webSocketRepository.deleteMemberInChatRoom(roomId, memberId);
         webSocketRepository.deleteSessionWithMemberId(memberId);
     }
 
