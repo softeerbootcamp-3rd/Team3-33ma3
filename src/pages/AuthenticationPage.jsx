@@ -1,13 +1,64 @@
 import AuthForm from "../components/AuthForm";
-import { redirect } from "react-router-dom";
+import { redirect, useSearchParams } from "react-router-dom";
 import Header from "../components/header/header";
+import { createPortal } from "react-dom";
+import {
+  CloseButton,
+  Dialog,
+  Title,
+  TopContainer,
+  Wrapper,
+} from "../components/LocationModal";
+import { useEffect, useRef } from "react";
+import styled from "styled-components";
+
+const AuthDialog = styled(Dialog)`
+  width: 400px;
+  text-align: center;
+`;
+
+const MiddleContainer = styled.div``;
+
+const AuthWrapper = styled(Wrapper)`
+  display: flex;
+  gap: 80px;
+  width: 400px;
+`;
 
 function AuthenticationPage() {
-  return (
+  const [searchParams] = useSearchParams();
+
+  const isLogin = searchParams.get("mode") === "login";
+  const isSignUp = !isLogin;
+  const userType = searchParams.get("type");
+  const dialog = useRef();
+
+  function handleCloseModal() {
+    dialog.current.close();
+  }
+
+  useEffect(() => {
+    if (isLogin || isSignUp) {
+      dialog.current.showModal();
+    }
+  }, []);
+
+  return createPortal(
     <>
       <Header />
-      <AuthForm />
-    </>
+      <AuthDialog ref={dialog} className={"auth-modal"}>
+        <AuthWrapper>
+          <TopContainer>
+            <Title>{isLogin ? "로그인" : "회원가입"}</Title>
+            <CloseButton onClick={handleCloseModal}>X</CloseButton>
+          </TopContainer>
+          <MiddleContainer>
+            <AuthForm />
+          </MiddleContainer>
+        </AuthWrapper>
+      </AuthDialog>
+    </>,
+    document.getElementById("auth-modal")
   );
 }
 

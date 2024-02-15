@@ -6,6 +6,62 @@ import {
   useActionData,
   useNavigation,
 } from "react-router-dom";
+import InputText from "./input/InputText";
+import styled from "styled-components";
+import SubmitButton from "./button/SubmitButton";
+import ClientImage from "../assets/client_mode.svg";
+import CenterImage from "../assets/center_mode.svg";
+
+const AuthInputContainer = styled.div`
+  display: flex;
+  gap: 15px;
+  flex-direction: column;
+  width: 300px;
+  align-items: center;
+`;
+
+const AuthBottomContainer = styled.div`
+  display: flex;
+  gap: 15px;
+  flex-direction: column;
+`;
+
+const AuthContainer = styled.div`
+  display: flex;
+  gap: 40px;
+  flex-direction: column;
+`;
+
+const AuthLink = styled(Link)`
+  text-decoration: none;
+  color: ${(props) => props.theme.colors.text_weak};
+`;
+
+const ModeContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  width: 100%;
+  padding: 30px;
+`;
+
+const Mode = styled.div`
+  display: flex;
+  width: 150px;
+  height: 150px;
+  border-radius: 14px;
+  background: #f8f8fa;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+`;
+
+const Image = styled.img`
+  width: 100px;
+  height: 80px;
+`;
 
 function searchAddressToCoordinate(address) {
   // Promise 객체를 반환합니다.
@@ -59,7 +115,6 @@ function AuthForm() {
   return (
     <>
       <Form method="post">
-        <h1>{isLogin ? "Log in" : `Create a new ${userType}`}</h1>
         {data && data.errors && (
           <ul>
             {Object.values(data.errors).map((err) => (
@@ -69,53 +124,77 @@ function AuthForm() {
         )}
         {data && data.message && <p>{data.message}</p>}
         {!isLogin && !userType && (
-          <>
-            <Link to="?mode=signUp&type=client">Client</Link>
-            <Link to="?mode=signUp&type=center">Center</Link>
-          </>
+          <ModeContainer>
+            <AuthLink to="?mode=signUp&type=client">
+              <Mode>
+                <Image src={ClientImage} />
+                사용자 회원가입
+              </Mode>
+            </AuthLink>
+            <AuthLink to="?mode=signUp&type=center">
+              <Mode>
+                <Image src={CenterImage} />
+                센터 회원가입
+              </Mode>
+            </AuthLink>
+          </ModeContainer>
         )}
         {(userType || isLogin) && (
-          <>
-            <p>
-              <label htmlFor="loginId">Id</label>
-              <input id="loginId" type="text" name="loginId" required />
-            </p>
-            <p>
-              <label htmlFor="password">Password</label>
-              <input id="password" type="password" name="password" required />
-            </p>
-            {userType === "center" && (
-              <>
-                <p>
-                  <label htmlFor="centerName">Center name</label>
-                  <input
+          <AuthContainer>
+            <AuthInputContainer>
+              <InputText
+                id="loginId"
+                type="text"
+                name="loginId"
+                placeholder="아이디"
+                size="small"
+                required
+              />
+
+              <InputText
+                id="password"
+                type="password"
+                name="password"
+                placeholder="비밀번호"
+                size="small"
+                required
+              />
+
+              {userType === "center" && (
+                <>
+                  <InputText
                     id="centerName"
                     type="text"
                     name="centerName"
+                    placeholder="센터이름"
+                    size="small"
                     required
                   />
-                </p>
-                <p>
-                  <label htmlFor="address">Address</label>
-                  <input
+
+                  <InputText
                     id="address"
                     type="text"
                     name="address"
                     onChange={handleInputCenterName}
+                    placeholder="위치"
+                    size="small"
                     required
                   />
-                </p>
-              </>
-            )}
-            <div>
-              <Link to={`?mode=${isLogin ? "signUp" : "login"}`}>
-                {isLogin ? "Create new user" : "Login"}
-              </Link>
-              <button disabled={isSubmitting}>
-                {isSubmitting ? "전송중..." : "저장하기"}
-              </button>
-            </div>
-          </>
+                </>
+              )}
+            </AuthInputContainer>
+            <AuthBottomContainer>
+              <AuthLink to={`?mode=${isLogin ? "signUp" : "login"}`}>
+                {isLogin ? "회원가입" : "로그인"}
+              </AuthLink>
+
+              <div>
+                <SubmitButton disabled={isSubmitting}>
+                  {isSubmitting ? "전송중..." : isLogin ? "로그인" : "가입"}
+                </SubmitButton>
+              </div>
+            </AuthBottomContainer>
+          </AuthContainer>
         )}
       </Form>
     </>

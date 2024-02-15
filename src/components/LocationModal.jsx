@@ -17,24 +17,24 @@ const MIN_RADIUS = 0;
 const MAX_RADIUS = 10;
 const DROP = 2;
 
-const Dialog = styled.dialog`
+export const Dialog = styled.dialog`
   padding: 30px;
   border-radius: ${(props) => props.theme.radiuses.radius_m};
   box-shadow: ${(props) => props.theme.boxShadow.floating};
 `;
 
-const Title = styled.p`
+export const Title = styled.p`
   color: ${(props) => props.theme.colors.surface_black};
   font-size: ${(props) => props.theme.fontSize.medium};
   font-weight: 700;
 `;
 
-const CloseButton = styled.button`
+export const CloseButton = styled.button`
   width: 35px;
   height: 35px;
 `;
 
-const TopContainer = styled.div`
+export const TopContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 30px;
@@ -58,7 +58,7 @@ const RadiusContainer = styled.div`
   align-items: center;
 `;
 
-const Wrapper = styled.div`
+export const Wrapper = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 10px;
