@@ -10,13 +10,29 @@ public class ChatMessage extends BaseTimeEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long chatMessageId;
 
-    private String contents;
+    @ManyToOne
+    @JoinColumn(name = "sender_id")
+    private Member sender;
 
     @ManyToOne
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
+    private String contents;
+
+    private boolean readDone;
+
+    public static ChatMessage createChatMessage(Member member, ChatRoom chatRoom, String contents) {
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.sender = member;
+        chatMessage.chatRoom = chatRoom;
+        chatMessage.contents = contents;
+        chatMessage.readDone = true;
+
+        return chatMessage;
+    }
+
+    public void setReadDoneFalse() {
+        this.readDone = false;
+    }
 }

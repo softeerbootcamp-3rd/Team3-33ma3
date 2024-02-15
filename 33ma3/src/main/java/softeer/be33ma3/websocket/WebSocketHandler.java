@@ -40,7 +40,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
             if(type.equals("post")) {
                 Long postId = (Long) attributes.get("postId");
                 Long memberId = (Long) attributes.get("memberId");
-                webSocketService.save(postId, memberId, session);
+                webSocketService.saveInPost(postId, memberId, session);
+            }
+            if(type.equals("chat")){
+                Long roomId = (Long) attributes.get("roomId");
+                Long senderId = (Long) attributes.get("memberId");
+                webSocketService.saveInChat(roomId, senderId, session);
             }
         }
     }
@@ -61,7 +66,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
             log.error("실시간 데이터 전송 에러");
         }
     }
-
     public void deletePostRoom(Long postId) {
         webSocketService.deletePostRoom(postId);
     }

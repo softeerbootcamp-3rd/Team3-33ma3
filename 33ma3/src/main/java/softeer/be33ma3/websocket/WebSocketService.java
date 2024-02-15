@@ -25,15 +25,24 @@ public class WebSocketService {
             ExitMember exitMember = objectMapper.readValue(payload, ExitMember.class);
             closePostConnection(exitMember.getRoomId(), exitMember.getMemberId());
         }
+        if(payload.contains("chat") && payload.contains("memberId")) {
+            ExitMember exitMember = objectMapper.readValue(payload, ExitMember.class);
+            closeChatConnection(exitMember.getRoomId(), exitMember.getMemberId());
+        }
 
         log.info("메세지 수신 성공: {}", payload); // 수신한 메세지 log
         TextMessage textMessage = new TextMessage("메세지 수신 성공");
         session.sendMessage(textMessage);
     }
 
-    public void save(Long postId, Long memberId, WebSocketSession session) {
+    public void saveInPost(Long postId, Long memberId, WebSocketSession session) {
         webSocketRepository.saveMemberInPost(postId, memberId);
         webSocketRepository.saveSessionWithMemberId(memberId, session);
+    }
+
+    public void saveInChat(Long roomId, Long receiverId, WebSocketSession session) {
+        webSocketRepository.saveMemberInChat(roomId, receiverId);
+        webSocketRepository.saveSessionWithMemberId(receiverId, session);
     }
 
     // 데이터 (클래스 객체) 전송
@@ -52,6 +61,11 @@ public class WebSocketService {
 
     private void closePostConnection(Long postId, Long memberId) {
         webSocketRepository.deleteMemberInPost(postId, memberId);
+        webSocketRepository.deleteSessionWithMemberId(memberId);
+    }
+
+    private void closeChatConnection(Long roomId, Long memberId) {
+        webSocketRepository.deleteMemberInChatRoom(roomId, memberId);
         webSocketRepository.deleteSessionWithMemberId(memberId);
     }
 

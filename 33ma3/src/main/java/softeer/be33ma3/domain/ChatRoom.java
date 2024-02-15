@@ -17,4 +17,12 @@ public class ChatRoom extends BaseTimeEntity{
     @ManyToOne
     @JoinColumn(name = "client_id")
     private Member client;
+
+    public static ChatRoom createCenter(Member client, Member center) {
+        ChatRoom chatRoom = new ChatRoom();
+        chatRoom.client = client;
+        chatRoom.center = center;
+
+        return chatRoom;
+    }
 }
