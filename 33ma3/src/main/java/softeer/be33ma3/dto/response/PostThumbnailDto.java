@@ -7,6 +7,7 @@ import softeer.be33ma3.domain.Post;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Getter
@@ -15,7 +16,8 @@ public class PostThumbnailDto implements Comparable<PostThumbnailDto> {
 
     private Long postId;
     private String modelName;
-    private LocalDateTime createTime;
+    private LocalDateTime rawCreateTime;
+    private String createTime;
     private int dDay;
     private int remainTime;
     private List<String> imageList;
@@ -26,9 +28,9 @@ public class PostThumbnailDto implements Comparable<PostThumbnailDto> {
     // 생성 시간 기준으로 최신순 정렬
     @Override
     public int compareTo(PostThumbnailDto other) {
-        if(this.createTime.isAfter(other.getCreateTime()))
+        if(this.rawCreateTime.isAfter(other.getRawCreateTime()))
             return -1;
-        else if(this.createTime.isBefore(other.getCreateTime()))
+        else if(this.rawCreateTime.isBefore(other.getRawCreateTime()))
             return 1;
         // createTime이 동일할 경우
         if(postId > other.getPostId())
@@ -53,12 +55,18 @@ public class PostThumbnailDto implements Comparable<PostThumbnailDto> {
         return PostThumbnailDto.builder()
                 .postId(post.getPostId())
                 .modelName(post.getModelName())
-                .createTime(post.getCreateTime())
+                .rawCreateTime(post.getCreateTime())
+                .createTime(createTimeFormatting(post.getCreateTime()))
                 .dDay(dDay)
                 .remainTime(remainTime)
                 .repairList(repairList)
                 .tuneUpList(tuneUpList)
                 .imageList(imageList)
                 .offerCount(offerCount).build();
+    }
+
+    private static String createTimeFormatting(LocalDateTime rawCreateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        return rawCreateTime.format(formatter);
     }
 }

@@ -48,11 +48,13 @@ public class PostService {
 
     // List<Post> -> List<PostThumbnailDto>로 변환
     private List<PostThumbnailDto> fromPostList(List<Post> posts) {
-        return posts.stream()
+        List<PostThumbnailDto> postThumbnailDtos = new ArrayList<>(posts.stream()
                 .map(post -> {
                     int offerCount = countOfferNum(post.getPostId());
                     return PostThumbnailDto.fromEntity(post, offerCount);
-                }).toList();
+                }).toList());
+        Collections.sort(postThumbnailDtos);
+        return postThumbnailDtos;
     }
 
     // 해당 게시글에 달린 댓글 개수 반환
