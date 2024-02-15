@@ -65,6 +65,7 @@ function AuthenticationPage() {
 
 export default AuthenticationPage;
 
+// AuthForm의 사용자 입력을 처리하고 서버에 데이터를 전송하는 함수
 export async function action({ request }) {
   const searchParams = new URL(request.url).searchParams;
   const mode = searchParams.get("mode") || "login";
