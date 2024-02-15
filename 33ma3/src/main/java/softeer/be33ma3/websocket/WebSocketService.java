@@ -8,6 +8,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -56,5 +57,10 @@ public class WebSocketService {
 
     public void deletePostRoom(Long postId) {
         webSocketRepository.deletePostRoom(postId);
+    }
+
+    // 해당 게시글에 접속해있는 유저 목록 반환
+    public Set<Long> findAllMemberInPost(Long postId) {
+        return webSocketRepository.findAllMemberInPost(postId);
     }
 }

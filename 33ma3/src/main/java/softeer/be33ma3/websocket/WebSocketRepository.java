@@ -19,6 +19,10 @@ public class WebSocketRepository {
     // memberId : WebSocketSession
     private final Map<Long, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
+    public Set<Long> findAllMemberInPost(Long postId) {
+        return postRoom.get(postId);
+    }
+
     public void saveMemberInPost(Long postId, Long memberId) {
         Set<Long> members = new HashSet<>();
         if(postRoom.containsKey(postId))
@@ -48,6 +52,7 @@ public class WebSocketRepository {
 
     public void deleteSessionWithMemberId(Long memberId) {
         sessions.remove(memberId);
+        log.info("세션 삭제 완료! 세션 저장소 크키: {}", sessions.size());
     }
 
     // 게시글 만료시 호출
