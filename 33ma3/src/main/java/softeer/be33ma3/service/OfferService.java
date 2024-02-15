@@ -19,6 +19,7 @@ import softeer.be33ma3.response.DataResponse;
 
 import java.util.IntSummaryStatistics;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -133,28 +134,38 @@ public class OfferService {
 
         if(stats.getSum() == 0)
             return 0;
-        return stats.getAverage();
+        return Math.round(stats.getAverage() * 10) / 10.0;      // 소수점 첫째 자리까지 반올림
     }
 
-    // 게시글에 해당하는 견적 제시 댓글 리스트 실시간 전송
-    public void sendOfferList2Writer(Long postId) {
+    public void sendAboutOfferUpdate(Long postId) {
         // 1. 해당 게시글 가져오기
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
         // 2. 글 작성자 아이디 가져오기
-        Long memberId = post.getMember().getMemberId();
-        // 3. 게시글에 속해있는 댓글 목록 가져오기
+        Long writerId = post.getMember().getMemberId();
+        // 3. 글 작성자에게 업데이트된 댓글 목록 실시간 전송
+        sendOfferList2Writer(postId, writerId);
+        // 4. 그 외 접속한 유저에게 업데이트된 평균 제시 가격 실시간 전송
+        sendAvgPrice2Others(postId, writerId);
+    }
+
+    // 게시글에 해당하는 견적 제시 댓글 리스트 실시간 전송
+    public void sendOfferList2Writer(Long postId, Long memberId) {
+        // 1. 게시글에 속해있는 댓글 목록 가져오기
         List<Offer> offerList = offerRepository.findByPost_PostId(postId);
         List<OfferDetailDto> offerDetailList = OfferDetailDto.fromEntityList(offerList);
-        // 4. 전송하기
+        // 1. 전송하기
         webSocketHandler.sendData2Client(memberId, offerDetailList);
     }
 
-    // 게시글에 견적을 작성한 모든 서비스 센터들에게 평균 견적 제시 가격 실시간 전송
-    public void sendAvgPrice2Centers(Long postId) {
+    // 해당 게시글 화면을 보고 있는 모든 유저들에게 평균 견적 제시 가격 실시간 전송
+    public void sendAvgPrice2Others(Long postId, Long writerId) {
         // 1. 해당 게시글에 달린 모든 견적 가져오기
         List<Offer> offerList = offerRepository.findByPost_PostId(postId);
-        // 2. 견적 작성자의 member id 가져오기
-        List<Long> memberList = findMemberIdsWithOfferList(offerList);
+        // 2. 해당 게시글을 보고 있는 모든 유저들 가져오기 (글 작성자도 포함되어있을 경우 제외시키기)
+        Set<Long> memberList = webSocketHandler.findAllMemberInPost(postId);
+        memberList = memberList.stream()
+                .filter(memberId -> !memberId.equals(writerId))
+                .collect(Collectors.toSet());
         // 3. 평균 견적 가격 계산하기
         AvgPriceDto avgPriceDto = new AvgPriceDto(calculateAvgPrice(offerList));
         // 4. 전송하기

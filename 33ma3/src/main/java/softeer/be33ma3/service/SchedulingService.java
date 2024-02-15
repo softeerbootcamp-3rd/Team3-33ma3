@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.repository.PostRepository;
+import softeer.be33ma3.websocket.WebSocketHandler;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
 @Service
 public class SchedulingService {
     private final PostRepository postRepository;
+    private final WebSocketHandler webSocketHandler;
 
     @Scheduled(cron = "0 1 0 * * * ", zone = "Asia/Seoul") //매 00시 01분 마다 실행
     @Transactional
@@ -33,6 +35,7 @@ public class SchedulingService {
 
             if (currentDate.isAfter(deadlineTime)) {
                 post.setDone();
+                webSocketHandler.deletePostRoom(post.getPostId());
             }
         }
     }

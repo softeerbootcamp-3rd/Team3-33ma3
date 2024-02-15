@@ -8,6 +8,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +25,6 @@ public class WebSocketService {
             ExitMember exitMember = objectMapper.readValue(payload, ExitMember.class);
             closePostConnection(exitMember.getRoomId(), exitMember.getMemberId());
         }
-
         if(payload.contains("chat") && payload.contains("memberId")) {
             ExitMember exitMember = objectMapper.readValue(payload, ExitMember.class);
             closeChatConnection(exitMember.getRoomId(), exitMember.getMemberId());
@@ -73,4 +73,8 @@ public class WebSocketService {
         webSocketRepository.deletePostRoom(postId);
     }
 
+    // 해당 게시글에 접속해있는 유저 목록 반환
+    public Set<Long> findAllMemberInPost(Long postId) {
+        return webSocketRepository.findAllMemberInPost(postId);
+    }
 }

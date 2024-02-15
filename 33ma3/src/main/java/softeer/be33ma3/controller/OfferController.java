@@ -56,10 +56,7 @@ public class OfferController {
                                          @RequestBody @Valid OfferCreateDto offerCreateDto,
                                          @Schema(hidden = true) @CurrentUser Member member) {
         offerService.createOffer(postId, offerCreateDto, member);
-        // 글 작성자에게 업데이트 된 댓글 리스트 보내기
-        offerService.sendOfferList2Writer(postId);
-        // 댓글 작성자들에게 업데이트된 평균 견적 제시 가격 보내기
-        offerService.sendAvgPrice2Centers(postId);
+        offerService.sendAboutOfferUpdate(postId);
         return ResponseEntity.ok(SingleResponse.success("입찰 성공"));
     }
 
@@ -80,10 +77,7 @@ public class OfferController {
                                          @RequestBody @Valid OfferCreateDto offerCreateDto,
                                          @Schema(hidden = true) @CurrentUser Member member) {
         offerService.updateOffer(postId, offerId, offerCreateDto, member);
-        // 글 작성자에게 업데이트 된 댓글 리스트 보내기
-        offerService.sendOfferList2Writer(postId);
-        // 댓글 작성자들에게 업데이트된 평균 견적 제시 가격 보내기
-        offerService.sendAvgPrice2Centers(postId);
+        offerService.sendAboutOfferUpdate(postId);
         return ResponseEntity.ok(SingleResponse.success("댓글 수정 성공"));
     }
 
@@ -102,10 +96,7 @@ public class OfferController {
                                          @PathVariable("offer_id") Long offerId,
                                          @Schema(hidden = true) @CurrentUser Member member) {
         offerService.deleteOffer(postId, offerId, member);
-        // 글 작성자에게 업데이트 된 댓글 리스트 보내기
-        offerService.sendOfferList2Writer(postId);
-        // 댓글 작성자들에게 업데이트된 평균 견적 제시 가격 보내기
-        offerService.sendAvgPrice2Centers(postId);
+        offerService.sendAboutOfferUpdate(postId);
         return ResponseEntity.ok(SingleResponse.success("댓글 삭제 성공"));
     }
 
