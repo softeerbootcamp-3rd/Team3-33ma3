@@ -42,12 +42,12 @@ public class ChatService {
         chatMessage = chatMessageRepository.save(chatMessage);
 
         if(webSocketRepository.findSessionByMemberId(receiver.getMemberId()) == null){  //채팅룸에 상대방이 존재하지 않을 경우
-            chatMessage.setReadDoneFalse();   //안읽음 처리
             Alert alert = Alert.createAlert(chatRoom.getChatRoomId(), receiver);  //알림 테이블에 저장
             alertRepository.save(alert);
             return;
         }
 
+        chatMessage.setReadDoneTrue();   //읽음 처리
         ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.createChatMessage(chatMessage);
         webSocketHandler.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);
     }
