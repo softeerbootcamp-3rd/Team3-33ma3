@@ -23,20 +23,14 @@ const router = createBrowserRouter([
         element: <PostListPage />,
       },
       {
-        path: "post",
-        element: <Outlet />,
-        children: [
-          { path: "create", element: <PostCreatePage /> },
-          {
-            path: "list",
-            element: <PostListPage />,
-          },
-          {
-            path: "info",
-            element: <PostPage />,
-          },
-        ],
+        path: "post/info",
+        element: <PostPage />,
       },
+      {
+        path: "post/list",
+        element: <PostListPage />,
+      },
+      { path: "post/create", element: <PostCreatePage /> },
       {
         path: "inquiry-history",
         element: <InquiryHistoryPage />,

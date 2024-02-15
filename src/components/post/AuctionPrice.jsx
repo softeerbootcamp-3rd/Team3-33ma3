@@ -12,7 +12,7 @@ const Container = styled.button`
   font-weight: 500;
   font-size: ${(props) => props.theme.fontSize.regular};
   color: ${(props) => props.theme.colors.text_strong};
-  transform: ${({ isActive }) => isActive && "scale(1.05)"};
+  transform: ${({ $isActive }) => $isActive && "scale(1.05)"};
 
   &:hover {
     transform: scale(1.05);
@@ -172,7 +172,7 @@ function AuctionPrice({
   onClick,
 }) {
   return (
-    <Container isActive={isActive} onClick={onClick} isEnd={isEnd}>
+    <Container $isActive={isActive} onClick={onClick} isEnd={isEnd}>
       <Bubble inStatus={inStatus}>
         <Price>{price}만</Price>
         <img src={SpeechBubble} style={bubbleImageSize} />
