@@ -40,6 +40,9 @@ public class ChatService {
         if(!post.getMember().equals(client)){
             throw new UnauthorizedException("작성자만 문의할 수 있습니다.");
         }
+        if(chatRoomRepository.findRoomIdByCenterIdAndClientId(centerId, client.getMemberId()).isPresent()){     // 이미 방이 존재하는 경우
+            return chatRoomRepository.findRoomIdByCenterIdAndClientId(centerId, client.getMemberId()).get();    // 기존 방 아이디 반환
+        }
 
         ChatRoom chatRoom = ChatRoom.createChatRoom(client, center);
         return chatRoomRepository.save(chatRoom).getChatRoomId();
