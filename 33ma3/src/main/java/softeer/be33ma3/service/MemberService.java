@@ -9,6 +9,7 @@ import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.CenterSignUpDto;
 import softeer.be33ma3.dto.request.LoginDto;
 import softeer.be33ma3.dto.request.ClientSignUpDto;
+import softeer.be33ma3.dto.response.LoginSuccessDto;
 import softeer.be33ma3.jwt.JwtService;
 import softeer.be33ma3.jwt.JwtToken;
 import softeer.be33ma3.repository.CenterRepository;
@@ -49,13 +50,13 @@ public class MemberService {
     }
 
     @Transactional
-    public JwtToken login(LoginDto loginDto) {
+    public LoginSuccessDto login(LoginDto loginDto) {
         Member member = memberRepository.findByLoginIdAndPassword(loginDto.getLoginId(), loginDto.getPassword())
                 .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않음"));
 
         JwtToken jwtToken = jwtService.getJwtToken(member.getMemberType(), member.getMemberId(), loginDto.getLoginId());
         member.setRefreshToken(jwtToken.getRefreshToken()); //리프레시 토큰 저장
 
-        return jwtToken;
+        return new LoginSuccessDto(member.getMemberId(), jwtToken);
     }
 }
