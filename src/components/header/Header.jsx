@@ -4,8 +4,6 @@ import NavItem from "./NavItem";
 import { CONTENT_MAX_WIDTH } from "../../constants/layouts";
 import { Link } from "react-router-dom";
 import Alarm from "../../assets/alarm.png";
-import AuthenticationModal from "../../pages/AuthenticationPage/AuthenticationPage";
-import { useRef } from "react";
 
 const HeaderContainer = styled.header`
   display: flex;
@@ -32,7 +30,7 @@ const HeaderItems = styled.div`
   justify-content: space-between;
 `;
 
-const LoginButton = styled.button`
+const LoginNav = styled.div`
   color: ${(props) => props.theme.colors.text_white_default};
   font-size: ${(props) => props.theme.fontSize.medium};
   font-weight: 700;
@@ -44,16 +42,9 @@ const NavItems = styled.div`
   align-items: center;
 `;
 
-function Header() {
-  const modalRef = useRef();
-  // Header login Button
-  function handleModal() {
-    modalRef.current.open();
-  }
-
+function Header(token) {
   return (
     <>
-      <AuthenticationModal ref={modalRef} />
       <HeaderContainer>
         <HeaderItems>
           <Link to={"/"}>
@@ -65,7 +56,9 @@ function Header() {
           </Link>
           <NavItems>
             <NavItem />
-            <LoginButton onClick={handleModal}>로그인</LoginButton>
+            <Link to="/auth?mode=login">
+              <LoginNav>{token ? "로그아웃" : "로그인"}</LoginNav>
+            </Link>
             <img src={Alarm} style={{ width: "30px", height: "30px" }} />
           </NavItems>
         </HeaderItems>

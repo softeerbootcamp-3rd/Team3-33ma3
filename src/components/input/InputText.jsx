@@ -23,7 +23,7 @@ const Input = styled.input`
 `;
 
 const InputText = forwardRef(function InputText(
-  { size, placeholder, onChange, defaultValue, name, type },
+  { size, placeholder, onChange, defaultValue, name, type, value },
   ref
 ) {
   return (
@@ -35,6 +35,7 @@ const InputText = forwardRef(function InputText(
       onChange={onChange}
       defaultValue={defaultValue}
       name={name}
+      value={value}
     ></Input>
   );
 });

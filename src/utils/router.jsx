@@ -13,8 +13,9 @@ import {
   useRouteLoaderData,
 } from "react-router-dom";
 import { tokenLoader } from "./auth";
-import { action } from "../pages/AuthenticationPage/AuthenticationPage";
-import AuthenticationModal from "../pages/AuthenticationPage/AuthenticationPage";
+import AuthenticationPage, {
+  action,
+} from "../pages/AuthenticationPage/AuthenticationPage";
 
 const router = createBrowserRouter([
   {
@@ -23,7 +24,6 @@ const router = createBrowserRouter([
     // errorElement: <ErrorPage />,
     id: "root",
     loader: tokenLoader,
-    action: action,
     children: [
       {
         // path가 존재하지 않는 컴포넌트들 <Outlet/>에 해당 컴포넌트들 들어감
@@ -32,7 +32,8 @@ const router = createBrowserRouter([
       },
       {
         path: "auth",
-        element: <AuthenticationModal />,
+        action: action,
+        element: <AuthenticationPage />,
       },
       {
         path: "post/info",

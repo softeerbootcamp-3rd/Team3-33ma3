@@ -1,72 +1,52 @@
 import AuthForm from "../../components/AuthForm";
 import { redirect, useSearchParams } from "react-router-dom";
-import { createPortal } from "react-dom";
-import {
-  CloseButton,
-  Dialog,
-  Title,
-  TopContainer,
-  Wrapper,
-} from "../../components/LocationModal";
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { Title, Wrapper } from "../../components/LocationModal";
 import styled from "styled-components";
 import { BASE_URL } from "../../constants/url";
-
-const AuthDialog = styled(Dialog)`
-  width: 400px;
-  text-align: center;
-`;
 
 const MiddleContainer = styled.div``;
 
 const AuthWrapper = styled(Wrapper)`
   display: flex;
   gap: 80px;
-  width: 400px;
 `;
 
-const AuthenticationModal = forwardRef(function AuthenticationModal(
-  { props },
-  ref
-) {
+const TitleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  width: 350px;
+`;
+
+const BorderContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 200px;
+`;
+
+function AuthenticationPage({ props }, ref) {
   const [searchParams] = useSearchParams();
 
   const isLogin = searchParams.get("mode") === "login";
   const isSignUp = !isLogin;
   const userType = searchParams.get("type");
-  const dialog = useRef();
 
-  function handleCloseModal() {
-    dialog.current.close();
-  }
-
-  useImperativeHandle(ref, () => {
-    return {
-      open() {
-        dialog.current.showModal();
-      },
-    };
-  });
-
-  return createPortal(
-    <>
-      <AuthDialog ref={dialog} className={"auth-modal"}>
-        <AuthWrapper>
-          <TopContainer>
-            <Title>{isLogin ? "로그인" : "회원가입"}</Title>
-            <CloseButton onClick={handleCloseModal}>X</CloseButton>
-          </TopContainer>
-          <MiddleContainer>
-            <AuthForm />
-          </MiddleContainer>
-        </AuthWrapper>
-      </AuthDialog>
-    </>,
-    document.getElementById("auth-modal")
+  return (
+    <BorderContainer>
+      <AuthWrapper>
+        <TitleContainer>
+          <Title>{isLogin ? "로그인" : "회원가입"}</Title>
+        </TitleContainer>
+        <MiddleContainer>
+          <AuthForm />
+        </MiddleContainer>
+      </AuthWrapper>
+    </BorderContainer>
   );
-});
+}
 
-export default AuthenticationModal;
+export default AuthenticationPage;
 
 // AuthForm의 사용자 입력을 처리하고 서버에 데이터를 전송하는 함수
 export async function action({ request }) {
@@ -117,5 +97,10 @@ export async function action({ request }) {
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
   }
-  return redirect("/");
+  if (mode === "signUp") {
+    return redirect("/auth?mode=login");
+  }
+  if (mode === "login") {
+    return redirect("/");
+  }
 }

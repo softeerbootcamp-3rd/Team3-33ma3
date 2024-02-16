@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Form,
   Link,
@@ -17,7 +17,6 @@ const AuthInputContainer = styled.div`
   display: flex;
   gap: 15px;
   flex-direction: column;
-  width: 300px;
   align-items: center;
 `;
 
@@ -25,12 +24,14 @@ const AuthBottomContainer = styled.div`
   display: flex;
   gap: 15px;
   flex-direction: column;
+  align-items: center;
 `;
 
 const AuthContainer = styled.div`
   display: flex;
   gap: 40px;
   flex-direction: column;
+  width: 350px;
 `;
 
 const AuthLink = styled(Link)`
@@ -48,8 +49,8 @@ const ModeContainer = styled.div`
 
 const Mode = styled.div`
   display: flex;
-  width: 150px;
-  height: 150px;
+  width: 200px;
+  height: 200px;
   border-radius: 14px;
   background: #f8f8fa;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
@@ -63,6 +64,8 @@ const Image = styled.img`
   width: 100px;
   height: 80px;
 `;
+
+const FormContainer = styled.div``;
 
 function searchAddressToCoordinate(address) {
   // Promise 객체를 반환합니다.
@@ -97,9 +100,11 @@ function AuthForm() {
   const [centerInformation, setCenterInformation] = useState();
   const [autoCompleteAddress, setAutoCompleteAddress] = useState("");
   const [checkAddress, setCheckAddress] = useState(false);
-  const [latitude, setLatitude] = useState(0);
-  const [longitude, setLongitude] = useState(0);
+  const [coords, setCoords] = useState({ latitude: 0, longitude: 0 });
+  const [inputId, setInputId] = useState("");
+  const [inputPassword, setInputPassword] = useState("");
   const [searchParams] = useSearchParams();
+
   const data = useActionData();
   const navigation = useNavigation();
 
@@ -113,8 +118,11 @@ function AuthForm() {
         if (res !== null) {
           setCenterInformation(res.roadAddress);
           setCheckAddress(true);
-          setLatitude(res.y);
-          setLongitude(res.x);
+          setCoords((prev) => ({
+            ...prev,
+            [latitude]: res.y,
+            [longitude]: res.x,
+          }));
         }
         console.log(res); // 성공적으로 주소 정보를 받아왔을 때의 처리
       })
@@ -129,10 +137,21 @@ function AuthForm() {
     setAutoCompleteKey(generateKeyBasedOnCurrentTime());
   }
 
-  function handleChangeMode() {}
+  function handleInputId(e) {
+    setInputId(e.target.value);
+  }
+
+  function handleInputPassword(e) {
+    setInputPassword(e.target.value);
+  }
+
+  useEffect(() => {
+    setInputId("");
+    setInputPassword("");
+  }, [isLogin]);
 
   return (
-    <>
+    <FormContainer>
       <Form method="post">
         {data && data.errors && (
           <ul>
@@ -167,6 +186,8 @@ function AuthForm() {
                 name="loginId"
                 placeholder="아이디"
                 size="small"
+                value={inputId}
+                onChange={handleInputId}
                 required
               />
 
@@ -176,13 +197,23 @@ function AuthForm() {
                 name="password"
                 placeholder="비밀번호"
                 size="small"
+                value={inputPassword}
+                onChange={handleInputPassword}
                 required
               />
 
               {userType === "center" && (
                 <>
-                  <input type="hidden" name="latitude" value={latitude} />
-                  <input type="hidden" name="longitude" value={longitude} />
+                  <input
+                    type="hidden"
+                    name="latitude"
+                    value={coords.latitude}
+                  />
+                  <input
+                    type="hidden"
+                    name="longitude"
+                    value={coords.longitude}
+                  />
                   <InputText
                     id="centerName"
                     type="text"
@@ -221,7 +252,7 @@ function AuthForm() {
           </AuthContainer>
         )}
       </Form>
-    </>
+    </FormContainer>
   );
 }
 
