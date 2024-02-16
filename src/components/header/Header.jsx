@@ -45,15 +45,8 @@ const NavItems = styled.div`
 `;
 
 function Header() {
-  const modalRef = useRef();
-  // Header login Button
-  function handleModal() {
-    modalRef.current.open();
-  }
-
   return (
     <>
-      <AuthenticationModal ref={modalRef} />
       <HeaderContainer>
         <HeaderItems>
           <Link to={"/"}>
@@ -65,7 +58,7 @@ function Header() {
           </Link>
           <NavItems>
             <NavItem />
-            <LoginButton onClick={handleModal}>로그인</LoginButton>
+            <LoginButton>로그인</LoginButton>
             <img src={Alarm} style={{ width: "30px", height: "30px" }} />
           </NavItems>
         </HeaderItems>

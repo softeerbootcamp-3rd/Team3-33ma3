@@ -17,7 +17,6 @@ const AuthInputContainer = styled.div`
   display: flex;
   gap: 15px;
   flex-direction: column;
-  width: 300px;
   align-items: center;
 `;
 
@@ -25,12 +24,14 @@ const AuthBottomContainer = styled.div`
   display: flex;
   gap: 15px;
   flex-direction: column;
+  align-items: center;
 `;
 
 const AuthContainer = styled.div`
   display: flex;
   gap: 40px;
   flex-direction: column;
+  width: 350px;
 `;
 
 const AuthLink = styled(Link)`
@@ -63,6 +64,8 @@ const Image = styled.img`
   width: 100px;
   height: 80px;
 `;
+
+const FormContainer = styled.div``;
 
 function searchAddressToCoordinate(address) {
   // Promise 객체를 반환합니다.
@@ -129,10 +132,8 @@ function AuthForm() {
     setAutoCompleteKey(generateKeyBasedOnCurrentTime());
   }
 
-  function handleChangeMode() {}
-
   return (
-    <>
+    <FormContainer>
       <Form method="post">
         {data && data.errors && (
           <ul>
@@ -221,7 +222,7 @@ function AuthForm() {
           </AuthContainer>
         )}
       </Form>
-    </>
+    </FormContainer>
   );
 }
 

@@ -8,7 +8,9 @@ import CenterListPage from "../pages/CenterListPage";
 import CenterInfoPage from "../pages/CenterInfoPage";
 import { Outlet, createBrowserRouter } from "react-router-dom";
 import { tokenLoader } from "./auth";
-import { action } from "../pages/AuthenticationPage/AuthenticationPage";
+import AuthenticationPage, {
+  action,
+} from "../pages/AuthenticationPage/AuthenticationPage";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +25,10 @@ const router = createBrowserRouter([
         // path가 존재하지 않는 컴포넌트들 <Outlet/>에 해당 컴포넌트들 들어감
         index: true,
         element: <PostListPage />,
+      },
+      {
+        path: "auth",
+        element: <AuthenticationPage />,
       },
       {
         path: "post/info",
