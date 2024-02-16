@@ -32,7 +32,7 @@ const HeaderItems = styled.div`
   justify-content: space-between;
 `;
 
-const LoginButton = styled.button`
+const LoginNav = styled.div`
   color: ${(props) => props.theme.colors.text_white_default};
   font-size: ${(props) => props.theme.fontSize.medium};
   font-weight: 700;
@@ -58,7 +58,9 @@ function Header() {
           </Link>
           <NavItems>
             <NavItem />
-            <LoginButton>로그인</LoginButton>
+            <Link to="/auth?mode=login">
+              <LoginNav>로그인</LoginNav>
+            </Link>
             <img src={Alarm} style={{ width: "30px", height: "30px" }} />
           </NavItems>
         </HeaderItems>
