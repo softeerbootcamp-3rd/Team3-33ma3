@@ -1,12 +1,6 @@
 import AuthForm from "../../components/AuthForm";
 import { redirect, useSearchParams } from "react-router-dom";
-import {
-  Dialog,
-  Title,
-  TopContainer,
-  Wrapper,
-} from "../../components/LocationModal";
-import { useRef } from "react";
+import { Title, Wrapper } from "../../components/LocationModal";
 import styled from "styled-components";
 import { BASE_URL } from "../../constants/url";
 
