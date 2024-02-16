@@ -19,7 +19,6 @@ const router = createBrowserRouter([
     // errorElement: <ErrorPage />,
     id: "root",
     loader: tokenLoader,
-    action: action,
     children: [
       {
         // path가 존재하지 않는 컴포넌트들 <Outlet/>에 해당 컴포넌트들 들어감
@@ -28,6 +27,7 @@ const router = createBrowserRouter([
       },
       {
         path: "auth",
+        action: action,
         element: <AuthenticationPage />,
       },
       {

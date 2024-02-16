@@ -103,5 +103,10 @@ export async function action({ request }) {
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
   }
-  return redirect("/");
+  if (mode === "signUp") {
+    return redirect("/auth?mode=login");
+  }
+  if (mode === "login") {
+    return redirect("/");
+  }
 }

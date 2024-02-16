@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Form,
   Link,
@@ -102,6 +102,8 @@ function AuthForm() {
   const [checkAddress, setCheckAddress] = useState(false);
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
+  const [inputId, setInputId] = useState("");
+  const [inputPassword, setInputPassword] = useState("");
   const [searchParams] = useSearchParams();
   const data = useActionData();
   const navigation = useNavigation();
@@ -131,6 +133,19 @@ function AuthForm() {
     setCheckAddress(false);
     setAutoCompleteKey(generateKeyBasedOnCurrentTime());
   }
+
+  function handleInputId(e) {
+    setInputId(e.target.value);
+  }
+
+  function handleInputPassword(e) {
+    setInputPassword(e.target.value);
+  }
+
+  useEffect(() => {
+    setInputId("");
+    setInputPassword("");
+  }, [isLogin]);
 
   return (
     <FormContainer>
@@ -168,6 +183,8 @@ function AuthForm() {
                 name="loginId"
                 placeholder="아이디"
                 size="small"
+                value={inputId}
+                onChange={handleInputId}
                 required
               />
 
@@ -177,6 +194,8 @@ function AuthForm() {
                 name="password"
                 placeholder="비밀번호"
                 size="small"
+                value={inputPassword}
+                onChange={handleInputPassword}
                 required
               />
 
