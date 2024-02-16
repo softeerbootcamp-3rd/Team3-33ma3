@@ -49,8 +49,8 @@ const ModeContainer = styled.div`
 
 const Mode = styled.div`
   display: flex;
-  width: 150px;
-  height: 150px;
+  width: 200px;
+  height: 200px;
   border-radius: 14px;
   background: #f8f8fa;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
