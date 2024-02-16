@@ -1,8 +1,9 @@
 import AuthForm from "../../components/AuthForm";
-import { redirect, useSearchParams } from "react-router-dom";
+import { redirect, useSearchParams, Navigate } from "react-router-dom";
 import { Title, Wrapper } from "../../components/LocationModal";
 import styled from "styled-components";
 import { BASE_URL } from "../../constants/url";
+import { removeAuthToken } from "../../utils/auth";
 
 const MiddleContainer = styled.div``;
 
@@ -25,18 +26,21 @@ const BorderContainer = styled.div`
   padding: 200px;
 `;
 
-function AuthenticationPage({ props }, ref) {
+function AuthenticationPage() {
   const [searchParams] = useSearchParams();
 
-  const isLogin = searchParams.get("mode") === "login";
-  const isSignUp = !isLogin;
-  const userType = searchParams.get("type");
+  const urlMode = searchParams.get("mode");
+
+  if (urlMode === "logout") {
+    removeAuthToken();
+    return <Navigate to="/" />;
+  }
 
   return (
     <BorderContainer>
       <AuthWrapper>
         <TitleContainer>
-          <Title>{isLogin ? "로그인" : "회원가입"}</Title>
+          <Title>{urlMode === "login" ? "로그인" : "회원가입"}</Title>
         </TitleContainer>
         <MiddleContainer>
           <AuthForm />
@@ -89,7 +93,6 @@ export async function action({ request }) {
   }
 
   const resData = await response.json();
-  console.log(resData);
   if (mode == "login") {
     const accessToken = resData.data.accessToken;
     const refreshToken = resData.data.refreshToken;

@@ -17,7 +17,7 @@ import {
 
 import { BASE_URL } from "../../constants/url";
 import LocationModal from "../../components/LocationModal";
-import { redirect, useNavigate, useRouteLoaderData } from "react-router-dom";
+import { useNavigate, useRouteLoaderData } from "react-router-dom";
 
 const Form = styled.form`
   width: 100%;

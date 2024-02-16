@@ -10,7 +10,12 @@ function getAuthToken() {
   return token;
 }
 
-export function getId() {
+function removeAuthToken() {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+}
+
+function getId() {
   const id = localStorage.getItem("id");
   if (!id) {
     return null;
@@ -18,17 +23,19 @@ export function getId() {
   return id;
 }
 
-export function tokenLoader() {
+function tokenLoader() {
   const accessToken = getAuthToken();
   const id = getId();
 
   return { accessToken: accessToken, id: id };
 }
 
-export function checkAuthLoader() {
+function checkAuthLoader() {
   const token = getAuthToken();
 
   if (!token) {
     return redirect("/auth");
   }
 }
+
+export { removeAuthToken, getId, tokenLoader, checkAuthLoader };

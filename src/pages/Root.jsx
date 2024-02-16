@@ -1,12 +1,11 @@
-import Header from "../components/header/header";
+import Header from "../components/header/Header";
 import { Outlet, useLoaderData } from "react-router-dom";
 
 function RootLayout() {
-  const token = useLoaderData();
-
+  const data = useLoaderData();
   return (
     <>
-      <Header token={token} />
+      <Header token={data.accessToken} />
       <main>
         <Outlet />
       </main>
