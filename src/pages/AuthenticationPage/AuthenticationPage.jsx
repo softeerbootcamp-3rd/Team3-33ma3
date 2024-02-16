@@ -84,12 +84,16 @@ export async function action({ request }) {
     body: JSON.stringify(authData),
   });
 
-  if (response.status === 422 || response.status === 401) {
-    return response;
-  }
-
+  // TODO: 백엔드에서 유효하지 않은 로그인, 회원가입 요청시 다른 에러 코드 받도록 요구
+  // ex) 401 : 아이디 양식 누락, 402 : 비밀번호 양식 누락, 403 : 아이디, 비밀번호 양식 모두 누락, 410 : 서비스 센터 이름 누락, 411 : 서비스 센터 위치 설정 누락 (유효하지 않은 위치의 경우도 고려?)
   if (!response.ok) {
-    throw json({ message: "Could not authenticate user." }, { status: 500 });
+    if (mode === "login") {
+      alert("로그인 정보가 없습니다. 다시 입력해주세요.");
+      return redirect("/auth?mode=login");
+    } else if (mode === "signUp") {
+      alert("이미 존재하는 회원 정보입니다. 다시 입력해주세요.");
+      return redirect(`/auth?mode=signUp&type=${type}`);
+    }
   }
 
   const resData = await response.json();

@@ -177,7 +177,7 @@ function AuthForm() {
             </AuthLink>
           </ModeContainer>
         )}
-        {(userType || isLogin) && (
+        {(isLogin || userType) && (
           <AuthContainer>
             <AuthInputContainer>
               <InputText
