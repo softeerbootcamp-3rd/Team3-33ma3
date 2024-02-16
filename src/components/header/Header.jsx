@@ -4,8 +4,6 @@ import NavItem from "./NavItem";
 import { CONTENT_MAX_WIDTH } from "../../constants/layouts";
 import { Link } from "react-router-dom";
 import Alarm from "../../assets/alarm.png";
-import AuthenticationModal from "../../pages/AuthenticationPage/AuthenticationPage";
-import { useRef } from "react";
 
 const HeaderContainer = styled.header`
   display: flex;
@@ -44,7 +42,7 @@ const NavItems = styled.div`
   align-items: center;
 `;
 
-function Header() {
+function Header(token) {
   return (
     <>
       <HeaderContainer>
@@ -59,7 +57,7 @@ function Header() {
           <NavItems>
             <NavItem />
             <Link to="/auth?mode=login">
-              <LoginNav>로그인</LoginNav>
+              <LoginNav>{token ? "로그아웃" : "로그인"}</LoginNav>
             </Link>
             <img src={Alarm} style={{ width: "30px", height: "30px" }} />
           </NavItems>
