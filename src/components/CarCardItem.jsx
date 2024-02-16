@@ -10,8 +10,8 @@ const CarCardContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 30px;
-  max-width: 450px;
-  min-width: 350px;
+  max-width: 340px;
+  min-width: 230px;
   background-color: ${({ theme }) => theme.colors.surface_white_weak};
   border-radius: ${({ theme }) => theme.radiuses.radius_m};
   gap: 23px;
