@@ -12,32 +12,14 @@ const AuctionList = styled.div`
   gap: 5px;
 `;
 
-const dummy = [
-  {
-    price: "123",
-    offerId: 1,
-    centerName: "가나",
-  },
-  {
-    price: "1234",
-    offerId: 2,
-    centerName: "가나다",
-  },
-  {
-    price: "1235",
-    offerId: 1,
-    centerName: "가나라",
-  },
-];
-
 function OfferList({ offerList, disabled }) {
   const [focusOffer, setFocusOffer] = useState();
-  offerList = dummy;
 
   function clickOffer(index) {
     setFocusOffer(index);
   }
 
+  console.log(offerList);
   const offers = offerList.map((offer, index) => (
     <AuctionPrice
       price={offer.price}

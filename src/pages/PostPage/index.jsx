@@ -9,6 +9,8 @@ import CarInfo from "./components/CarInfo";
 import { BASE_URL } from "../../constants/url";
 import OfferList from "./components/OfferList";
 import AuctionResult from "./components/AuctionResult";
+import { useRouteLoaderData, useSearchParams } from "react-router-dom";
+import AuctionStatus from "./components/AuctionStatus";
 
 const PostContainer = styled.div`
   padding-top: 70px;
@@ -31,15 +33,25 @@ const FullColumn = styled.div`
 
 function PostPage() {
   const [postData, setPostData] = useState();
+  const [offerList, setOfferList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [query, setQuery] = useSearchParams();
+  const { accessToken } = useRouteLoaderData("root");
+  const postId = query.get("post_id");
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(BASE_URL + "post/one/1")
+    fetch(BASE_URL + `post/one/${postId}`, {
+      method: "GET",
+      headers: {
+        Authorization: accessToken ? accessToken : null,
+      },
+    })
       .then((res) => res.json())
       .then((json) => {
         console.log(json.data);
         setPostData(json.data.postDetail);
+        setOfferList(json.data.offerDetails);
         setIsLoading(false);
       });
   }, []);
@@ -56,15 +68,10 @@ function PostPage() {
               <Content content={postData.contents} />
             </FullColumn>
             <FullColumn>
-              <OptionType title={"경매 현황"}>
-                <AuctionAverageStatus />
-              </OptionType>
-            </FullColumn>
-            <FullColumn>
-              <AuctionResult />
+              <AuctionStatus curOfferList={offerList} postId={postId} />
             </FullColumn>
           </PostInfo>
-          <SubmitButton children={"경매 참여"} />
+          <SubmitButton>경매 참여</SubmitButton>
         </PostContainer>
       )}
     </Page>

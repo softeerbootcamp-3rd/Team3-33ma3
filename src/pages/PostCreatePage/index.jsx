@@ -17,6 +17,7 @@ import {
 
 import { BASE_URL } from "../../constants/url";
 import LocationModal from "../../components/LocationModal";
+import { redirect, useNavigate, useRouteLoaderData } from "react-router-dom";
 
 const Form = styled.form`
   width: 100%;
@@ -61,6 +62,8 @@ function PostCreatePage() {
   const [address, setAddress] = useState("");
   const [centerList, setCenterList] = useState([]);
   const [radius, setRadius] = useState(0);
+  const { accessToken } = useRouteLoaderData("root");
+  const navigate = useNavigate();
 
   // Form 제출 버튼 클릭 시 실행
   function onSubmit(e) {
@@ -101,8 +104,7 @@ function PostCreatePage() {
     fetch(BASE_URL + "post/create", {
       method: "POST",
       headers: {
-        Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwibWVtYmVyVHlwZSI6MSwibWVtYmVySWQiOjEsImxvZ2luSWQiOiJ1c2VyMSIsImV4cCI6MTcwNzgxNTcyNX0._l5jHGQnmK8KzdDe118G8lzfx3z5CQzq4h0JaDB5c0s",
+        Authorization: accessToken,
         Accept: "application/json",
       },
       body: fd,
@@ -120,6 +122,7 @@ function PostCreatePage() {
       })
       .finally(() => {
         setLoading(false);
+        navigate("/");
       });
   }
 
