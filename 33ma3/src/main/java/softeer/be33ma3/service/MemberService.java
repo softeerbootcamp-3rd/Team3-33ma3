@@ -57,6 +57,6 @@ public class MemberService {
         JwtToken jwtToken = jwtService.getJwtToken(member.getMemberType(), member.getMemberId(), loginDto.getLoginId());
         member.setRefreshToken(jwtToken.getRefreshToken()); //리프레시 토큰 저장
 
-        return new LoginSuccessDto(member.getMemberId(), jwtToken);
+        return LoginSuccessDto.createLoginSuccessDto(member, jwtToken);
     }
 }

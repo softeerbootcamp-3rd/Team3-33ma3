@@ -15,7 +15,6 @@ import softeer.be33ma3.dto.request.LoginDto;
 import softeer.be33ma3.dto.request.ClientSignUpDto;
 import softeer.be33ma3.dto.response.LoginSuccessDto;
 import softeer.be33ma3.jwt.JwtService;
-import softeer.be33ma3.jwt.JwtToken;
 import softeer.be33ma3.response.DataResponse;
 import softeer.be33ma3.response.SingleResponse;
 import softeer.be33ma3.service.MemberService;
@@ -63,7 +62,7 @@ public class MemberController {
     public ResponseEntity<?> login(@RequestBody @Valid LoginDto loginDto){
         LoginSuccessDto loginSuccessDto = memberService.login(loginDto);
 
-        return ResponseEntity.ok(DataResponse.success("로그인 성공", loginSuccessDto));
+        return ResponseEntity.ok(DataResponse.success("로그인 성공", loginSuccessDto.getJwtToken()));
     }
 
     @ApiResponses({
