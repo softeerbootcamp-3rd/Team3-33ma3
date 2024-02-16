@@ -7,10 +7,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.ChatMessageRequestDto;
+import softeer.be33ma3.dto.response.ChatDto;
 import softeer.be33ma3.jwt.CurrentUser;
 import softeer.be33ma3.response.DataResponse;
 import softeer.be33ma3.response.SingleResponse;
 import softeer.be33ma3.service.ChatService;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,5 +33,12 @@ public class ChatController {
         chatService.sendMessage(sender, roomId, receiverId, chatMessageRequestDto.getMessage());
 
         return ResponseEntity.ok().body(SingleResponse.success("전송 성공"));
+    }
+
+    @GetMapping("/chat/all")
+    public ResponseEntity<?> showAllChat(@CurrentUser Member member){
+        List<ChatDto> allChatDto = chatService.showAllChat(member);
+
+        return ResponseEntity.ok().body(DataResponse.success("채팅 내역 전송 성공", allChatDto));
     }
 }

@@ -1,17 +1,26 @@
 package softeer.be33ma3.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.domain.*;
+import softeer.be33ma3.dto.response.ChatDto;
 import softeer.be33ma3.dto.response.ChatMessageResponseDto;
 import softeer.be33ma3.exception.UnauthorizedException;
 import softeer.be33ma3.repository.*;
 import softeer.be33ma3.websocket.WebSocketHandler;
 import softeer.be33ma3.websocket.WebSocketRepository;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static softeer.be33ma3.service.MemberService.CENTER_TYPE;
+import static softeer.be33ma3.service.MemberService.CLIENT_TYPE;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
@@ -20,6 +29,7 @@ public class ChatService {
     private final WebSocketHandler webSocketHandler;
     private final WebSocketRepository webSocketRepository;
     private final AlertRepository alertRepository;
+    private final CenterRepository centerRepository;
 
     @Transactional
     public Long createRoom(Member client, Long centerId, Long postId) {
@@ -46,9 +56,37 @@ public class ChatService {
             alertRepository.save(alert);
             return;
         }
-
+        //채팅룸에 상대방이 존재하는 경우
         chatMessage.setReadDoneTrue();   //읽음 처리
         ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.createChatMessage(chatMessage);
-        webSocketHandler.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);
+        webSocketHandler.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);   //실시간 전송
+    }
+
+    public List<ChatDto> showAllChat(Member member) {
+        List<ChatDto> allChatDto = new ArrayList<>();
+
+        if(member.getMemberType() == CLIENT_TYPE){
+            List<ChatRoom> chatRooms = chatRoomRepository.findByClient_MemberId(member.getMemberId());
+            for (ChatRoom chatRoom : chatRooms) {
+                Center center = centerRepository.findByMember_MemberId(chatRoom.getCenter().getMemberId()).get();
+                allChatDto.add(getChatDto(chatRoom, center.getCenterName()));
+            }
+        }
+
+        if(member.getMemberType() == CENTER_TYPE) {
+            List<ChatRoom> chatRooms = chatRoomRepository.findByCenter_MemberId(member.getMemberId());
+            for (ChatRoom chatRoom : chatRooms) {
+                allChatDto.add(getChatDto(chatRoom, chatRoom.getClient().getLoginId()));
+            }
+        }
+
+        return allChatDto;
+    }
+
+    private ChatDto getChatDto(ChatRoom chatRoom, String memberName) {
+        String lastChatMessage = chatMessageRepository.findTop1ByChatRoomId(chatRoom.getChatRoomId());      //마지막 메세지
+        int count = (int) chatMessageRepository.countReadDoneIsFalse(chatRoom.getChatRoomId());     //안읽은 메세지 개수
+
+        return ChatDto.createChatDto(chatRoom, lastChatMessage, memberName, count);
     }
 }
