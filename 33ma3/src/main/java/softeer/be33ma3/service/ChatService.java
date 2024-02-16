@@ -21,6 +21,7 @@ import static softeer.be33ma3.service.MemberService.CLIENT_TYPE;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
@@ -40,7 +41,7 @@ public class ChatService {
             throw new UnauthorizedException("작성자만 문의할 수 있습니다.");
         }
 
-        ChatRoom chatRoom = ChatRoom.createCenter(client, center);
+        ChatRoom chatRoom = ChatRoom.createChatRoom(client, center);
         return chatRoomRepository.save(chatRoom).getChatRoomId();
     }
 
