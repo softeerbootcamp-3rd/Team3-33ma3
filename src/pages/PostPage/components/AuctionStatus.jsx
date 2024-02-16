@@ -1,14 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import OptionType from "../../../components/post/OptionType";
 import OfferList from "./OfferList";
+import { BASE_URL, IP } from "../../../constants/url";
 
-function AuctionStatus() {
+function AuctionStatus({ postId, curOfferList }) {
   const webSocket = useRef(null);
-  const [offerList, setOfferList] = useState([]);
+  const [offerList, setOfferList] = useState(curOfferList);
 
   useEffect(() => {
     // /connect/{postId}/{memberId}
-    webSocket.current = new WebSocket("ws://192.168.1.192:8080/connect/3/2");
+    webSocket.current = new WebSocket(`ws://${IP}/connect/post/${postId}/1`);
 
     // socket 연결 시 이벤트
     webSocket.current.onopen = () => {
@@ -40,11 +41,11 @@ function AuctionStatus() {
     };
   }, []);
 
-  const sendMessage = (message) => {
-    if (webSocket.current.readyState === WebSocket.OPEN) {
-      webSocket.current.send(message);
-    }
-  };
+  // const sendMessage = (message) => {
+  //   if (webSocket.current.readyState === WebSocket.OPEN) {
+  //     webSocket.current.send(message);
+  //   }
+  // };
 
   return (
     <OptionType title={"경매 현황"}>

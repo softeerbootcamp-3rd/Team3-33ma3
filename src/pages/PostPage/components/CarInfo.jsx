@@ -26,16 +26,16 @@ function CarInfo({ postData }) {
       <OptionType title={"차량 정보"}>
         <OptionItems>
           <OptionItem title={"차종"}>
-            <p>승용</p>
+            <p>{postData.carType}</p>
           </OptionItem>
           <OptionItem title={"모델"}>
-            <p>제네시스</p>
+            <p>{postData.modelName}</p>
           </OptionItem>
           <OptionItem title={"마감 기한"}>
-            <p>3일 남음</p>
+            <p>{postData.dday}</p>
           </OptionItem>
           <OptionItem title={"지역"}>
-            <p>서울시 강남구</p>
+            <p>{postData.regionName}</p>
           </OptionItem>
           <OptionItem title={"수리 서비스"}>
             <ServiceList>

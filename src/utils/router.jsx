@@ -6,9 +6,15 @@ import ChatRoomPage from "../pages/ChatRoomPage";
 import InquiryHistoryPage from "../pages/InquiryHistoryPage";
 import CenterListPage from "../pages/CenterListPage";
 import CenterInfoPage from "../pages/CenterInfoPage";
-import { Outlet, createBrowserRouter } from "react-router-dom";
+import {
+  Navigate,
+  Outlet,
+  createBrowserRouter,
+  useRouteLoaderData,
+} from "react-router-dom";
 import { tokenLoader } from "./auth";
 import { action } from "../pages/AuthenticationPage/AuthenticationPage";
+import AuthenticationModal from "../pages/AuthenticationPage/AuthenticationPage";
 
 const router = createBrowserRouter([
   {
@@ -25,25 +31,44 @@ const router = createBrowserRouter([
         element: <PostListPage />,
       },
       {
+        path: "auth",
+        element: <AuthenticationModal />,
+      },
+      {
         path: "post/info",
-        element: <PostPage />,
+        element: (
+          <RequireAuth>
+            <PostPage />
+          </RequireAuth>
+        ),
       },
       {
         path: "post/list",
         element: <PostListPage />,
       },
       {
-        // 로그인 안 할 시 접근 불가능
         path: "post/create",
-        element: <PostCreatePage />,
+        element: (
+          <RequireAuth>
+            <PostCreatePage />
+          </RequireAuth>
+        ),
       },
       {
         path: "inquiry-history",
-        element: <InquiryHistoryPage />,
+        element: (
+          <RequireAuth>
+            <InquiryHistoryPage />
+          </RequireAuth>
+        ),
       },
       {
         path: "chat-room",
-        element: <ChatRoomPage />,
+        element: (
+          <RequireAuth>
+            <ChatRoomPage />
+          </RequireAuth>
+        ),
       },
       {
         path: "center-review",
@@ -62,5 +87,14 @@ const router = createBrowserRouter([
     ],
   },
 ]);
+
+function RequireAuth({ children }) {
+  const tokenLoader = useRouteLoaderData("root");
+
+  if (tokenLoader.accessToken === null) {
+    return <Navigate to={"/auth"} />;
+  }
+  return children;
+}
 
 export default router;
