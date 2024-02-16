@@ -7,6 +7,7 @@ import styled from "styled-components";
 
 const SilderContainer = styled.div`
   height: ${({ size }) => (size === "large" ? "530px" : "290px")};
+  width: ${({ size }) => (size === "large" ? "480px" : "100%")};
 `;
 const StyledSlider = styled(Slider)`
   position: relative;

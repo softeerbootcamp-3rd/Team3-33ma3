@@ -10,9 +10,19 @@ function getAuthToken() {
   return token;
 }
 
+export function getId() {
+  const id = localStorage.getItem("id");
+  if (!id) {
+    return null;
+  }
+  return id;
+}
+
 export function tokenLoader() {
-  const token = getAuthToken();
-  return token;
+  const accessToken = getAuthToken();
+  const id = getId();
+
+  return { accessToken: accessToken, id: id };
 }
 
 export function checkAuthLoader() {
