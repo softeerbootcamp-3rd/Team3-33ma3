@@ -31,7 +31,9 @@ public class ChatHistoryDto {
     }
 
     private static String createTimeFormatting(LocalDateTime createTime) {
+        String periodOfDay = createTime.getHour() < 12 ? "오전 " : "오후 ";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        return createTime.format(formatter);
+
+        return periodOfDay + createTime.format(formatter);
     }
 }
