@@ -9,5 +9,8 @@ import java.util.List;
 
 public interface PostPerCenterRepository extends JpaRepository<PostPerCenter, Long> {
     @Query("SELECT ppc.post FROM PostPerCenter ppc WHERE ppc.center.centerId = :centerId ORDER BY ppc.post.createTime DESC")
-    List<Post> findPostsByCenter_CenterIdOrderByCreateTimeDesc(Long centerId);
+    List<Post> findPostsByCenterIdOrderByCreateTimeDesc(Long centerId);
+
+    @Query("SELECT ppc.post.postId FROM PostPerCenter ppc WHERE ppc.center.centerId = :centerId")
+    List<Long> findPostIdsByCenterId(Long centerId);
 }

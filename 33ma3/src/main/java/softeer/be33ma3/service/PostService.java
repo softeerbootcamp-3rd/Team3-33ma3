@@ -40,7 +40,22 @@ public class PostService {
         }
         // 2. 서비스 센터일 경우 -> 센터에 해당하는 게시글만 가져오기
         Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 센터"));
-        List<Post> posts = postPerCenterRepository.findPostsByCenter_CenterIdOrderByCreateTimeDesc(center.getCenterId());
+        List<Post> posts = postPerCenterRepository.findPostsByCenterIdOrderByCreateTimeDesc(center.getCenterId());
+        return fromPostList(posts);
+    }
+
+    // 게시글 목록 조회
+    public List<PostThumbnailDto> showPosts(Boolean done, String region, String repair, String tuneUp, Member member) {
+        List<String> regions = stringCommaParsing(region);
+        List<String> repairs = stringCommaParsing(repair);
+        List<String> tuneUps = stringCommaParsing(tuneUp);
+        List<Post> posts = List.of();
+        List<Long> postIds = null;
+        if(member != null && member.getMemberType() == CENTER_TYPE) {
+            Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 센터"));
+            postIds = postPerCenterRepository.findPostIdsByCenterId(center.getCenterId());
+        }
+        posts = postRepository.findAllByConditions(done, regions, repairs, tuneUps, postIds);
         return fromPostList(posts);
     }
 
@@ -178,7 +193,7 @@ public class PostService {
 
     // 구분자 콤마로 문자열 파싱 후 각각의 토큰에서 공백 제거 후 리스트 반환
     public static List<String> stringCommaParsing(String inputString) {
-        if(inputString.isEmpty())
+        if(inputString.isBlank())
             return List.of();
         return Arrays.stream(inputString.split(","))
                 .map(String::strip)
