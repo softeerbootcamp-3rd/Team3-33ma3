@@ -2,14 +2,18 @@ import React, { useEffect, useRef, useState } from "react";
 import OptionType from "../../../components/post/OptionType";
 import OfferList from "./OfferList";
 import { BASE_URL, IP } from "../../../constants/url";
+import { useRouteLoaderData } from "react-router-dom";
 
 function AuctionStatus({ postId, curOfferList }) {
   const webSocket = useRef(null);
   const [offerList, setOfferList] = useState(curOfferList);
+  const { memberId } = useRouteLoaderData("root");
 
   useEffect(() => {
     // /connect/{postId}/{memberId}
-    webSocket.current = new WebSocket(`ws://${IP}/connect/post/${postId}/1`);
+    webSocket.current = new WebSocket(
+      `ws://${IP}/connect/post/${postId}/${memberId}`
+    );
 
     // socket 연결 시 이벤트
     webSocket.current.onopen = () => {
@@ -40,12 +44,6 @@ function AuctionStatus({ postId, curOfferList }) {
       webSocket.current.close();
     };
   }, []);
-
-  // const sendMessage = (message) => {
-  //   if (webSocket.current.readyState === WebSocket.OPEN) {
-  //     webSocket.current.send(message);
-  //   }
-  // };
 
   return (
     <OptionType title={"경매 현황"}>

@@ -7,9 +7,15 @@ import Content from "./components/Content";
 import AuctionAverageStatus from "./components/AuctionAverageStatus";
 import CarInfo from "./components/CarInfo";
 import { BASE_URL } from "../../constants/url";
+import { CENTER_TYPE } from "../../constants/options";
 import OfferList from "./components/OfferList";
 import AuctionResult from "./components/AuctionResult";
-import { useRouteLoaderData, useSearchParams } from "react-router-dom";
+import {
+  redirect,
+  useNavigate,
+  useRouteLoaderData,
+  useSearchParams,
+} from "react-router-dom";
 import AuctionStatus from "./components/AuctionStatus";
 
 const PostContainer = styled.div`
@@ -33,11 +39,12 @@ const FullColumn = styled.div`
 
 function PostPage() {
   const [postData, setPostData] = useState();
-  const [offerList, setOfferList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isWriter, setIsWriter] = useState();
   const [query, setQuery] = useSearchParams();
-  const { accessToken } = useRouteLoaderData("root");
+  const { accessToken, memberId } = useRouteLoaderData("root");
   const postId = query.get("post_id");
+  const navigate = useNavigate();
 
   useEffect(() => {
     setIsLoading(true);
@@ -50,11 +57,28 @@ function PostPage() {
       .then((res) => res.json())
       .then((json) => {
         console.log(json.data);
-        setPostData(json.data.postDetail);
-        setOfferList(json.data.offerDetails);
+
+        if (!validateAuthorization(json.data.postDetail.dday)) {
+          alert("경매가 진행중인 게시물은 로그인 이후 이용 가능합니다.");
+          console.log("경매가 진행중인 게시물은 로그인 이후 이용 가능합니다.");
+          navigate("/");
+        }
+
+        // 작성자인지 확인
+        setIsWriter(json.data.postDetail.writerId === Number(memberId));
+        setPostData(json.data);
         setIsLoading(false);
       });
   }, []);
+
+  // 로그인 안된 경우 마감되지 않은 게시물은 접근 제한
+  function validateAuthorization(dDay) {
+    if (!accessToken) {
+      console.log(dDay === -1);
+      return dDay === -1;
+    }
+    return true;
+  }
 
   return (
     <Page>
@@ -63,15 +87,25 @@ function PostPage() {
       ) : (
         <PostContainer>
           <PostInfo>
-            <CarInfo postData={postData} />
+            <CarInfo postData={postData.postDetail} />
             <FullColumn>
-              <Content content={postData.contents} />
+              <Content content={postData.postDetail.contents} />
             </FullColumn>
             <FullColumn>
-              <AuctionStatus curOfferList={offerList} postId={postId} />
+              {isWriter ? (
+                <AuctionStatus
+                  curOfferList={postData.offerList}
+                  postId={postId}
+                />
+              ) : (
+                <AuctionAverageStatus
+                  curAvgPrice={postData.avgPrice}
+                  curOfferDetail={postData.offerDetail}
+                  postId={postId}
+                />
+              )}
             </FullColumn>
           </PostInfo>
-          <SubmitButton>경매 참여</SubmitButton>
         </PostContainer>
       )}
     </Page>
