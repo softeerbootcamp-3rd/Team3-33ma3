@@ -47,10 +47,8 @@ public class PostThumbnailDto {
     private int offerCount;
 
     // Post Entity -> PostThumbnailDto 변환
-    public static PostThumbnailDto fromEntity(Post post, int offerCount) {
+    public static PostThumbnailDto fromEntity(Post post, List<String> repairList, List<String> tuneUpList, int offerCount) {
         List<String> imageList = post.getImages().stream().map(Image::getLink).toList();
-        List<String> repairList = PostService.stringCommaParsing(post.getRepairService());
-        List<String> tuneUpList = PostService.stringCommaParsing(post.getTuneUpService());
         Duration duration = PostDetailDto.calculateDuration(post);
         int dDay = -1;
         int remainTime = 0;

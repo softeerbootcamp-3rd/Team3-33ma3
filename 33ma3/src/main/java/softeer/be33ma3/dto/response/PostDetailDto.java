@@ -51,9 +51,7 @@ public class PostDetailDto {
     private List<String> imageList;
 
     // Post Entity -> PostDetailDto 변환
-    public static PostDetailDto fromEntity(Post post) {
-        List<String> repairList = PostService.stringCommaParsing(post.getRepairService());
-        List<String> tuneUpList = PostService.stringCommaParsing(post.getTuneUpService());
+    public static PostDetailDto fromEntity(Post post, List<String> repairList, List<String> tuneUpList) {
         List<String> imageList = post.getImages().stream().map(Image::getLink).toList();
         Duration duration = calculateDuration(post);
         int dDay = -1;
