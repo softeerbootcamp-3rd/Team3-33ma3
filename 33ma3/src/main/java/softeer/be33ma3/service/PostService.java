@@ -36,13 +36,12 @@ public class PostService {
         List<String> regions = stringCommaParsing(region);
         List<String> repairs = stringCommaParsing(repair);
         List<String> tuneUps = stringCommaParsing(tuneUp);
-        List<Post> posts = List.of();
         List<Long> postIds = null;
         if(member != null && member.getMemberType() == CENTER_TYPE) {
             Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 센터"));
             postIds = postPerCenterRepository.findPostIdsByCenterId(center.getCenterId());
         }
-        posts = postRepository.findAllByConditions(done, regions, repairs, tuneUps, postIds);
+        List<Post> posts = postRepository.findAllByConditions(done, regions, repairs, tuneUps, postIds);
         return fromPostList(posts);
     }
 
