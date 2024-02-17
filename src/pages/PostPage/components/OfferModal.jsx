@@ -38,7 +38,22 @@ function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
     e.preventDefault();
 
     const formData = new FormData(e.target);
+    // 경매 참여
+    if (!offerDetail) {
+      console.log("경매 참여");
+      submitOffer(formData);
+    }
+    // 기존 댓글 수정
+    else {
+      console.log("경매 수정");
+      editOffer(formData);
+    }
+  }
+
+  // 경매 참여
+  function submitOffer(formData) {
     const newOffer = { ...Object.fromEntries(formData.entries()) };
+    console.log(newOffer);
 
     fetch(BASE_URL + `post/${postId}/offer`, {
       method: "POST",
@@ -51,8 +66,37 @@ function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
       .then((res) => {
         if (res.ok) {
           return res.json();
+        } else {
+          throw new Error("not ok");
         }
-        console.log("error");
+      })
+      .then((json) => {
+        console.log(json);
+        updateOfferDetail(newOffer);
+        handleClose();
+      });
+  }
+
+  // 입찰 댓글 수정
+  function editOffer(formData) {
+    const newOffer = { ...Object.fromEntries(formData.entries()) };
+    console.log(newOffer);
+    console.log("수정");
+
+    fetch(BASE_URL + `post/${postId}/offer/${offerDetail.offerId}`, {
+      method: "POST",
+      headers: {
+        Authorization: accessToken,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ...offerDetail, ...newOffer }),
+    })
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw new Error("not ok");
+        }
       })
       .then((json) => {
         console.log(json);
@@ -76,6 +120,7 @@ function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
       .then((json) => {
         console.log(json);
         updateOfferDetail(null);
+        handleClose();
       });
   }
 

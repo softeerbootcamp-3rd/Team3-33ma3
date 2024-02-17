@@ -49,7 +49,7 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
   // TODO: 웹 소켓 연결
   useEffect(() => {
     webSocket.current = new WebSocket(
-      `ws://${IP}connect/post/${postId}/${memberId}`
+      `ws://${IP}/connect/post/${postId}/${memberId}`
     );
 
     webSocket.current.onopen = () => {

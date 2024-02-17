@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import Comment from "../../../components/post/Comment";
 import AuctionPrice from "../../../components/post/AuctionPrice";
@@ -12,21 +12,24 @@ const AuctionList = styled.div`
   gap: 5px;
 `;
 
-function OfferList({ offerList, disabled }) {
+function OfferList({ prevOfferList, offerList, disabled }) {
   const [focusOffer, setFocusOffer] = useState();
+  console.log(prevOfferList.current);
 
   function clickOffer(index) {
     setFocusOffer(index);
   }
 
   console.log(offerList);
+  // 기존에도 존재했던 offerId라면 hetch 애니메이션 실행
   const offers = offerList.map((offer, index) => (
     <AuctionPrice
       price={offer.price}
       centerName={offer.centerName}
-      key={offer.offerId}
+      key={offer.offerId + "/" + offer.price}
       onClick={() => clickOffer(index)}
       isActive={focusOffer === index}
+      isEdited={prevOfferList.current.has(offer.offerId)}
     />
   ));
 

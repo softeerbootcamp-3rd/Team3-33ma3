@@ -4,10 +4,13 @@ import OfferList from "./OfferList";
 import { BASE_URL, IP } from "../../../constants/url";
 import { useRouteLoaderData } from "react-router-dom";
 
-function AuctionStatus({ postId, curOfferList }) {
+function AuctionStatus({ postId, curOfferDetails }) {
   const webSocket = useRef(null);
-  const [offerList, setOfferList] = useState(curOfferList);
+  const [offerList, setOfferList] = useState(curOfferDetails);
   const { memberId } = useRouteLoaderData("root");
+  const prevOfferList = useRef(
+    new Set(curOfferDetails.map((offer) => offer.offerId))
+  );
 
   useEffect(() => {
     // /connect/{postId}/{memberId}
@@ -29,6 +32,7 @@ function AuctionStatus({ postId, curOfferList }) {
     // socket에서 메세지 전달 시 이벤트
     webSocket.current.onmessage = (event) => {
       console.log(event.data);
+      prevOfferList.current = new Set(offerList.map((offer) => offer.offerId));
       setOfferList(JSON.parse(event.data));
     };
 
@@ -47,7 +51,7 @@ function AuctionStatus({ postId, curOfferList }) {
 
   return (
     <OptionType title={"경매 현황"}>
-      <OfferList offerList={offerList} />
+      <OfferList offerList={offerList} prevOfferList={prevOfferList} />
     </OptionType>
   );
 }

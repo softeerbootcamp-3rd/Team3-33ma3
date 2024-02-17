@@ -18,8 +18,10 @@ const Container = styled.button`
     transform: scale(1.05);
   }
 
-  animation-name: ${(props) => !props.isEnd && "pullUp"};
-  -webkit-animation-name: ${(props) => !props.isEnd && "pullUp"};
+  animation-name: ${(props) =>
+    !props.isEnd && props.isEdited === false && "pullUp"};
+  -webkit-animation-name: ${(props) =>
+    !props.isEnd && props.isEdited === false && "pullUp"};
 
   animation-duration: 1.1s;
   -webkit-animation-duration: 1.1s;
@@ -85,14 +87,16 @@ const Bubble = styled.div`
   height: 147px;
   position: relative;
 
-  animation-name: ${(props) => props.inStatus && "floating"};
-  -webkit-animation-name: ${(props) => props.inStatus && "floating"};
+  &.floating {
+    animation-name: floating;
+    -webkit-animation-name: floating;
 
-  animation-duration: 1.5s;
-  -webkit-animation-duration: 1.5s;
+    animation-duration: 1.5s;
+    -webkit-animation-duration: 1.5s;
 
-  animation-iteration-count: infinite;
-  -webkit-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+    -webkit-animation-iteration-count: infinite;
+  }
 
   @keyframes floating {
     0% {
@@ -147,6 +151,71 @@ const Bubble = styled.div`
       opacity: 0.7;
     }
   }
+
+  &.hatch{
+    animation-name: hatch;
+    -webkit-animation-name: hatch;	
+  
+    animation-duration: 2s;	
+    -webkit-animation-duration: 2s;
+  
+    animation-timing-function: ease-in-out;	
+    -webkit-animation-timing-function: ease-in-out;
+  
+    transform-origin: 50% 100%;
+    -ms-transform-origin: 50% 100%;
+    -webkit-transform-origin: 50% 100%; 
+  
+    visibility: visible !important;		
+  }
+  
+  @keyframes hatch {
+    0% {
+      transform: rotate(0deg) scaleY(0.6);
+    }
+    20% {
+      transform: rotate(-2deg) scaleY(1.05);
+    }
+    35% {
+      transform: rotate(2deg) scaleY(1);
+    }
+    50% {
+      transform: rotate(-2deg);
+    }	
+    65% {
+      transform: rotate(1deg);
+    }	
+    80% {
+      transform: rotate(-1deg);
+    }		
+    100% {
+      transform: rotate(0deg);
+    }									
+  }
+  
+  @-webkit-keyframes hatch {
+    0% {
+      -webkit-transform: rotate(0deg) scaleY(0.6);
+    }
+    20% {
+      -webkit-transform: rotate(-2deg) scaleY(1.05);
+    }
+    35% {
+      -webkit-transform: rotate(2deg) scaleY(1);
+    }
+    50% {
+      -webkit-transform: rotate(-2deg);
+    }	
+    65% {
+      -webkit-transform: rotate(1deg);
+    }	
+    80% {
+      -webkit-transform: rotate(-1deg);
+    }		
+    100% {
+      -webkit-transform: rotate(0deg);
+    }		
+  }
 `;
 
 const Price = styled.div`
@@ -169,11 +238,13 @@ function AuctionPrice({
   isActive,
   inStatus,
   isEnd,
+  isEdited,
   onClick,
 }) {
+  console.log(isEdited);
   return (
     <Container $isActive={isActive} onClick={onClick} isEnd={isEnd}>
-      <Bubble inStatus={inStatus}>
+      <Bubble className={isEdited && "hatch"}>
         <Price>{price}만</Price>
         <img src={SpeechBubble} style={bubbleImageSize} />
       </Bubble>

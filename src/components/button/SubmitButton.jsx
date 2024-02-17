@@ -26,10 +26,16 @@ const Button = styled.button`
   }
 `;
 
-export default function SubmitButton({ size, children, onClick, disabled }) {
+export default function SubmitButton({
+  size,
+  children,
+  onClick,
+  disabled,
+  type,
+}) {
   return (
     <>
-      <Button size={size} onClick={onClick} disabled={disabled}>
+      <Button size={size} onClick={onClick} disabled={disabled} type={type}>
         {children}
       </Button>
     </>
