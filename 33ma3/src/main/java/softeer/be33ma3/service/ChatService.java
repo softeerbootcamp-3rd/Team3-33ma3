@@ -54,7 +54,7 @@ public class ChatService {
         Member receiver = memberRepository.findById(receiverId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
 
         if(sender.getMemberType() == CLIENT_TYPE){
-            if(chatRoom.getClient().equals(sender) && chatRoom.getCenter().equals(receiver)){
+            if(!(chatRoom.getClient().equals(sender) && chatRoom.getCenter().equals(receiver))){
                 throw new UnauthorizedException("해당 방의 회원이 아닙니다.");
             }
         }
