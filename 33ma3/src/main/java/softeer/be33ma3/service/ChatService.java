@@ -52,6 +52,13 @@ public class ChatService {
     public void sendMessage(Member sender, Long roomId, Long receiverId, String contents) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅 룸"));
         Member receiver = memberRepository.findById(receiverId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
+
+        if(sender.getMemberType() == CLIENT_TYPE){
+            if(chatRoom.getClient().equals(sender) && chatRoom.getCenter().equals(receiver)){
+                throw new UnauthorizedException("해당 방의 멤버가 아닙니다.");
+            }
+        }
+
         ChatMessage chatMessage = ChatMessage.createChatMessage(sender, chatRoom, contents);
         chatMessage = chatMessageRepository.save(chatMessage);
 
