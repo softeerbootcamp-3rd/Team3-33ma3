@@ -47,6 +47,8 @@ public class WebSocketService {
 
     // 데이터 (클래스 객체) 전송
     public void sendData(Long memberId, Object data) throws IOException {
+        if(memberId == null || data == null)
+            return;
         // 클라이언트에 해당하는 세션 가져오기
         WebSocketSession session = webSocketRepository.findSessionByMemberId(memberId);
         if(session == null) {
@@ -76,5 +78,12 @@ public class WebSocketService {
     // 해당 게시글에 접속해있는 유저 목록 반환
     public Set<Long> findAllMemberInPost(Long postId) {
         return webSocketRepository.findAllMemberInPost(postId);
+    }
+
+    public boolean isInPostRoom(Long postId, Long memberId) {
+        Set<Long> memberIds = webSocketRepository.findAllMemberInPost(postId);
+        if(memberId == null)
+            return false;
+        return memberIds.contains(memberId);
     }
 }

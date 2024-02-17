@@ -1,6 +1,7 @@
 package softeer.be33ma3.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.dto.response.AvgPriceDto;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class OfferService {
 
     private final OfferRepository offerRepository;
@@ -105,7 +107,7 @@ public class OfferService {
         // 5. 댓글 낙찰, 게시글 마감 처리
         offer.setSelected();
         post.setDone();
-        // 6. 서비스 센터들에게 낙찰 또는 경매 마감 메세지 보내기
+        // TODO: 6. 서비스 센터들에게 낙찰 또는 경매 마감 메세지 보내기
         Long selectedMemberId = offer.getCenter().getMember().getMemberId();
         sendMessageAfterSelection(postId, selectedMemberId);
         webSocketHandler.deletePostRoom(postId);
@@ -153,8 +155,11 @@ public class OfferService {
         // 1. 게시글에 속해있는 댓글 목록 가져오기
         List<Offer> offerList = offerRepository.findByPost_PostId(postId);
         List<OfferDetailDto> offerDetailList = OfferDetailDto.fromEntityList(offerList);
-        // 1. 전송하기
-        webSocketHandler.sendData2Client(memberId, offerDetailList);
+        // 2. 해당 게시글 화면에 진입해 있을 경우 전송하기
+        if(webSocketHandler.isInPostRoom(postId, memberId)) {
+            log.info("게시글 작성자에게 실시간 댓글 전송 진행");
+            webSocketHandler.sendData2Client(memberId, offerDetailList);
+        }
     }
 
     // 해당 게시글 화면을 보고 있는 모든 유저들에게 평균 견적 제시 가격 실시간 전송
@@ -163,6 +168,10 @@ public class OfferService {
         List<Offer> offerList = offerRepository.findByPost_PostId(postId);
         // 2. 해당 게시글을 보고 있는 모든 유저들 가져오기 (글 작성자도 포함되어있을 경우 제외시키기)
         Set<Long> memberList = webSocketHandler.findAllMemberInPost(postId);
+        if(memberList == null) {
+            log.info("해당 게시글을 보고 있는 유저가 없습니다.");
+            return;
+        }
         memberList = memberList.stream()
                 .filter(memberId -> !memberId.equals(writerId))
                 .collect(Collectors.toSet());
