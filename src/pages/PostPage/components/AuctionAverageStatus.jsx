@@ -115,7 +115,7 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
                 </Text>
               )}
               <Text>
-                {curOfferDetail === null ? (
+                {avgPrice === 0 ? (
                   "아직 경매가 시작되지 않았습니다."
                 ) : (
                   <>
