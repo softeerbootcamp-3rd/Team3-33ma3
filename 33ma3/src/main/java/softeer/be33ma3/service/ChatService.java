@@ -119,7 +119,7 @@ public class ChatService {
         }
 
         if (member.getMemberType() == CENTER_TYPE && !chatRoom.getCenter().equals(member)) {
-            throw new IllegalArgumentException("해당 방의 회원이 아닙니다.");
+            throw new UnauthorizedException("해당 방의 회원이 아닙니다.");
         }
     }
 
