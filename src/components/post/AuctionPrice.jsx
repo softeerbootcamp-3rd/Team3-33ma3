@@ -18,8 +18,8 @@ const Container = styled.button`
     transform: scale(1.05);
   }
 
-  animation-name: ${(props) => props.isEnd && "pullUp"};
-  -webkit-animation-name: ${(props) => props.isEnd && "pullUp"};
+  animation-name: ${(props) => !props.isEnd && "pullUp"};
+  -webkit-animation-name: ${(props) => !props.isEnd && "pullUp"};
 
   animation-duration: 1.1s;
   -webkit-animation-duration: 1.1s;
@@ -140,7 +140,7 @@ const Bubble = styled.div`
     }
     50% {
       -webkit-transform: scale(1);
-      opacity: 1;
+      opacity: 1;s
     }
     100% {
       -webkit-transform: scale(0.95);

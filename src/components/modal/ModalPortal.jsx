@@ -51,12 +51,12 @@ const ModalContent = styled.div`
   width: 100%;
 `;
 
-function ModalPortal({ width, handleClose, children }) {
+function ModalPortal({ width, title, handleClose, children }) {
   return createPortal(
     <Modal>
       <ModalBody width={width}>
         <ModalHeader>
-          <Title>dkdkdkdk</Title>
+          <Title>{title}</Title>
           <CloseButton onClick={handleClose}>
             <img src={CloseImg} style={{ width: "35px", height: "35px" }} />
           </CloseButton>
