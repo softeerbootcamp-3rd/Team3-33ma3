@@ -11,31 +11,30 @@ import ViewCurrentLocation from "./ViewCurrentLocation";
 import InputText from "./input/InputText";
 import SubmitButton from "./button/SubmitButton";
 import { BASE_URL } from "../constants/url";
-import ModalPortal from "./modal/ModalPortal";
 
 const KM_TO_M_CONVERSION_FACTOR = 1000;
 const MIN_RADIUS = 0;
 const MAX_RADIUS = 10;
 const DROP = 2;
 
-export const Dialog = styled.dialog`
+const Dialog = styled.dialog`
   padding: 30px;
   border-radius: ${(props) => props.theme.radiuses.radius_m};
   box-shadow: ${(props) => props.theme.boxShadow.floating};
 `;
 
-export const Title = styled.p`
+const Title = styled.p`
   color: ${(props) => props.theme.colors.surface_black};
   font-size: ${(props) => props.theme.fontSize.medium};
   font-weight: 700;
 `;
 
-export const CloseButton = styled.button`
+const CloseButton = styled.button`
   width: 35px;
   height: 35px;
 `;
 
-export const TopContainer = styled.div`
+const TopContainer = styled.div`
   display: flex;
 
   align-items: center;
@@ -60,7 +59,7 @@ const RadiusContainer = styled.div`
   align-items: center;
 `;
 
-export const Wrapper = styled.div`
+const Wrapper = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 10px;

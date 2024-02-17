@@ -1,14 +1,22 @@
 import AuthForm from "../../components/AuthForm";
 import { redirect, useSearchParams } from "react-router-dom";
-import { Title, Wrapper } from "../../components/LocationModal";
 import styled from "styled-components";
 import { BASE_URL } from "../../constants/url";
 
 const MiddleContainer = styled.div``;
 
-const AuthWrapper = styled(Wrapper)`
+const AuthWrapper = styled.div`
   display: flex;
   gap: 80px;
+  align-items: center;
+  gap: 10px;
+  flex-direction: column;
+`;
+
+const Title = styled.p`
+  color: ${(props) => props.theme.colors.surface_black};
+  font-size: ${(props) => props.theme.fontSize.medium};
+  font-weight: 700;
 `;
 
 const TitleContainer = styled.div`
