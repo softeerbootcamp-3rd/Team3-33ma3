@@ -10,8 +10,9 @@ import styled from "styled-components";
 import ViewCurrentLocation from "./ViewCurrentLocation";
 import InputText from "./input/InputText";
 import SubmitButton from "./button/SubmitButton";
+import { BASE_URL } from "../constants/url";
+import ModalPortal from "./modal/ModalPortal";
 
-export const URL = "http://15.165.162.126:8080/";
 const KM_TO_M_CONVERSION_FACTOR = 1000;
 const MIN_RADIUS = 0;
 const MAX_RADIUS = 10;
@@ -36,6 +37,7 @@ export const CloseButton = styled.button`
 
 export const TopContainer = styled.div`
   display: flex;
+
   align-items: center;
   gap: 30px;
   width: 100%;
@@ -129,7 +131,7 @@ export function searchAddressToCoordinate(
 // 반경 내의 marker 출력, 그 외는 제외하는 함수
 async function updateMarkers(map, circle, markers) {
   const response = await fetch(
-    `${URL}location?latitude=${map.center._lat}&longitude=${
+    `${BASE_URL}location?latitude=${map.center._lat}&longitude=${
       map.center._lng
     }&radius=${circle.getRadius() / 1000}`
   );
@@ -227,11 +229,13 @@ const LocationModal = forwardRef(function LocationModal(
 
   useEffect(() => {
     if (newMap) {
-      fetch(`${URL}center/all`)
+      fetch(`${BASE_URL}center/all`)
         .then((res) => {
+          console.log(res);
           return res.json();
         })
         .then((data) => {
+          console.log(data);
           const repairCenterList = data.data;
           const markers = repairCenterList.map((element) => {
             const position = new naver.maps.LatLng(
