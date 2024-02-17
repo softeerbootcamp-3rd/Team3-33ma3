@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import softeer.be33ma3.domain.Image;
 import softeer.be33ma3.domain.Post;
+import softeer.be33ma3.service.PostService;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -51,8 +52,8 @@ public class PostDetailDto {
 
     // Post Entity -> PostDetailDto 변환
     public static PostDetailDto fromEntity(Post post) {
-        List<String> repairList = stringCommaParsing(post.getRepairService());
-        List<String> tuneUpList = stringCommaParsing(post.getTuneUpService());
+        List<String> repairList = PostService.stringCommaParsing(post.getRepairService());
+        List<String> tuneUpList = PostService.stringCommaParsing(post.getTuneUpService());
         List<String> imageList = post.getImages().stream().map(Image::getLink).toList();
         Duration duration = calculateDuration(post);
         int dDay = -1;
@@ -74,15 +75,6 @@ public class PostDetailDto {
                 .repairList(repairList)
                 .tuneUpList(tuneUpList)
                 .imageList(imageList).build();
-    }
-
-    // 구분자 콤마로 문자열 파싱 후 각각의 토큰에서 공백 제거 후 리스트 반환
-    public static List<String> stringCommaParsing(String inputString) {
-        if(inputString.isEmpty())
-            return List.of();
-        return Arrays.stream(inputString.split(","))
-                .map(String::strip)
-                .toList();
     }
 
     public static Duration calculateDuration(Post post) {

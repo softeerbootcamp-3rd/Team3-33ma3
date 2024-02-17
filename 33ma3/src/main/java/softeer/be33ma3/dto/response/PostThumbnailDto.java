@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import softeer.be33ma3.domain.Image;
 import softeer.be33ma3.domain.Post;
+import softeer.be33ma3.service.PostService;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -48,8 +49,8 @@ public class PostThumbnailDto {
     // Post Entity -> PostThumbnailDto 변환
     public static PostThumbnailDto fromEntity(Post post, int offerCount) {
         List<String> imageList = post.getImages().stream().map(Image::getLink).toList();
-        List<String> repairList = PostDetailDto.stringCommaParsing(post.getRepairService());
-        List<String> tuneUpList = PostDetailDto.stringCommaParsing(post.getTuneUpService());
+        List<String> repairList = PostService.stringCommaParsing(post.getRepairService());
+        List<String> tuneUpList = PostService.stringCommaParsing(post.getTuneUpService());
         Duration duration = PostDetailDto.calculateDuration(post);
         int dDay = -1;
         int remainTime = 0;
