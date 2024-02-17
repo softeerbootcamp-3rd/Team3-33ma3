@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @Builder
 @Schema(description = "게시글 목록 미리보기 응답 DTO")
-public class PostThumbnailDto implements Comparable<PostThumbnailDto> {
+public class PostThumbnailDto {
     @Schema(description = "게시글 아이디", example = "1")
     private Long postId;
 
@@ -23,9 +23,6 @@ public class PostThumbnailDto implements Comparable<PostThumbnailDto> {
 
     @Schema(description = "모델명", example = "제네시스")
     private String modelName;
-
-    @Schema(description = "게시글 생성 시간 LocalDateTime", example = "2024-02-06T02:23:25.043239")
-    private LocalDateTime rawCreateTime;
 
     @Schema(description = "게시글 생성 시간 문자열", example = "2024.02.06")
     private String createTime;
@@ -48,20 +45,6 @@ public class PostThumbnailDto implements Comparable<PostThumbnailDto> {
     @Schema(description = "댓글 개수", example = "1")
     private int offerCount;
 
-    // 생성 시간 기준으로 최신순 정렬
-    @Override
-    public int compareTo(PostThumbnailDto other) {
-        if(this.rawCreateTime.isAfter(other.getRawCreateTime()))
-            return -1;
-        else if(this.rawCreateTime.isBefore(other.getRawCreateTime()))
-            return 1;
-        // createTime이 동일할 경우
-        if(postId > other.getPostId())
-            return -1;
-        else
-            return 1;
-    }
-
     // Post Entity -> PostThumbnailDto 변환
     public static PostThumbnailDto fromEntity(Post post, int offerCount) {
         List<String> imageList = post.getImages().stream().map(Image::getLink).toList();
@@ -79,7 +62,6 @@ public class PostThumbnailDto implements Comparable<PostThumbnailDto> {
                 .postId(post.getPostId())
                 .writerId(post.getMember().getMemberId())
                 .modelName(post.getModelName())
-                .rawCreateTime(post.getCreateTime())
                 .createTime(createTimeFormatting(post.getCreateTime()))
                 .dDay(dDay)
                 .remainTime(remainTime)

@@ -35,24 +35,22 @@ public class PostService {
     public List<PostThumbnailDto> showPosts(Member member) {
         // 1. 로그인하지 않았거나 서비스 센터가 아닌 유저일 경우
         if(member == null || member.getMemberType() == MemberService.CLIENT_TYPE) {
-            List<Post> posts = postRepository.findAll();
+            List<Post> posts = postRepository.findAllByOrderByCreateTimeDesc();
             return fromPostList(posts);
         }
         // 2. 서비스 센터일 경우 -> 센터에 해당하는 게시글만 가져오기
         Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 센터"));
-        List<Post> posts = postPerCenterRepository.findPostsByCenter_CenterId(center.getCenterId());
+        List<Post> posts = postPerCenterRepository.findPostsByCenter_CenterIdOrderByCreateTimeDesc(center.getCenterId());
         return fromPostList(posts);
     }
 
     // List<Post> -> List<PostThumbnailDto>로 변환
     private List<PostThumbnailDto> fromPostList(List<Post> posts) {
-        List<PostThumbnailDto> postThumbnailDtos = new ArrayList<>(posts.stream()
+        return new ArrayList<>(posts.stream()
                 .map(post -> {
                     int offerCount = countOfferNum(post.getPostId());
                     return PostThumbnailDto.fromEntity(post, offerCount);
                 }).toList());
-        Collections.sort(postThumbnailDtos);
-        return postThumbnailDtos;
     }
 
     // 해당 게시글에 달린 댓글 개수 반환
