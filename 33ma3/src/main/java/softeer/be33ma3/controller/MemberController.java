@@ -62,7 +62,7 @@ public class MemberController {
     public ResponseEntity<?> login(@RequestBody @Valid LoginDto loginDto){
         LoginSuccessDto loginSuccessDto = memberService.login(loginDto);
 
-        return ResponseEntity.ok(DataResponse.success("로그인 성공", loginSuccessDto.getJwtToken()));
+        return ResponseEntity.ok(DataResponse.success("로그인 성공", loginSuccessDto));
     }
 
     @ApiResponses({

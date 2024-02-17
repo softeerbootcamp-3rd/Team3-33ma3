@@ -12,7 +12,7 @@ public class ChatMessageResponseDto {
     private String contents;
     private LocalDateTime createTime;
 
-    public static ChatMessageResponseDto createChatMessage(ChatMessage chatMessage){
+    public static ChatMessageResponseDto create(ChatMessage chatMessage){
         return new ChatMessageResponseDto(chatMessage.getContents(), chatMessage.getCreateTime());
     }
 }
