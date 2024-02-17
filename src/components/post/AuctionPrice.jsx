@@ -2,9 +2,12 @@ import React from "react";
 import styled from "styled-components";
 import Person from "../../assets/person.svg";
 import SpeechBubble from "../../assets/speech_bubble.svg";
+import PrizeImg from "../../assets/1st_prize.svg";
 
 const Container = styled.button`
   display: flex;
+  width: 175px;
+  position: relative;
   flex-direction: column;
   gap: 10px;
   align-items: center;
@@ -232,6 +235,14 @@ const bubbleImageSize = {
   height: "147px",
 };
 
+const Prize = styled.img`
+  position: absolute;
+  z-index: 2;
+  width: 60px;
+  height: 60px;
+  left: 0;
+`;
+
 function AuctionPrice({
   price,
   centerName,
@@ -239,11 +250,12 @@ function AuctionPrice({
   inStatus,
   isEnd,
   isEdited,
+  isSelected,
   onClick,
 }) {
-  console.log(isEdited);
   return (
     <Container $isActive={isActive} onClick={onClick} isEnd={isEnd}>
+      {isSelected && <Prize src={PrizeImg} />}
       <Bubble className={isEdited && "hatch"}>
         <Price>{price}만</Price>
         <img src={SpeechBubble} style={bubbleImageSize} />

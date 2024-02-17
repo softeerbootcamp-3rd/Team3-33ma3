@@ -2,7 +2,6 @@ import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import Comment from "../../../components/post/Comment";
 import AuctionPrice from "../../../components/post/AuctionPrice";
-import { useRouteLoaderData } from "react-router-dom";
 
 const AuctionList = styled.div`
   width: 100%;
@@ -10,12 +9,10 @@ const AuctionList = styled.div`
   overflow-x: auto;
   display: flex;
   align-items: center;
-  gap: 5px;
 `;
 
 function OfferList({ prevOfferList, offerList, disabled, handleSelectOffer }) {
   const [focusOffer, setFocusOffer] = useState();
-  console.log(prevOfferList.current);
 
   function clickOffer(index) {
     setFocusOffer(index);
@@ -30,7 +27,8 @@ function OfferList({ prevOfferList, offerList, disabled, handleSelectOffer }) {
       key={offer.offerId + "/" + offer.price}
       onClick={() => clickOffer(index)}
       isActive={focusOffer === index}
-      isEdited={prevOfferList.current.has(offer.offerId)}
+      isEdited={!disabled && prevOfferList.current.has(offer.offerId)}
+      isSelected={offer.selected}
     />
   ));
 

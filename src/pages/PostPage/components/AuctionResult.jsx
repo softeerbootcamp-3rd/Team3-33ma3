@@ -12,12 +12,13 @@ const AwardedBid = styled.div`
 `;
 
 function AuctionResult({ offerList }) {
+  console.log("result");
   return (
     <OptionType title={"경매 결과"}>
-      <AwardedBid>
+      {/* <AwardedBid>
         <AuctionPrice centerName={"강남"} price={"12"} isActive />
         <Comment centerName={"강남"} contents={"경매 성공자!"} disabled />
-      </AwardedBid>
+      </AwardedBid> */}
       <OfferList offerList={offerList} disabled />
     </OptionType>
   );

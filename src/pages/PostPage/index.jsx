@@ -8,6 +8,7 @@ import AuctionAverageStatus from "./components/AuctionAverageStatus";
 import CarInfo from "./components/CarInfo";
 import { BASE_URL } from "../../constants/url";
 import { CENTER_TYPE } from "../../constants/options";
+import AuctionResult from "./components/AuctionResult";
 
 import {
   redirect,
@@ -44,7 +45,6 @@ function PostPage() {
   const { accessToken, memberId } = useRouteLoaderData("root");
   const postId = query.get("post_id");
   const navigate = useNavigate();
-  console.log(isWriter);
 
   useEffect(() => {
     setIsLoading(true);
@@ -92,17 +92,21 @@ function PostPage() {
               <Content content={postData.postDetail.contents} />
             </FullColumn>
             <FullColumn>
-              {isWriter ? (
-                <AuctionStatus
-                  curOfferDetails={postData.offerDetails}
-                  postId={postId}
-                />
+              {postData.postDetail.dday !== -1 ? (
+                isWriter ? (
+                  <AuctionStatus
+                    curOfferDetails={postData.offerDetails}
+                    postId={postId}
+                  />
+                ) : (
+                  <AuctionAverageStatus
+                    curAvgPrice={postData.avgPrice}
+                    curOfferDetail={postData.offerDetail}
+                    postId={postId}
+                  />
+                )
               ) : (
-                <AuctionAverageStatus
-                  curAvgPrice={postData.avgPrice}
-                  curOfferDetail={postData.offerDetail}
-                  postId={postId}
-                />
+                <AuctionResult offerList={postData.offerDetails} />
               )}
             </FullColumn>
           </PostInfo>

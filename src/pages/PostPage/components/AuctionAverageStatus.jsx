@@ -115,9 +115,15 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
                 </Text>
               )}
               <Text>
-                <p>현재 제시 금액의 </p>
-                <BoldText color="red">평균가는 {avgPrice}만원</BoldText>
-                <p>입니다. {offerDetail && "수정하시겠습니까?"}</p>
+                {curOfferDetail === null ? (
+                  "아직 경매가 시작되지 않았습니다."
+                ) : (
+                  <>
+                    <p>현재 제시 금액의 </p>
+                    <BoldText color="red">평균가는 {avgPrice}만원</BoldText>
+                    <p>입니다. {offerDetail && "수정하시겠습니까?"}</p>
+                  </>
+                )}
               </Text>
             </TextContainer>
           </OptionType>
