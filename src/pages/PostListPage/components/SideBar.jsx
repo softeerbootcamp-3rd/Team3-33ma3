@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 import SideBarContainer from "../../../components/sidebar/SideBarContainer";
 import ToggleButton from "../../../components/button/ToggleButton";
@@ -18,21 +18,64 @@ const ServiceList = styled.div`
   gap: 5px;
 `;
 
-function SideBar() {
+function SideBar({ setIsDone, setRegionList, setRepairList, setTuneUpList }) {
+  const regionList = useRef([]);
+  const repairList = useRef([]);
+  const tuneUpList = useRef([]);
+
   const districts = DISTRICTS.map((item, index) => (
-    <DropDownItemButton content={item} key={index} />
+    <DropDownItemButton
+      content={item}
+      key={index}
+      onClick={() => toggleBefore3(regionList, setRegionList, item)}
+    />
   ));
 
   const repairServices = REPAIR_SERVICE_OPTIONS.map((item, index) => (
-    <ChipButton type={item} key={index} />
+    <ChipButton
+      type={item}
+      key={index}
+      onClick={() => toggle(repairList, setRepairList, item)}
+    />
   ));
+
   const tuneUpServices = TUNEUP_SERVICE_OPTIONS.map((item, index) => (
-    <ChipButton type={item} key={index} />
+    <ChipButton
+      type={item}
+      key={index}
+      onClick={() => toggle(tuneUpList, setTuneUpList, item)}
+    />
   ));
+
+  function toggle(ref, setState, value) {
+    if (ref.current.includes(value)) {
+      ref.current = ref.current.filter((item) => item !== value);
+    } else {
+      ref.current = [...ref.current, value];
+    }
+    setState(ref.current);
+  }
+
+  function toggleBefore3(ref, setState, value) {
+    if (ref.current.includes(value)) {
+      ref.current = ref.current.filter((item) => item !== value);
+    } else if (ref.current.length < 3) {
+      ref.current = [...ref.current, value];
+    } else {
+      alert("지역은 최대 3개까지 선택 가능합니다.");
+      return false;
+    }
+    setState(ref.current);
+    return true;
+  }
 
   return (
     <SideBarContainer title={"검색 조건"}>
-      <ToggleButton title={"수리 완료 여부"} />
+      <ToggleButton
+        title={"경매 완료 여부"}
+        name={"done"}
+        setIsDone={setIsDone}
+      />
       <DropDownButton title={"지역"} number={DISTRICTS.length}>
         {districts}
       </DropDownButton>
