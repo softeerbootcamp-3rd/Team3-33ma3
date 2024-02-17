@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import OptionType from "../../../components/post/OptionType";
 import { IP } from "../../../constants/url";
-import { useRouteLoaderData } from "react-router-dom";
+import { useNavigate, useRouteLoaderData } from "react-router-dom";
 import SubmitButton from "../../../components/button/SubmitButton";
 import OfferModal from "./OfferModal";
+import ResultModal from "./ResultModal";
 import { CENTER_TYPE, MEMBER_TYPE } from "../../../constants/options";
 
 const AverageContainer = styled.div`
@@ -38,13 +39,13 @@ const Text = styled.div`
 
 function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
   const webSocket = useRef();
+  const selectedMine = useRef();
   const [avgPrice, setAvgPrice] = useState(curAvgPrice);
   const [offerDetail, setOfferDetail] = useState(curOfferDetail);
   const { memberId, memberType } = useRouteLoaderData("root");
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // 기존 경매가 수정
-  function handleSubmit2() {}
+  const [isEnd, setIsEnd] = useState(false);
+  const navigate = useNavigate();
 
   // TODO: 웹 소켓 연결
   useEffect(() => {
@@ -62,6 +63,12 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
 
     webSocket.current.onmessage = (event) => {
       console.log(event.data);
+      const data = JSON.parse(event.data);
+      if (data.message && offerDetail) {
+        const selected = offerDetail.offerId === data.data;
+        selectedMine.current = selected;
+        setIsEnd(true);
+      }
       setAvgPrice(JSON.parse(event.data).avgPrice);
     };
 
@@ -78,12 +85,6 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
     };
   }, []);
 
-  // const sendMessage = (message) => {
-  //   if (webSocket.current.readyState === WebSocket.OPEN) {
-  //     webSocket.current.send(message);
-  //   }
-  // };
-
   // type 이 center인 경우 경매 참여하기 or 수정하기 버튼 보여주기
   // type 이 user인 경우 평균만 보여주기
   return (
@@ -94,6 +95,12 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
           handleClose={() => setIsModalOpen(false)}
           offerDetail={offerDetail}
           updateOfferDetail={setOfferDetail}
+        />
+      )}
+      {isEnd && (
+        <ResultModal
+          selected={selectedMine.current}
+          handleClose={() => navigate(`/`)}
         />
       )}
       <AverageContainer>

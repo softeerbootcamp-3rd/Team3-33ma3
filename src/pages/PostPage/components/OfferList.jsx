@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import Comment from "../../../components/post/Comment";
 import AuctionPrice from "../../../components/post/AuctionPrice";
+import { useRouteLoaderData } from "react-router-dom";
 
 const AuctionList = styled.div`
   width: 100%;
@@ -12,7 +13,7 @@ const AuctionList = styled.div`
   gap: 5px;
 `;
 
-function OfferList({ prevOfferList, offerList, disabled }) {
+function OfferList({ prevOfferList, offerList, disabled, handleSelectOffer }) {
   const [focusOffer, setFocusOffer] = useState();
   console.log(prevOfferList.current);
 
@@ -41,6 +42,9 @@ function OfferList({ prevOfferList, offerList, disabled }) {
           centerName={!disabled && offerList[focusOffer].centerName}
           contents={offerList[focusOffer].contents}
           disabled={disabled}
+          handleSelectOffer={() =>
+            handleSelectOffer(offerList[focusOffer].offerId)
+          }
         />
       )}
     </>

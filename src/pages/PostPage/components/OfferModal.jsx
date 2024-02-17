@@ -72,7 +72,7 @@ function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
       })
       .then((json) => {
         console.log(json);
-        updateOfferDetail(newOffer);
+        updateOfferDetail({ ...newOffer, offerId: json.data });
         handleClose();
       });
   }

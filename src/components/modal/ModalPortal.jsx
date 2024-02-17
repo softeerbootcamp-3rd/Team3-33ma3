@@ -31,7 +31,7 @@ const ModalBody = styled.div`
 
 const Title = styled.p`
   color: ${(props) => props.theme.colors.text_strong};
-  font-size: ${(props) => props.theme.fontSize.medium};
+  font-size: ${(props) => props.theme.fontSize.large};
   font-weight: 700;
 `;
 

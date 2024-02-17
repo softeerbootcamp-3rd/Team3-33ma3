@@ -7,7 +7,7 @@ import { useRouteLoaderData } from "react-router-dom";
 function AuctionStatus({ postId, curOfferDetails }) {
   const webSocket = useRef(null);
   const [offerList, setOfferList] = useState(curOfferDetails);
-  const { memberId } = useRouteLoaderData("root");
+  const { memberId, accessToken } = useRouteLoaderData("root");
   const prevOfferList = useRef(
     new Set(curOfferDetails.map((offer) => offer.offerId))
   );
@@ -49,9 +49,27 @@ function AuctionStatus({ postId, curOfferDetails }) {
     };
   }, []);
 
+  // TODO: util이나 api로 분리?
+  // 댓글 낙찰
+  function handleSelectOffer(offerId) {
+    fetch(BASE_URL + `post/${postId}/offer/${offerId}/select`, {
+      method: "GET",
+      headers: {
+        Authorization: accessToken,
+        "Content-type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((json) => console.log(json));
+  }
+
   return (
     <OptionType title={"경매 현황"}>
-      <OfferList offerList={offerList} prevOfferList={prevOfferList} />
+      <OfferList
+        offerList={offerList}
+        prevOfferList={prevOfferList}
+        handleSelectOffer={handleSelectOffer}
+      />
     </OptionType>
   );
 }
