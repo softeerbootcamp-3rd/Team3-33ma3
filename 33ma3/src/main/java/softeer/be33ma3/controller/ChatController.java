@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.ChatMessageRequestDto;
+import softeer.be33ma3.dto.response.ChatHistoryDto;
 import softeer.be33ma3.dto.response.ChatRoomListDto;
 import softeer.be33ma3.jwt.CurrentUser;
 import softeer.be33ma3.response.DataResponse;
@@ -67,5 +68,12 @@ public class ChatController {
         List<ChatRoomListDto> allChatRoomListDto = chatService.showAllChatRoom(member);
 
         return ResponseEntity.ok().body(DataResponse.success("문의 내역 전송 성공", allChatRoomListDto));
+    }
+
+    @GetMapping("/chat/history/{roomId}")
+    public ResponseEntity<?> showOneChatHistory(@CurrentUser Member member, @PathVariable("roomId") Long roomId){
+         List<ChatHistoryDto> chatHistoryDtos = chatService.showOneChatHistory(member, roomId);
+
+        return ResponseEntity.ok().body(DataResponse.success("채팅 내역 전송 성공", chatHistoryDtos));
     }
 }
