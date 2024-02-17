@@ -108,6 +108,8 @@ public class PostService {
     public Object showPost(Long postId, Member member) {
         // 1. 게시글 존재 유무 판단
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
+        if(member == null && !post.isDone())
+            throw new UnauthorizedException("경매 중인 게시글을 보려면 로그인해주세요.");
         // 2. 게시글 세부 사항 가져오기
         PostDetailDto postDetailDto = PostDetailDto.fromEntity(post);
         // 3. 경매가 완료되었거나 글 작성자의 접근일 경우
