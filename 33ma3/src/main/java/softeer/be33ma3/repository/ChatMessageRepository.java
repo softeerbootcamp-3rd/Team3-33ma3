@@ -12,7 +12,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     long countReadDoneIsFalse(@Param("chatRoomId") Long chatRoomId, @Param("memberId") Long memberId);  //내가 아닌 다른 사람이 보낸 경우 읽음이 false 인 개수
 
     @Query("SELECT c.contents FROM ChatMessage c WHERE c.chatRoom.chatRoomId = :chatRoomId ORDER BY c.createTime DESC LIMIT 1")
-    String findTop1ByChatRoomId(@Param("chatRoomId") Long chatRoomId);
+    String findLastMessageByChatRoomId(@Param("chatRoomId") Long chatRoomId);
 
     List<ChatMessage> findByChatRoom_ChatRoomId(Long roomId);
 }

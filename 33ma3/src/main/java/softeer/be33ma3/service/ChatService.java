@@ -95,7 +95,7 @@ public class ChatService {
     }
 
     private ChatRoomListDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
-        String lastChatMessage = chatMessageRepository.findTop1ByChatRoomId(chatRoom.getChatRoomId());      //마지막 메세지
+        String lastChatMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());      //마지막 메세지
         int count = (int) chatMessageRepository.countReadDoneIsFalse(chatRoom.getChatRoomId(), member.getMemberId());     //안읽은 메세지 개수
 
         return ChatRoomListDto.createChatRoomDto(chatRoom, lastChatMessage, memberName, count);
