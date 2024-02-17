@@ -45,17 +45,9 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
     }
 
     private BooleanExpression containsAllService(String type, List<String> services) {
-        BooleanExpression expression = Expressions.TRUE;
-        if(type.equals("repair")) {
-            for(String service : services) {
-                expression = expression.and(post.repairService.contains(service));
-            }
-        }
-        else if(type.equals("tuneUp")) {
-            for(String service : services) {
-                expression = expression.and(post.tuneUpService.contains(service));
-            }
-        }
-        return expression;
+        return services.stream()
+                .map(service -> type.equals("repair") ? post.repairService.contains(service) : post.tuneUpService.contains(service))
+                .reduce(BooleanExpression::and)
+                .orElse(Expressions.TRUE);
     }
 }
