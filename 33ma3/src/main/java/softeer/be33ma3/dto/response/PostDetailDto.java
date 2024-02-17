@@ -19,6 +19,9 @@ public class PostDetailDto {
     @Schema(description = "게시글 아이디", example = "1")
     private Long postId;
 
+    @Schema(description = "작성자 아이디", example = "1")
+    private Long writerId;
+
     @Schema(description = "차종", example = "승용차")
     private String carType;
 
@@ -61,6 +64,7 @@ public class PostDetailDto {
 
         return PostDetailDto.builder()
                 .postId(post.getPostId())
+                .writerId(post.getMember().getMemberId())
                 .carType(post.getCarType())
                 .modelName(post.getModelName())
                 .dDay(dDay)

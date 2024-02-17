@@ -62,8 +62,8 @@ public class PostController {
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시글 조회 완료", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>존재하지 않는 서비스 센터",
-                    content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>존재하지 않는 서비스 센터", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "401", description = "경매 중인 게시글을 보려면 로그인해주세요.", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "게시글 조회", description = "게시글 조회 메서드 입니다.")
     @Parameter(name = "post_id", description = "조회할 게시글 id", required = true, example = "1", in = ParameterIn.PATH)
