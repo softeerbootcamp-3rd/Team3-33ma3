@@ -1,31 +1,13 @@
 import { useRef, useEffect } from "react";
-import { searchCoordinateToAddress } from "./LocationModal";
-
-const DEFAULT_LATITUDE = 0;
-const DEFAULT_LONGITUDE = 0;
-const DEFAULT_ZOOM_SCALE = 15;
-const DEFAULT_MAX_ZOOM = 15;
-const DEFAULT_MIN_ZOOM = 11;
-
-// 현재 위치 좌표 반환 함수
-function getCurrentLocation() {
-  return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
-      reject(new Error("Geolocation is not supported!"));
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        resolve({ latitude, longitude });
-      },
-      (error) => {
-        reject(error);
-      }
-    );
-  });
-}
+import {
+  getCurrentLocation,
+  searchCoordinateToAddress,
+} from "../utils/locationUtils";
+import {
+  DEFAULT_MAX_ZOOM,
+  DEFAULT_MIN_ZOOM,
+  DEFAULT_ZOOM_SCALE,
+} from "../constants/mapConstants";
 
 // 현재 위치 좌표 기반 map, marker, circle 객체 생성 및 주소 상태 업데이트 함수
 function initMap(latitude, longitude, mapElement, setNewAddress) {

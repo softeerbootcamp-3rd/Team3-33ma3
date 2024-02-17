@@ -12,6 +12,7 @@ import SubmitButton from "./button/SubmitButton";
 import ClientImage from "../assets/client_mode.svg";
 import CenterImage from "../assets/center_mode.svg";
 import { generateKeyBasedOnCurrentTime } from "./LocationModal";
+import { searchAddressToCoordinate } from "../utils/locationUtils";
 
 const AuthInputContainer = styled.div`
   display: flex;
@@ -67,32 +68,6 @@ const Image = styled.img`
 
 const FormContainer = styled.div``;
 
-function searchAddressToCoordinate(address) {
-  // Promise 객체를 반환합니다.
-  return new Promise((resolve, reject) => {
-    naver.maps.Service.geocode(
-      {
-        query: address ? address : "DEFAULT",
-      },
-      function (status, response) {
-        if (status === naver.maps.Service.Status.ERROR) {
-          // 오류 상태일 경우 reject를 호출하여 Promise를 reject 상태로 만듭니다.
-          return reject("Something went Wrong!");
-        }
-
-        if (response.v2.meta.totalCount === 0) {
-          // 주소 검색 결과가 없을 경우
-          return resolve(null);
-        }
-
-        const item = response.v2.addresses[0]; // 찾은 주소 정보
-        // 성공적으로 주소 정보를 찾았을 경우 resolve를 호출하여 Promise를 resolve 상태로 만듭니다.
-        resolve(item);
-      }
-    );
-  });
-}
-
 function AuthForm() {
   const [autoCompleteKey, setAutoCompleteKey] = useState(
     generateKeyBasedOnCurrentTime()
@@ -116,12 +91,12 @@ function AuthForm() {
     searchAddressToCoordinate(e.target.value)
       .then((res) => {
         if (res !== null) {
-          setCenterInformation(res.roadAddress);
+          setCenterInformation(res.address.roadAddress);
           setCheckAddress(true);
           setCoords((prev) => ({
             ...prev,
-            [latitude]: res.y,
-            [longitude]: res.x,
+            [latitude]: res.address.y,
+            [longitude]: res.address.x,
           }));
         }
         console.log(res); // 성공적으로 주소 정보를 받아왔을 때의 처리
@@ -177,7 +152,7 @@ function AuthForm() {
             </AuthLink>
           </ModeContainer>
         )}
-        {(userType || isLogin) && (
+        {(isLogin || userType) && (
           <AuthContainer>
             <AuthInputContainer>
               <InputText

@@ -10,12 +10,17 @@ import styled from "styled-components";
 import ViewCurrentLocation from "./ViewCurrentLocation";
 import InputText from "./input/InputText";
 import SubmitButton from "./button/SubmitButton";
-
-export const URL = "http://15.165.162.126:8080/";
-const KM_TO_M_CONVERSION_FACTOR = 1000;
-const MIN_RADIUS = 0;
-const MAX_RADIUS = 10;
-const DROP = 2;
+import { BASE_URL } from "../constants/url";
+import {
+  searchAddressToCoordinate,
+  searchCoordinateToAddress,
+} from "../utils/locationUtils";
+import {
+  KM_TO_M_CONVERSION_FACTOR,
+  MAX_RADIUS,
+  MIN_RADIUS,
+  DROP,
+} from "../constants/mapConstants";
 
 export const Dialog = styled.dialog`
   padding: 30px;
@@ -72,66 +77,12 @@ export function generateKeyBasedOnCurrentTime() {
   return key;
 }
 
-// 좌표 기반 주소, 지번 상태 업데이트 함수
-export function searchCoordinateToAddress(latLng, updateAddress) {
-  naver.maps.Service.reverseGeocode(
-    {
-      coords: latLng,
-      orders: [
-        naver.maps.Service.OrderType.ADDR,
-        naver.maps.Service.OrderType.ROAD_ADDR,
-      ].join(","),
-    },
-    function (status, response) {
-      if (status !== naver.maps.Service.Status.OK) {
-        return alert("Something went wrong!");
-      }
-      const address = response.v2.address.roadAddress
-        ? response.v2.address.roadAddress
-        : response.v2.address.jibunAddress;
-      updateAddress(address);
-    }
-  );
-}
-
-// 주소 기반 좌표 값으로 map, marker, circle의 center 및 반경 내 marker 업데이트 함수
-export function searchAddressToCoordinate(
-  address,
-  map,
-  marker,
-  circle,
-  markerList
-) {
-  naver.maps.Service.geocode(
-    {
-      query: address ? address : "DEFAULT",
-    },
-    function (status, response) {
-      if (status === naver.maps.Service.Status.ERROR) {
-        return alert("Something went Wrong!");
-      }
-
-      // 주소를 도로명으로 찾을 때, 건물명까지 입력하지 않으면 응답받지 못함
-      if (response.v2.meta.totalCount === 0) {
-        return;
-      }
-
-      const item = response.v2.addresses[0]; // 찾은 주소 정보
-      const point = new naver.maps.Point(Number(item.x), Number(item.y)); // 지도에서 이동할 좌표
-      map.setCenter(point);
-      marker.setPosition(point);
-      circle.setCenter(map.getCenter());
-      updateMarkers(map, circle, markerList);
-    }
-  );
-}
-
 // 반경 내의 marker 출력, 그 외는 제외하는 함수
 async function updateMarkers(map, circle, markers) {
   const response = await fetch(
-    `${URL}location?latitude=${map.center._lat}&longitude=${
+    `${BASE_URL}location?latitude=${map.center._lat}&longitude=${
       map.center._lng
-    }&radius=${circle.getRadius() / 1000}`
+    }&radius=${circle.getRadius() / KM_TO_M_CONVERSION_FACTOR}`
   );
 
   const jsonData = await response.json();
@@ -183,14 +134,16 @@ const LocationModal = forwardRef(function LocationModal(
   }
 
   function handleInputAddressChange(e) {
-    const inputAddress = e.target.value;
-    searchAddressToCoordinate(
-      inputAddress,
-      newMap,
-      newMarker,
-      newCircle,
-      markerList
-    );
+    const address = e.target.value;
+    searchAddressToCoordinate(address)
+      .then((res) => {
+        const point = res.point;
+        newMap.setCenter(point);
+        newMarker.setPosition(point);
+        newCircle.setCenter(newMap.getCenter());
+        updateMarkers(newMap, newCircle, markerList);
+      })
+      .catch((error) => console.log(error));
   }
 
   function handleInputRadiusChange(e) {
@@ -227,7 +180,7 @@ const LocationModal = forwardRef(function LocationModal(
 
   useEffect(() => {
     if (newMap) {
-      fetch(`${URL}center/all`)
+      fetch(`${BASE_URL}center/all`)
         .then((res) => {
           return res.json();
         })
@@ -260,7 +213,11 @@ const LocationModal = forwardRef(function LocationModal(
             const currentCoords = newMap.getCenter();
 
             updateMarkers(newMap, newCircle, markers);
-            searchCoordinateToAddress(currentCoords, setNewAddress);
+            searchCoordinateToAddress(currentCoords)
+              .then((res) => {
+                setNewAddress(res);
+              })
+              .catch((error) => console.log(error));
           });
 
           setMarkerList(() => markers);
