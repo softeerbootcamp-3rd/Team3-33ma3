@@ -45,7 +45,7 @@ public class OfferService {
 
     // 견적 제시 댓글 생성
     @Transactional
-    public void createOffer(Long postId, OfferCreateDto offerCreateDto, Member member) {
+    public Long createOffer(Long postId, OfferCreateDto offerCreateDto, Member member) {
         // 1. 해당 게시글이 마감 전인지 확인
         Post post = checkNotDonePost(postId);
         // 2. 센터 정보 가져오기
@@ -55,7 +55,8 @@ public class OfferService {
                 .ifPresent(offer -> {throw new UnauthorizedException("이미 견적을 작성하였습니다.");});
         // 4. 댓글 생성하여 저장하기
         Offer offer = offerCreateDto.toEntity(post, center);
-        offerRepository.save(offer);
+        Offer savedOffer = offerRepository.save(offer);
+        return savedOffer.getOfferId();
     }
 
     // 견적 제시 댓글 수정
