@@ -95,25 +95,30 @@ public class ChatService {
         return allChatRoomListDto;
     }
 
+    @Transactional
     public List<ChatHistoryDto> showOneChatHistory(Member member, Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅 룸"));
         validateMember(member, chatRoom);
 
         List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoom_ChatRoomId(chatRoom.getChatRoomId());
-        //TODO: 읽음 처리 하기
-        return chatMessages.stream()
-                .map(ChatHistoryDto::getChatHistoryDto)
-                .toList();
+
+        List<ChatHistoryDto> chatHistoryDtos = new ArrayList<>();
+        for (ChatMessage chatMessage : chatMessages) {
+            if(!chatMessage.getSender().equals(member) && !chatMessage.isReadDone()){   //상대방이 보낸 메세지의 읽음 여부가 false인 경우
+                chatMessage.setReadDoneTrue();      //읽음 처리
+            }
+            chatHistoryDtos.add(ChatHistoryDto.getChatHistoryDto(chatMessage));
+        }
+
+        return chatHistoryDtos;
     }
 
-    private static void validateMember(Member member, ChatRoom chatRoom) {
-        if(member.getMemberType() == CLIENT_TYPE){      //클라이언트인 경우
-            if(!chatRoom.getClient().equals(member)) {       //방에 있는 클라이언트와 내역을 확인하려는 클라이언트가 같은지 확인
-                throw new UnauthorizedException("해당 방의 회원이 아닙니다.");
-            }
+    private void validateMember(Member member, ChatRoom chatRoom) {
+        if (member.getMemberType() == CLIENT_TYPE && !chatRoom.getClient().equals(member)) {
+            throw new UnauthorizedException("해당 방의 회원이 아닙니다.");
         }
-        //센터인 경우
-        if(!chatRoom.getCenter().equals(member)){       //방에 있는 센터와 내역을 확인하려는 센터가 같은지 확인
+
+        if (member.getMemberType() == CENTER_TYPE && !chatRoom.getCenter().equals(member)) {
             throw new IllegalArgumentException("해당 방의 회원이 아닙니다.");
         }
     }

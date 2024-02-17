@@ -83,7 +83,6 @@ public class PostService {
         return savedPost.getPostId();
     }
 
-
     @Transactional
     public void editPost(Member member, Long postId, PostCreateDto postCreateDto) {
         Post post = validPostAndMember(member, postId);
@@ -91,6 +90,7 @@ public class PostService {
         Region region = getRegion(postCreateDto.getLocation());
         post.editPost(postCreateDto, region);
     }
+
     @Transactional
     public void deletePost(Member member, Long postId) {
         Post post = validPostAndMember(member, postId);
