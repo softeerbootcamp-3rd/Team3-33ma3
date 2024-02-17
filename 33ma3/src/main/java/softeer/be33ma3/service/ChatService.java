@@ -54,7 +54,7 @@ public class ChatService {
         Member receiver = memberRepository.findById(receiverId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
 
         if(sender.getMemberType() == CLIENT_TYPE){
-            if(chatRoom.getClient().equals(sender) && chatRoom.getCenter().equals(receiver)){
+            if(!(chatRoom.getClient().equals(sender) && chatRoom.getCenter().equals(receiver))){
                 throw new UnauthorizedException("해당 방의 회원이 아닙니다.");
             }
         }
@@ -95,7 +95,7 @@ public class ChatService {
     }
 
     private ChatRoomListDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
-        String lastChatMessage = chatMessageRepository.findTop1ByChatRoomId(chatRoom.getChatRoomId());      //마지막 메세지
+        String lastChatMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());      //마지막 메세지
         int count = (int) chatMessageRepository.countReadDoneIsFalse(chatRoom.getChatRoomId(), member.getMemberId());     //안읽은 메세지 개수
 
         return ChatRoomListDto.createChatRoomDto(chatRoom, lastChatMessage, memberName, count);
