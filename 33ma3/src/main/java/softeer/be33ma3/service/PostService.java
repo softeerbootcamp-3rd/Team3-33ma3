@@ -33,7 +33,6 @@ public class PostService {
 
     // 게시글 목록 조회
     public List<PostThumbnailDto> showPosts(Boolean done, String region, String repair, String tuneUp, Member member) {
-        System.out.println("here! :" + done + " " + region + " " + repair + " " + tuneUp + " " + member);
         List<String> regions = stringCommaParsing(region);
         List<String> repairs = stringCommaParsing(repair);
         List<String> tuneUps = stringCommaParsing(tuneUp);
