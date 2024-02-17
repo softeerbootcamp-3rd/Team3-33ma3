@@ -36,7 +36,7 @@ public class ChatController {
     })
     @Parameter(name = "post_id", description = "게시글 id", required = true, example = "1", in = ParameterIn.PATH)
     @Parameter(name = "center_id", description = "문의할 센터 id", required = true, example = "2", in = ParameterIn.PATH)
-    @Operation(summary = "채팅방 생성", description = "체팅방 새성하기 메서드 입니다.")
+    @Operation(summary = "채팅방 생성", description = "채팅방 생성하기 메서드 입니다.")
     @PostMapping("/chatRoom/{post_id}/{center_id}")
     public ResponseEntity<?> createRoom(@CurrentUser Member member, @PathVariable("center_id") Long centerId, @PathVariable("post_id") Long postId){
         Long roomId = chatService.createRoom(member, centerId, postId);
@@ -51,7 +51,7 @@ public class ChatController {
     })
     @Parameter(name = "room_id", description = "채팅방 id", required = true, example = "1", in = ParameterIn.PATH)
     @Parameter(name = "receiver_id", description = "메세지 받는 사람 id", required = true, example = "2", in = ParameterIn.PATH)
-    @Operation(summary = "채팅 메세지 보내기", description = "체팅 메세지 보내기 메서드 입니다.")
+    @Operation(summary = "채팅 메세지 보내기", description = "채팅 메세지 보내기 메서드 입니다.")
     @PostMapping("/chat/{room_id}/{receiver_id}")
     public ResponseEntity<?> chat(@Schema(hidden = true) @CurrentUser Member sender, @PathVariable("room_id") Long roomId,
                                   @PathVariable("receiver_id") Long receiverId, @RequestBody @Valid ChatMessageRequestDto chatMessageRequestDto){
