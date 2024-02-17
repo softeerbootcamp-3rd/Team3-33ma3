@@ -21,6 +21,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
         BooleanExpression predicate = makeCondition(done, regions, repairs, tuneUps, postIds);
         return jpaQueryFactory.selectFrom(post)
                 .where(predicate)
+                .orderBy(post.createTime.desc(), post.postId.desc())
                 .fetch();
     }
 
