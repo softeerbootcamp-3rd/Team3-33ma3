@@ -51,3 +51,6 @@ export const DISTRICTS = [
   "중구",
   "중랑구",
 ];
+
+export const MEMBER_TYPE = 1;
+export const CENTER_TYPE = 2;

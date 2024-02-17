@@ -15,6 +15,10 @@ const GlobalStyle = createGlobalStyle`
         min-width: ${MIN_WIDTH};
     }
 
+    #root{
+        overflow: auto;
+    }
+
     *{
         font-family: Pretendard;
     }

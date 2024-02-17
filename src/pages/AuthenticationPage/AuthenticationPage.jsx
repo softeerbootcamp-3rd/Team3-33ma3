@@ -99,11 +99,15 @@ export async function action({ request }) {
   const resData = await response.json();
   console.log(resData);
   if (mode == "login") {
-    const accessToken = resData.data.accessToken;
-    const refreshToken = resData.data.refreshToken;
+    const accessToken = resData.data.jwtToken.accessToken;
+    const refreshToken = resData.data.jwtToken.refreshToken;
+    const memberId = resData.data.memberId;
+    const memberType = resData.data.memberType;
 
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
+    localStorage.setItem("memberId", memberId);
+    localStorage.setItem("memberType", memberType);
   }
   if (mode === "signUp") {
     return redirect("/auth?mode=login");
