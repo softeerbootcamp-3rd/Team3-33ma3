@@ -35,24 +35,22 @@ public class PostService {
     public List<PostThumbnailDto> showPosts(Member member) {
         // 1. 로그인하지 않았거나 서비스 센터가 아닌 유저일 경우
         if(member == null || member.getMemberType() == MemberService.CLIENT_TYPE) {
-            List<Post> posts = postRepository.findAll();
+            List<Post> posts = postRepository.findAllByOrderByCreateTimeDesc();
             return fromPostList(posts);
         }
         // 2. 서비스 센터일 경우 -> 센터에 해당하는 게시글만 가져오기
         Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 센터"));
-        List<Post> posts = postPerCenterRepository.findPostsByCenter_CenterId(center.getCenterId());
+        List<Post> posts = postPerCenterRepository.findPostsByCenter_CenterIdOrderByCreateTimeDesc(center.getCenterId());
         return fromPostList(posts);
     }
 
     // List<Post> -> List<PostThumbnailDto>로 변환
     private List<PostThumbnailDto> fromPostList(List<Post> posts) {
-        List<PostThumbnailDto> postThumbnailDtos = new ArrayList<>(posts.stream()
+        return new ArrayList<>(posts.stream()
                 .map(post -> {
                     int offerCount = countOfferNum(post.getPostId());
                     return PostThumbnailDto.fromEntity(post, offerCount);
                 }).toList());
-        Collections.sort(postThumbnailDtos);
-        return postThumbnailDtos;
     }
 
     // 해당 게시글에 달린 댓글 개수 반환
@@ -108,6 +106,8 @@ public class PostService {
     public Object showPost(Long postId, Member member) {
         // 1. 게시글 존재 유무 판단
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
+        if(member == null && !post.isDone())
+            throw new UnauthorizedException("경매 중인 게시글을 보려면 로그인해주세요.");
         // 2. 게시글 세부 사항 가져오기
         PostDetailDto postDetailDto = PostDetailDto.fromEntity(post);
         // 3. 경매가 완료되었거나 글 작성자의 접근일 경우
