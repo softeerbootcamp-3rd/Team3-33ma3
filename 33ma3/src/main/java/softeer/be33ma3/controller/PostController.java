@@ -41,8 +41,12 @@ public class PostController {
     })
     @Operation(summary = "게시글 목록 조회", description = "게시글 목록 조회 메서드 입니다.")
     @GetMapping
-    public ResponseEntity<?> showPosts(@Schema(hidden = true) @CurrentUser Member member) {
-        List<PostThumbnailDto> postThumbnailDtos = postService.showPosts(member);
+    public ResponseEntity<?> showPosts(@RequestParam(name = "done", required = false) Boolean done,
+                                       @RequestParam(name = "region", required = false) String region,
+                                       @RequestParam(name = "repair", required = false) String repair,
+                                       @RequestParam(name = "tuneUp", required = false) String tuneUp,
+                                       @Schema(hidden = true) @CurrentUser Member member) {
+        List<PostThumbnailDto> postThumbnailDtos = postService.showPosts(done, region, repair, tuneUp, member);
         return ResponseEntity.ok().body(DataResponse.success("게시글 목록 조회 성공", postThumbnailDtos));
     }
 

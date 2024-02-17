@@ -32,15 +32,16 @@ public class PostService {
     private final ImageService imageService;
 
     // 게시글 목록 조회
-    public List<PostThumbnailDto> showPosts(Member member) {
-        // 1. 로그인하지 않았거나 서비스 센터가 아닌 유저일 경우
-        if(member == null || member.getMemberType() == MemberService.CLIENT_TYPE) {
-            List<Post> posts = postRepository.findAllByOrderByCreateTimeDesc();
-            return fromPostList(posts);
+    public List<PostThumbnailDto> showPosts(Boolean done, String region, String repair, String tuneUp, Member member) {
+        List<String> regions = stringCommaParsing(region);
+        List<String> repairs = stringCommaParsing(repair);
+        List<String> tuneUps = stringCommaParsing(tuneUp);
+        List<Long> postIds = null;
+        if(member != null && member.getMemberType() == CENTER_TYPE) {
+            Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 센터"));
+            postIds = postPerCenterRepository.findPostIdsByCenterId(center.getCenterId());
         }
-        // 2. 서비스 센터일 경우 -> 센터에 해당하는 게시글만 가져오기
-        Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 센터"));
-        List<Post> posts = postPerCenterRepository.findPostsByCenter_CenterIdOrderByCreateTimeDesc(center.getCenterId());
+        List<Post> posts = postRepository.findAllByConditions(done, regions, repairs, tuneUps, postIds);
         return fromPostList(posts);
     }
 
@@ -48,8 +49,10 @@ public class PostService {
     private List<PostThumbnailDto> fromPostList(List<Post> posts) {
         return new ArrayList<>(posts.stream()
                 .map(post -> {
+                    List<String> repairList = stringCommaParsing(post.getRepairService());
+                    List<String> tuneUpList = stringCommaParsing(post.getTuneUpService());
                     int offerCount = countOfferNum(post.getPostId());
-                    return PostThumbnailDto.fromEntity(post, offerCount);
+                    return PostThumbnailDto.fromEntity(post, repairList, tuneUpList, offerCount);
                 }).toList());
     }
 
@@ -109,7 +112,9 @@ public class PostService {
         if(member == null && !post.isDone())
             throw new UnauthorizedException("경매 중인 게시글을 보려면 로그인해주세요.");
         // 2. 게시글 세부 사항 가져오기
-        PostDetailDto postDetailDto = PostDetailDto.fromEntity(post);
+        List<String> repairList = stringCommaParsing(post.getRepairService());
+        List<String> tuneUpList = stringCommaParsing(post.getTuneUpService());
+        PostDetailDto postDetailDto = PostDetailDto.fromEntity(post, repairList, tuneUpList);
         // 3. 경매가 완료되었거나 글 작성자의 접근일 경우
         if(post.isDone() || (member!=null && post.getMember().equals(member))) {
             List<Offer> offerList = offerRepository.findByPost_PostId(postId);
@@ -174,5 +179,14 @@ public class PostService {
         }
 
         return post;
+    }
+
+    // 구분자 콤마로 문자열 파싱 후 각각의 토큰에서 공백 제거 후 리스트 반환
+    public static List<String> stringCommaParsing(String inputString) {
+        if(inputString == null || inputString.isBlank())
+            return List.of();
+        return Arrays.stream(inputString.split(","))
+                .map(String::strip)
+                .toList();
     }
 }

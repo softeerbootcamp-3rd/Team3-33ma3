@@ -45,7 +45,7 @@ public class OfferController {
     }
 
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "입찰 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "200", description = "입찰 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>완료된 게시글" + "<br>존재하지 않는 센터",
                     content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
@@ -55,13 +55,13 @@ public class OfferController {
     public ResponseEntity<?> createOffer(@PathVariable("post_id") Long postId,
                                          @RequestBody @Valid OfferCreateDto offerCreateDto,
                                          @Schema(hidden = true) @CurrentUser Member member) {
-        offerService.createOffer(postId, offerCreateDto, member);
+        Long offerId = offerService.createOffer(postId, offerCreateDto, member);
         offerService.sendAboutOfferUpdate(postId);
-        return ResponseEntity.ok(SingleResponse.success("입찰 성공"));
+        return ResponseEntity.ok(DataResponse.success("입찰 성공", offerId));
     }
 
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "댓글 수정 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "200", description = "댓글 수정 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
             @ApiResponse(responseCode = "401", description = "작성자만 수정 가능합니다.",
                     content = @Content(schema = @Schema(implementation = SingleResponse.class))),
             @ApiResponse(responseCode = "400", description = "기존 금액보다 낮은 금액으로만 수정 가능합니다."
@@ -78,11 +78,11 @@ public class OfferController {
                                          @Schema(hidden = true) @CurrentUser Member member) {
         offerService.updateOffer(postId, offerId, offerCreateDto, member);
         offerService.sendAboutOfferUpdate(postId);
-        return ResponseEntity.ok(SingleResponse.success("댓글 수정 성공"));
+        return ResponseEntity.ok(DataResponse.success("댓글 수정 성공", offerId));
     }
 
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "댓글 삭제 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "200", description = "댓글 삭제 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
             @ApiResponse(responseCode = "401", description = "작성자만 삭제 가능합니다.",
                     content = @Content(schema = @Schema(implementation = SingleResponse.class))),
             @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>완료된 게시글" + "<br>존재하지 않는 견적" + "<br>존재하지 않는 센터",
@@ -97,7 +97,7 @@ public class OfferController {
                                          @Schema(hidden = true) @CurrentUser Member member) {
         offerService.deleteOffer(postId, offerId, member);
         offerService.sendAboutOfferUpdate(postId);
-        return ResponseEntity.ok(SingleResponse.success("댓글 삭제 성공"));
+        return ResponseEntity.ok(DataResponse.success("댓글 삭제 성공", offerId));
     }
 
     @ApiResponses({
