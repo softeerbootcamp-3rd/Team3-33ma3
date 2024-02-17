@@ -18,7 +18,7 @@ public class ChatRoom extends BaseTimeEntity{
     @JoinColumn(name = "client_id")
     private Member client;
 
-    public static ChatRoom createCenter(Member client, Member center) {
+    public static ChatRoom createChatRoom(Member client, Member center) {
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.client = client;
         chatRoom.center = center;
