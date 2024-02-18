@@ -1,7 +1,6 @@
 package softeer.be33ma3.exception;
 
 import lombok.Getter;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 
 @Getter

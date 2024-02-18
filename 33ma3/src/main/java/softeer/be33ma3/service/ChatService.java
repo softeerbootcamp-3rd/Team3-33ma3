@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.domain.*;
 import softeer.be33ma3.dto.response.ChatRoomListDto;
 import softeer.be33ma3.dto.response.ChatMessageResponseDto;
+import softeer.be33ma3.exception.BusinessException;
+import softeer.be33ma3.exception.ErrorCode;
 import softeer.be33ma3.exception.UnauthorizedException;
 import softeer.be33ma3.repository.*;
 import softeer.be33ma3.websocket.WebSocketHandler;
@@ -15,6 +17,7 @@ import softeer.be33ma3.websocket.WebSocketRepository;
 import java.util.ArrayList;
 import java.util.List;
 
+import static softeer.be33ma3.exception.ErrorCode.NOT_FOUND_CENTER;
 import static softeer.be33ma3.service.MemberService.CENTER_TYPE;
 import static softeer.be33ma3.service.MemberService.CLIENT_TYPE;
 
@@ -34,7 +37,7 @@ public class ChatService {
 
     @Transactional
     public Long createRoom(Member client, Long centerId, Long postId) {
-        Member center = memberRepository.findById(centerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 센터"));
+        Member center = memberRepository.findById(centerId).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
 
         if(!post.getMember().equals(client)){
