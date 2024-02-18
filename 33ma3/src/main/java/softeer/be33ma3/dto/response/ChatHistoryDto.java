@@ -16,7 +16,7 @@ public class ChatHistoryDto {
     private Long senderId;
     @Schema(description = "메세지 내용", example = "안녕하세요")
     private String contents;
-    @Schema(description = "메세지 생성 시간", example = "07:12")
+    @Schema(description = "메세지 생성 시간", example = "오전 07:12")
     private String createTime;
     @Schema(description = "읽음 여부", example = "1")
     private boolean readDone;
