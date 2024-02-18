@@ -1,7 +1,13 @@
 import React from "react";
+import { ChatList } from "./components/ChatList";
+import { ChatContainer } from "./components/ChatContainer";
 
 function ChatRoomPage() {
-  return <p>"ChatRoomPage"</p>;
+  return (
+    <>
+      <ChatContainer />
+    </>
+  );
 }
 
 export default ChatRoomPage;
