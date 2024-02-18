@@ -48,27 +48,27 @@ function PostPage() {
 
   useEffect(() => {
     setIsLoading(true);
+    const headers = accessToken ? { Authorization: accessToken } : {};
     fetch(BASE_URL + `post/one/${postId}`, {
       method: "GET",
-      headers: {
-        Authorization: accessToken ? accessToken : null,
-      },
+      headers: headers,
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        } else if (res.status === 401) {
+          navigate("/auth?mode=login");
+        }
+      })
       .then((json) => {
         console.log(json.data);
-
-        if (!validateAuthorization(json.data.postDetail.dday)) {
-          alert("경매가 진행중인 게시물은 로그인 이후 이용 가능합니다.");
-          console.log("경매가 진행중인 게시물은 로그인 이후 이용 가능합니다.");
-          navigate("/");
-        }
 
         // 작성자인지 확인
         setIsWriter(json.data.postDetail.writerId === Number(memberId));
         setPostData(json.data);
         setIsLoading(false);
-      });
+      })
+      .catch((error) => alert("로그인이 필요한 페이지입니다."));
   }, []);
 
   // 로그인 안된 경우 마감되지 않은 게시물은 접근 제한
