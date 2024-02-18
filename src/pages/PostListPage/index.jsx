@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Page from "../../components/post/Page";
 import SideBar from "./components/SideBar";
-import CarCardItem from "../../components/CarCardItem";
+import CarCardItem from "./components/CarCardItem";
 import { BASE_URL } from "../../constants/url";
 import { Link } from "react-router-dom";
 
