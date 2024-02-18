@@ -7,8 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
+import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.jwt.JwtProvider;
 
+import static softeer.be33ma3.exception.ErrorCode.TOKEN_REQUIRED;
 import static softeer.be33ma3.jwt.JwtProperties.ACCESS_HEADER_STRING;
 import static softeer.be33ma3.jwt.JwtProperties.ACCESS_PREFIX_STRING;
 
@@ -25,7 +27,7 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
         String accessToken = getToken(request);
 
         if (accessToken == null) {    //헤더에 토큰이 없는 경우
-            throw new JwtTokenException("JWT 토큰 필요");
+            throw new BusinessException(TOKEN_REQUIRED);
         }
 
         if (StringUtils.hasText(accessToken)) {  //토큰이 있는 경우

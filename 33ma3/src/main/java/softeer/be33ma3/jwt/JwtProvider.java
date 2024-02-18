@@ -7,11 +7,14 @@ import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.MemberRepository;
 
 import java.security.Key;
 import java.util.Date;
 
+import static softeer.be33ma3.exception.ErrorCode.EXPIRED_TOKEN;
+import static softeer.be33ma3.exception.ErrorCode.JWT_NOT_VALID;
 import static softeer.be33ma3.jwt.JwtProperties.*;
 @Slf4j
 @Component //빈으로 등록
@@ -54,11 +57,11 @@ public class JwtProvider {  //jwt 토큰을 만들고 검증하는 역할
             Jwts.parserBuilder().setSigningKey(key)
                     .build().parseClaimsJws(token).getBody();
         }catch (SignatureException e ){ //signature 검증에 실패한 경우
-            throw new JwtTokenException("JWT_NOT_VALID");
+            throw new BusinessException(JWT_NOT_VALID);
         }catch (ExpiredJwtException e) { //토큰이 만료된 경우
-            throw new JwtTokenException("만료된 토큰");
+            throw new BusinessException(EXPIRED_TOKEN);
         } catch (MalformedJwtException e) { //jwt 형식에 맞지 않는 경우
-            throw new JwtTokenException("JWT_NOT_VALID");
+            throw new BusinessException(JWT_NOT_VALID);
         }
 
         return true;

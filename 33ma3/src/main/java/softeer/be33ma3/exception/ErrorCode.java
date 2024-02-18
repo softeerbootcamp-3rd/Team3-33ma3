@@ -37,7 +37,15 @@ public enum ErrorCode {
     CLOSED_POST(HttpStatus.BAD_REQUEST,"마감된 게시글"),
 
     //이미지
-    UNABLE_TO_CONVERT_FILE(HttpStatus.BAD_REQUEST,"파일을 변환할 수 없음");
+    UNABLE_TO_CONVERT_FILE(HttpStatus.BAD_REQUEST,"파일을 변환할 수 없음"),
+
+    //JWT
+    TOKEN_REQUIRED(HttpStatus.UNAUTHORIZED, "JWT 토큰 필요"),
+    JWT_NOT_VALID(HttpStatus.UNAUTHORIZED, "JWT_NOT_VALID"),
+    REFRESH_TOKEN_REQUIRED(HttpStatus.UNAUTHORIZED, "REFRESH TOKEN 필요"),
+    REFRESH_TOKEN_NOT_VALID(HttpStatus.UNAUTHORIZED, "올바르지 않은 리프레시 토큰"),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰");
+
 
     private final HttpStatus status;
     private final String errorMessage;
