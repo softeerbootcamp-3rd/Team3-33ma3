@@ -3,7 +3,7 @@ import ChatIcon from "/src/assets/chatIcon.svg";
 
 const Header = styled.header`
   display: flex;
-  width: 1000px;
+  width: ${(props) => (props.chatmode === "true" ? "400px;" : "1000px;")}
   height: 120px;
   background: ${(props) => props.theme.colors.surface_brand};
   justify-content: center;
@@ -24,9 +24,9 @@ const IconContainer = styled.div`
   gap: 10px;
 `;
 
-function ChatHeader() {
+function MessageHeader(props) {
   return (
-    <Header>
+    <Header chatmode={props.chatmode}>
       <IconContainer>
         <Icon src={ChatIcon} />
         전체
@@ -35,4 +35,4 @@ function ChatHeader() {
   );
 }
 
-export { ChatHeader };
+export { MessageHeader };

@@ -1,8 +1,10 @@
 import styled from "styled-components";
+import CenterLogo from "/src/assets/33MA3_logo.png";
+import { useNavigate } from "react-router-dom";
 
 const Logo = styled.img`
-  width: 100px;
-  height: 80px;
+  width: 45px;
+  height: 60px;
 `;
 
 const OpponentInfo = styled.div`
@@ -39,6 +41,9 @@ const MessageBox = styled.li`
   justify-content: space-between;
   padding: 15px;
   border-bottom: 1px solid ${(props) => props.theme.colors.surface_weak};
+  &:hover {
+    background: ${(props) => props.theme.colors.surface_weak};
+  }
 `;
 
 const KeyContent = styled.div`
@@ -47,21 +52,27 @@ const KeyContent = styled.div`
   gap: 20px;
 `;
 
-function ChatMessage({ name, content, count }) {
+function Message(props) {
+  const navigate = useNavigate();
+  function handleOnClick() {
+    props.onClick(true);
+    navigate("/chat-room?mode=chat");
+  }
+
   return (
     <>
-      <MessageBox>
+      <MessageBox onClick={handleOnClick}>
         <KeyContent>
-          <Logo />
+          <Logo src={CenterLogo} />
           <OpponentInfo>
-            <OpponentName>{name}</OpponentName>
-            <OpponentMessage>{content}~</OpponentMessage>
+            <OpponentName>{props.info.name}</OpponentName>
+            <OpponentMessage>{props.info.content}</OpponentMessage>
           </OpponentInfo>
         </KeyContent>
-        <MessageCount>{count}</MessageCount>
+        <MessageCount>{props.info.count}</MessageCount>
       </MessageBox>
     </>
   );
 }
 
-export { ChatMessage };
+export { Message };

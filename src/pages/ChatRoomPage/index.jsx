@@ -1,11 +1,10 @@
 import React from "react";
-import { ChatList } from "./components/ChatList";
-import { ChatContainer } from "./components/ChatContainer";
+import { MessageList } from "./components/MessageList";
 
 function ChatRoomPage() {
   return (
     <>
-      <ChatContainer />
+      <MessageList />
     </>
   );
 }
