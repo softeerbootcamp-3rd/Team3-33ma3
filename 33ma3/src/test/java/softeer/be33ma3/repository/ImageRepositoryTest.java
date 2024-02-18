@@ -22,7 +22,6 @@ class ImageRepositoryTest {
         imageRepository.deleteAllInBatch();
     }
 
-
     @DisplayName("이미지 아이디 리스트로 파일 이름을 찾을 수 있다.")
     @Test
     void findFileNamesByImageIdIn(){

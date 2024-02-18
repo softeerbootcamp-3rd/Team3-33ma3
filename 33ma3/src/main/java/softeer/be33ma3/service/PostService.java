@@ -170,7 +170,7 @@ public class PostService {
     private Post validPostAndMember(Member member, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
 
-        if (!post.getMember().equals(member)) {
+        if (post.getMember().getMemberId() != member.getMemberId()) {
             throw new UnauthorizedException("작성자만 가능합니다.");
         }
 

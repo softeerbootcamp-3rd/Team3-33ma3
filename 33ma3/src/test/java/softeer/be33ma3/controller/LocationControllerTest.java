@@ -24,7 +24,7 @@ class LocationControllerTest {
 
     @DisplayName("사용자 위치에서 반경안에 있는 서비스 센터들을 반환한다.")
     @Test
-    void getCenters() throws Exception {
+    void getCentersInRadius() throws Exception {
         //given
         double latitude = 37.547427;
         double longitude = 127.056600;
