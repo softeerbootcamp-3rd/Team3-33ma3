@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.domain.Member;
-import softeer.be33ma3.exception.JwtTokenException;
 import softeer.be33ma3.repository.MemberRepository;
 
 @Service

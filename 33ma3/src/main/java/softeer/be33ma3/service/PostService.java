@@ -8,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 import softeer.be33ma3.domain.*;
 import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.dto.response.*;
-import softeer.be33ma3.exception.UnauthorizedException;
 import softeer.be33ma3.repository.*;
 
 import java.util.*;

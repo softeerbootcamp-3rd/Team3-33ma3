@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import softeer.be33ma3.domain.Member;
-import softeer.be33ma3.exception.JwtTokenException;
 import softeer.be33ma3.jwt.JwtProvider;
 import softeer.be33ma3.repository.MemberRepository;
 

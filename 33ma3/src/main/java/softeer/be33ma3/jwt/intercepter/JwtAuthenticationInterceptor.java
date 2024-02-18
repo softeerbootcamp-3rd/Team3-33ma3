@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
-import softeer.be33ma3.exception.JwtTokenException;
 import softeer.be33ma3.jwt.JwtProvider;
 
 import static softeer.be33ma3.jwt.JwtProperties.ACCESS_HEADER_STRING;

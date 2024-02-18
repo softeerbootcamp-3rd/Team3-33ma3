@@ -7,7 +7,6 @@ import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import softeer.be33ma3.exception.JwtTokenException;
 import softeer.be33ma3.repository.MemberRepository;
 
 import java.security.Key;
