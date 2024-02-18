@@ -59,6 +59,7 @@ const BottomContainer = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: ${({ theme }) => theme.fontSize.regular};
   font-weight: 500;
 `;

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import Page from "../../components/post/Page";
 import SideBar from "./components/SideBar";
+import CenterCardItem from "./components/CenterCardItem";
 
 const Content = styled.div`
   display: flex;
@@ -25,9 +26,9 @@ const ReviewListHeader = styled.div`
 `;
 
 const ReviewList = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 `;
 
 function CenterListPage() {
@@ -52,7 +53,9 @@ function CenterListPage() {
               <ReviewListHeader>
                 <p>3건</p>
               </ReviewListHeader>
-              <ReviewList></ReviewList>
+              <ReviewList>
+                <CenterCardItem />
+              </ReviewList>
             </>
           )}
         </ReviewListContainer>
