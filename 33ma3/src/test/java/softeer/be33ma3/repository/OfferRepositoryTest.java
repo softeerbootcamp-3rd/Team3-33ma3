@@ -44,10 +44,9 @@ class OfferRepositoryTest {
         Post post1 = Post.createPost(postCreateDto, null, null);
         Post savedPost1 = postRepository.save(post1);
             // offer 저장
-        Offer offer1 = createOffer(1, "offer1", savedPost1, null);
-        Offer offer2 = createOffer(2, "offer2", savedPost1, null);
-        Offer offer3 = createOffer(3, "offer3", savedPost1, null);
-        offerRepository.saveAll(List.of(offer1, offer2, offer3));
+        createOffer(1, "offer1", savedPost1, null);
+        createOffer(2, "offer2", savedPost1, null);
+        createOffer(3, "offer3", savedPost1, null);
         // when
         List<Offer> offerList = offerRepository.findByPost_PostId(savedPost1.getPostId());
         // then
@@ -84,8 +83,7 @@ class OfferRepositoryTest {
         Center center1 = Center.createCenter("서비스센터1", 0, 0, null);
         Center savedCenter1 = centerRepository.save(center1);
             // offer 저장
-        Offer offer1 = createOffer(1, "offer1", savedPost1, savedCenter1);
-        offerRepository.save(offer1);
+        createOffer(1, "offer1", savedPost1, savedCenter1);
         // when
         Optional<Offer> actual = offerRepository.findByPost_PostIdAndCenter_CenterId(savedPost1.getPostId(), savedCenter1.getCenterId());
         // then
@@ -110,11 +108,12 @@ class OfferRepositoryTest {
         assertThat(actual).isEmpty();
     }
 
-    static Offer createOffer(int price, String contents, Post post, Center center) {
-        return Offer.builder()
+    private Offer createOffer(int price, String contents, Post post, Center center) {
+        Offer offer = Offer.builder()
                 .price(price)
                 .contents(contents)
                 .post(post)
                 .center(center).build();
+        return offerRepository.save(offer);
     }
 }

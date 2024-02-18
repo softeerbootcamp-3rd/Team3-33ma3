@@ -9,6 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 import softeer.be33ma3.domain.Center;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Offer;
+import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.repository.CenterRepository;
 import softeer.be33ma3.repository.MemberRepository;
 import softeer.be33ma3.repository.OfferRepository;
@@ -44,7 +45,7 @@ class OfferDetailDtoTest {
         Member savedMember = memberRepository.save(member);
         Center center = Center.createCenter("center1", 0.0, 0.0, savedMember);
         Center savedCenter = centerRepository.save(center);
-        Offer savedOffer = createOffer(10, "offer1", savedCenter);
+        Offer savedOffer = createOffer(10, "offer1", null, savedCenter);
         // when
         OfferDetailDto actual = OfferDetailDto.fromEntity(savedOffer);
         // then
@@ -65,9 +66,9 @@ class OfferDetailDtoTest {
         Center center2 = Center.createCenter("center2", 0.0, 0.0, members.get(1));
         Center center3 = Center.createCenter("center3", 0.0, 0.0, members.get(2));
         List<Center> centers = centerRepository.saveAll(List.of(center1, center2, center3));
-        Offer offer1 = createOffer(3, "offer1", centers.get(0));
-        Offer offer2 = createOffer(2, "offer2", centers.get(1));
-        Offer offer3 = createOffer(1, "offer3", centers.get(2));
+        Offer offer1 = createOffer(3, "offer1", null, centers.get(0));
+        Offer offer2 = createOffer(2, "offer2", null, centers.get(1));
+        Offer offer3 = createOffer(1, "offer3", null, centers.get(2));
         // when
         List<OfferDetailDto> actual = OfferDetailDto.fromEntityList(List.of(offer1, offer2, offer3));
         // then
@@ -80,11 +81,11 @@ class OfferDetailDtoTest {
                 );
     }
 
-    private Offer createOffer(int price, String contents, Center center) {
+    private Offer createOffer(int price, String contents, Post post, Center center) {
         Offer offer = Offer.builder()
                 .price(price)
                 .contents(contents)
-                .post(null)
+                .post(post)
                 .center(center).build();
         return offerRepository.save(offer);
     }
