@@ -42,7 +42,7 @@ const NavItems = styled.div`
   align-items: center;
 `;
 
-function Header(token) {
+function Header({ token }) {
   return (
     <>
       <HeaderContainer>
@@ -56,7 +56,7 @@ function Header(token) {
           </Link>
           <NavItems>
             <NavItem />
-            <Link to="/auth?mode=login">
+            <Link to={token ? "/auth?mode=logout" : "/auth?mode=login"}>
               <LoginNav>{token ? "로그아웃" : "로그인"}</LoginNav>
             </Link>
             <img src={Alarm} style={{ width: "30px", height: "30px" }} />

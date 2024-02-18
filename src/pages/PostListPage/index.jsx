@@ -36,6 +36,10 @@ const CardList = styled.div`
 function PostListPage() {
   const [thumnailList, setThumnailList] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [regionList, setRegionList] = useState();
+  const [repairList, setRepairList] = useState();
+  const [tuneUpList, setTuneUpList] = useState();
+  const [isDone, setIsDone] = useState();
 
   useEffect(() => {
     setIsLoading(true);
@@ -49,6 +53,24 @@ function PostListPage() {
       });
   }, []);
 
+  useEffect(() => {
+    setIsLoading(true);
+    fetch(
+      `${BASE_URL}post?done=${isDone ? isDone : ""}&region=${
+        regionList ? regionList.join(",") : ""
+      }&repair=${repairList ? repairList.join(",") : ""}&tuneUp=${
+        tuneUpList ? tuneUpList.join(",") : ""
+      }`
+    )
+      .then((res) => res.json())
+      .then((json) => {
+        setThumnailList(json.data);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [regionList, repairList, tuneUpList, isDone]);
+
   const carList =
     !isLoading &&
     thumnailList.map((item) => (
@@ -60,7 +82,12 @@ function PostListPage() {
   return (
     <Page title={"게시물 작성"}>
       <Content>
-        <SideBar />
+        <SideBar
+          setRegionList={setRegionList}
+          setRepairList={setRepairList}
+          setTuneUpList={setTuneUpList}
+          setIsDone={setIsDone}
+        />
         <CardListContainer>
           {isLoading ? (
             <p>Loading...</p>

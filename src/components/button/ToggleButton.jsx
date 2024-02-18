@@ -65,19 +65,24 @@ const CheckBox = styled.input`
   }
 `;
 
-function ToggleButton({ title, onClick }) {
-  const [isActive, setIsActive] = useState();
+function ToggleButton({ title, name, setIsDone }) {
+  const [isActive, setIsActive] = useState(false);
 
-  function toggle() {
+  function handleToggle() {
+    setIsDone((isActive) => !isActive);
     setIsActive((isActive) => !isActive);
-    onClick();
   }
 
   return (
     <ToggleContainer>
       <p>{title}</p>
       <ToggleSwitch>
-        <CheckBox type="checkbox" checked={isActive} onChange={toggle} />
+        <CheckBox
+          type="checkbox"
+          checked={isActive}
+          onChange={handleToggle}
+          name={name}
+        />
         <ToggleSlider />
       </ToggleSwitch>
     </ToggleContainer>

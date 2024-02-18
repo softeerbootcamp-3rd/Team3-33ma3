@@ -19,8 +19,10 @@ function DropDownItemButton({ content, onClick }) {
   const [isActive, setIsActive] = useState(false);
 
   function toggle() {
+    if (!onClick()) {
+      return;
+    }
     setIsActive(!isActive);
-    onClick();
   }
 
   return (

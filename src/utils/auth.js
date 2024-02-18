@@ -10,6 +10,11 @@ function getAuthToken() {
   return token;
 }
 
+function removeAuthToken() {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+}
+
 function getMemberId() {
   const memberId = localStorage.getItem("memberId");
   if (!memberId) {
@@ -26,7 +31,7 @@ function getMemberType() {
   return memberType;
 }
 
-export function tokenLoader() {
+function tokenLoader() {
   const accessToken = getAuthToken();
   const memberId = getMemberId();
   const memberType = getMemberType();
@@ -38,10 +43,12 @@ export function tokenLoader() {
   };
 }
 
-export function checkAuthLoader() {
+function checkAuthLoader() {
   const token = getAuthToken();
 
   if (!token) {
     return redirect("/auth");
   }
 }
+
+export { removeAuthToken, getId, tokenLoader, checkAuthLoader };
