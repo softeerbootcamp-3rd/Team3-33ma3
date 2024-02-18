@@ -9,7 +9,7 @@ public enum ErrorCode {
     NOT_FOUND_CENTER(HttpStatus.NOT_FOUND,"존재하지 않는 센터"),
     NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "존재하지 않는 회원"),
     AUTHOR_ONLY_ACCESS(HttpStatus.UNAUTHORIZED ,"작성자만 가능합니다."),
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR"),
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error"),
 
     //post
     NOT_FOUND_POST(HttpStatus.NOT_FOUND, "존재하지 않는 게시글"),
