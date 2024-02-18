@@ -208,14 +208,20 @@ class OfferServiceTest {
         // post 저장
         Post savedPost = createAndSavePost("승용차", "제네시스", 3, "서울시 강남구",
                 "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 내용", null, null);
+        Post savedPost2 = createAndSavePost("승용차", "제네시스", 3, "서울시 강남구",
+                "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 내용", null, null);
         // center 저장
         Member member = Member.createMember(2, "center1Id", "center1Pw");
         Member savedMember = memberRepository.save(member);
         Center center = Center.createCenter("center1", 0.0, 0.0, savedMember);
         centerRepository.save(center);
+        // savedPost에 offer 생성 후 저장
+        OfferCreateDto offerCreateDto = new OfferCreateDto(10, "offer1");
+        Long offerId = offerService.createOffer(savedPost.getPostId(), offerCreateDto, savedMember);
+        OfferCreateDto offerCreateDto2 = new OfferCreateDto(9, "new offer1");
         // when
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            offerService.updateOffer(savedPost.getPostId(), 999L, null, savedMember);
+            offerService.updateOffer(savedPost2.getPostId(), offerId, offerCreateDto2, savedMember);
         });
         // then
         assertThat(exception.getMessage()).isEqualTo("존재하지 않는 견적");
@@ -323,8 +329,57 @@ class OfferServiceTest {
         assertThat(exception.getMessage()).isEqualTo("작성자만 삭제 가능합니다.");
     }
 
+    @DisplayName("성공적으로 댓글을 낙찰할 수 있다.")
     @Test
     void selectOffer() {
+        // given
+        // post 작성자 생성
+        Member writer = Member.createMember(1, "writerId", "writerPw");
+        Member savedWriter = memberRepository.save(writer);
+        // post 저장
+        Post savedPost = createAndSavePost("승용차", "제네시스", 3, "서울시 강남구",
+                "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 내용", null, savedWriter);
+        // center 저장
+        Member member = Member.createMember(2, "center1Id", "center1Pw");
+        Member savedMember = memberRepository.save(member);
+        Center center = Center.createCenter("center1", 0.0, 0.0, savedMember);
+        centerRepository.save(center);
+        // offer 저장
+        OfferCreateDto offerCreateDto = new OfferCreateDto(10, "offer1");
+        Long offerId = offerService.createOffer(savedPost.getPostId(), offerCreateDto, savedMember);
+        // when
+        offerService.selectOffer(savedPost.getPostId(), offerId, savedWriter);
+        // then
+        Post post = postRepository.findById(savedPost.getPostId()).get();
+        Offer offer = offerRepository.findById(offerId).get();
+        assertThat(post.isDone()).isTrue();
+        assertThat(offer.isSelected()).isTrue();
+    }
+
+    @DisplayName("게시글 작성자가 아닌 유저가 낙찰 요청 시 예외가 발생한다.")
+    @Test
+    void selectOfferWithNotWriter() {
+        // given
+        // post 작성자 생성
+        Member writer = Member.createMember(1, "writerId", "writerPw");
+        Member savedWriter = memberRepository.save(writer);
+        // post 저장
+        Post savedPost = createAndSavePost("승용차", "제네시스", 3, "서울시 강남구",
+                "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 내용", null, savedWriter);
+        // center 저장
+        Member member = Member.createMember(2, "center1Id", "center1Pw");
+        Member savedMember = memberRepository.save(member);
+        Center center = Center.createCenter("center1", 0.0, 0.0, savedMember);
+        centerRepository.save(center);
+        // offer 저장
+        OfferCreateDto offerCreateDto = new OfferCreateDto(10, "offer1");
+        Long offerId = offerService.createOffer(savedPost.getPostId(), offerCreateDto, savedMember);
+        // when
+        UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
+            offerService.selectOffer(savedPost.getPostId(), offerId, savedMember);
+        });
+        // then
+        assertThat(exception.getMessage()).isEqualTo("작성자만 낙찰 가능합니다.");
     }
 
     @Test
