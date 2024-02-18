@@ -48,7 +48,7 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
   const navigate = useNavigate();
 
   // TODO: 웹 소켓 연결
-  useEffect(() => {
+  useEffect(function () {
     webSocket.current = new WebSocket(
       `ws://${IP}/connect/post/${postId}/${memberId}`
     );
@@ -59,17 +59,6 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
 
     webSocket.current.onclose = () => {
       console.log("closed");
-    };
-
-    webSocket.current.onmessage = (event) => {
-      console.log(event.data);
-      const data = JSON.parse(event.data);
-      if (data.message && offerDetail) {
-        const selected = offerDetail.offerId === data.data;
-        selectedMine.current = selected;
-        setIsEnd(true);
-      }
-      setAvgPrice(JSON.parse(event.data).avgPrice);
     };
 
     return () => {
@@ -84,6 +73,25 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
       }
     };
   }, []);
+
+  useEffect(() => {
+    webSocket.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log(data);
+      if (data.message && offerDetail) {
+        console.log("끝!");
+        const selected = offerDetail.offerId === data.data;
+        selectedMine.current = selected;
+        setIsEnd(true);
+      } else {
+        setAvgPrice(JSON.parse(event.data).avgPrice);
+      }
+    };
+
+    return () => {
+      webSocket.current.onmessage = null;
+    };
+  }, [offerDetail]);
 
   // type 이 center인 경우 경매 참여하기 or 수정하기 버튼 보여주기
   // type 이 user인 경우 평균만 보여주기

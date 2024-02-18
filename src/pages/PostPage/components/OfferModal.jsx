@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import ModalPortal from "../../../components/modal/ModalPortal";
 import InputText from "../../../components/input/InputText";
@@ -33,6 +33,8 @@ const ButtonContainer = styled.div`
 
 function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
   const { accessToken } = useRouteLoaderData("root");
+  const [isLoading, setIsLoading] = useState(false);
+
   // 경매 참여
   function handleSubmitOffer(e) {
     e.preventDefault();
@@ -52,9 +54,9 @@ function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
 
   // 경매 참여
   function submitOffer(formData) {
+    setIsLoading(true);
     const newOffer = { ...Object.fromEntries(formData.entries()) };
     console.log(newOffer);
-
     fetch(BASE_URL + `post/${postId}/offer`, {
       method: "POST",
       headers: {
@@ -73,12 +75,14 @@ function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
       .then((json) => {
         console.log(json);
         updateOfferDetail({ ...newOffer, offerId: json.data });
+        setIsLoading(false);
         handleClose();
       });
   }
 
   // 입찰 댓글 수정
   function editOffer(formData) {
+    setIsLoading(true);
     const newOffer = { ...Object.fromEntries(formData.entries()) };
     console.log(newOffer);
     console.log("수정");
@@ -101,6 +105,7 @@ function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
       .then((json) => {
         console.log(json);
         updateOfferDetail(newOffer);
+        setIsLoading(false);
         handleClose();
       });
   }
@@ -147,10 +152,10 @@ function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
             <SubmitButton type="button" onClick={handleDeleteOffer}>
               삭제
             </SubmitButton>
-            <SubmitButton>수정</SubmitButton>
+            <SubmitButton disabled={isLoading}>수정</SubmitButton>
           </ButtonContainer>
         ) : (
-          <SubmitButton>응찰</SubmitButton>
+          <SubmitButton disabled={isLoading}>응찰</SubmitButton>
         )}
       </OfferContainer>
     </ModalPortal>

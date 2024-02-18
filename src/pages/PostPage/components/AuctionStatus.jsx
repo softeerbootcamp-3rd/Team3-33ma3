@@ -38,14 +38,23 @@ function AuctionStatus({ postId, curOfferDetails }) {
 
     // socket 에러 발생 시 이벤트
     webSocket.current.error = (event) => {
-      console.log("error");
+      alert("연결이 끊어졌습니다.");
     };
 
     // clean up 함수
     // unmount 될 때 webSocket 연결 해제
     return () => {
-      console.log("unmounted");
-      webSocket.current.close();
+      if (webSocket.current.readyState === WebSocket.OPEN) {
+        const closeMessage = {
+          type: "post",
+          postId: postId,
+          memberId: memberId,
+        };
+        webSocket.current.send(JSON.stringify(closeMessage));
+        webSocket.current.close();
+      } else {
+        alert("연결이 끊어졌습니다.");
+      }
     };
   }, []);
 
