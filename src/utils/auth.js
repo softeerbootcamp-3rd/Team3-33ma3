@@ -51,4 +51,4 @@ function checkAuthLoader() {
   }
 }
 
-export { removeAuthToken, getId, tokenLoader, checkAuthLoader };
+export { removeAuthToken, getMemberId, tokenLoader, checkAuthLoader };
