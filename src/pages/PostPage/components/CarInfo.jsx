@@ -32,7 +32,7 @@ function CarInfo({ postData }) {
             <p>{postData.modelName}</p>
           </OptionItem>
           <OptionItem title={"마감 기한"}>
-            <p>{postData.dday}</p>
+            <p>{postData.dday === -1 ? "마감 완료" : postData.dday}</p>
           </OptionItem>
           <OptionItem title={"지역"}>
             <p>{postData.regionName}</p>

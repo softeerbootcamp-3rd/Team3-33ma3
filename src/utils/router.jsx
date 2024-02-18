@@ -16,6 +16,7 @@ import { tokenLoader } from "./auth";
 import AuthenticationPage, {
   action,
 } from "../pages/AuthenticationPage/AuthenticationPage";
+import { CENTER_TYPE } from "../constants/options";
 
 const router = createBrowserRouter([
   {
@@ -37,11 +38,7 @@ const router = createBrowserRouter([
       },
       {
         path: "post/info",
-        element: (
-          <RequireAuth>
-            <PostPage />
-          </RequireAuth>
-        ),
+        element: <PostPage />,
       },
       {
         path: "post/list",
@@ -90,9 +87,9 @@ const router = createBrowserRouter([
 ]);
 
 function RequireAuth({ children }) {
-  const tokenLoader = useRouteLoaderData("root");
+  const { accessToken, memberType } = useRouteLoaderData("root");
 
-  if (tokenLoader.accessToken === null) {
+  if (!accessToken || Number(memberType) === CENTER_TYPE) {
     return <Navigate to={"/auth"} />;
   }
   return children;

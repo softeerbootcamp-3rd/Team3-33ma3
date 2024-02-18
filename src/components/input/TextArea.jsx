@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 
-const Input = styled.textarea`
+const TextAreaContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  width: 100%;
+`;
+const Text = styled.textarea`
   width: 100%;
   height: 300px;
   background: ${(props) => props.theme.colors.surface_white_weak};
@@ -9,7 +15,9 @@ const Input = styled.textarea`
   resize: none;
   border-radius: ${(props) => props.theme.radiuses.radius_s};
   box-sizing: border-box;
-  font-size: ${(props) => props.theme.fontSize.regular};
+  font-size: ${({ theme }) => theme.fontSize.regular};
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.text_strong};
   padding: 10px;
 
   &:focus {
@@ -33,8 +41,8 @@ const InputLength = styled.div`
   }
 `;
 
-function TextArea({ maxLength, name }) {
-  const [length, setLength] = useState(0);
+function TextArea({ maxLength, name, placeholder, defaultValue }) {
+  const [length, setLength] = useState(defaultValue ? defaultValue.length : 0);
 
   function onChange(e) {
     const userInputLength = e.target.value.length;
@@ -42,13 +50,19 @@ function TextArea({ maxLength, name }) {
   }
 
   return (
-    <>
-      <Input onChange={onChange} name={name} maxLength={maxLength}></Input>
+    <TextAreaContainer>
+      <Text
+        onChange={onChange}
+        name={name}
+        maxLength={maxLength}
+        placeholder={placeholder}
+        defaultValue={defaultValue}
+      />
       <InputLength>
         <h3>{length}</h3>
         <p>/{maxLength}</p>
       </InputLength>
-    </>
+    </TextAreaContainer>
   );
 }
 

@@ -22,25 +22,26 @@ import {
   DROP,
 } from "../constants/mapConstants";
 
-export const Dialog = styled.dialog`
+const Dialog = styled.dialog`
   padding: 30px;
   border-radius: ${(props) => props.theme.radiuses.radius_m};
   box-shadow: ${(props) => props.theme.boxShadow.floating};
 `;
 
-export const Title = styled.p`
+const Title = styled.p`
   color: ${(props) => props.theme.colors.surface_black};
   font-size: ${(props) => props.theme.fontSize.medium};
   font-weight: 700;
 `;
 
-export const CloseButton = styled.button`
+const CloseButton = styled.button`
   width: 35px;
   height: 35px;
 `;
 
-export const TopContainer = styled.div`
+const TopContainer = styled.div`
   display: flex;
+
   align-items: center;
   gap: 30px;
   width: 100%;
@@ -63,7 +64,7 @@ const RadiusContainer = styled.div`
   align-items: center;
 `;
 
-export const Wrapper = styled.div`
+const Wrapper = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -182,9 +183,11 @@ const LocationModal = forwardRef(function LocationModal(
     if (newMap) {
       fetch(`${BASE_URL}center/all`)
         .then((res) => {
+          console.log(res);
           return res.json();
         })
         .then((data) => {
+          console.log(data);
           const repairCenterList = data.data;
           const markers = repairCenterList.map((element) => {
             const position = new naver.maps.LatLng(

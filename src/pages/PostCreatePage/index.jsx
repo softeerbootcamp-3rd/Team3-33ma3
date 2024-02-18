@@ -91,7 +91,7 @@ function PostCreatePage() {
 
     // TODO: 에러처리 필요
     if (!validateOptions(newPost)) {
-      console.log("게시물 작성 형식 안맞음");
+      alert("게시물 작성 형식이 올바르지 않습니다.");
       setLoading(false);
       return;
     }
@@ -114,6 +114,7 @@ function PostCreatePage() {
           console.log("success!");
         } else {
           console.log("error");
+          alert("게시물 작성에 실패했습니다.");
         }
         return response.json();
       })
@@ -121,8 +122,8 @@ function PostCreatePage() {
         console.log(json);
       })
       .finally(() => {
-        setLoading(false);
         navigate("/");
+        setLoading(false);
       });
   }
 

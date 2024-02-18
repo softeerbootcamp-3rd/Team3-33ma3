@@ -2,9 +2,12 @@ import React from "react";
 import styled from "styled-components";
 import Person from "../../assets/person.svg";
 import SpeechBubble from "../../assets/speech_bubble.svg";
+import PrizeImg from "../../assets/1st_prize.svg";
 
 const Container = styled.button`
   display: flex;
+  width: 175px;
+  position: relative;
   flex-direction: column;
   gap: 10px;
   align-items: center;
@@ -18,8 +21,10 @@ const Container = styled.button`
     transform: scale(1.05);
   }
 
-  animation-name: ${(props) => props.isEnd && "pullUp"};
-  -webkit-animation-name: ${(props) => props.isEnd && "pullUp"};
+  animation-name: ${(props) =>
+    !props.isEnd && props.isEdited === false && "pullUp"};
+  -webkit-animation-name: ${(props) =>
+    !props.isEnd && props.isEdited === false && "pullUp"};
 
   animation-duration: 1.1s;
   -webkit-animation-duration: 1.1s;
@@ -85,14 +90,16 @@ const Bubble = styled.div`
   height: 147px;
   position: relative;
 
-  animation-name: ${(props) => props.inStatus && "floating"};
-  -webkit-animation-name: ${(props) => props.inStatus && "floating"};
+  &.floating {
+    animation-name: floating;
+    -webkit-animation-name: floating;
 
-  animation-duration: 1.5s;
-  -webkit-animation-duration: 1.5s;
+    animation-duration: 1.5s;
+    -webkit-animation-duration: 1.5s;
 
-  animation-iteration-count: infinite;
-  -webkit-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+    -webkit-animation-iteration-count: infinite;
+  }
 
   @keyframes floating {
     0% {
@@ -140,12 +147,77 @@ const Bubble = styled.div`
     }
     50% {
       -webkit-transform: scale(1);
-      opacity: 1;
+      opacity: 1;s
     }
     100% {
       -webkit-transform: scale(0.95);
       opacity: 0.7;
     }
+  }
+
+  &.hatch{
+    animation-name: hatch;
+    -webkit-animation-name: hatch;	
+  
+    animation-duration: 2s;	
+    -webkit-animation-duration: 2s;
+  
+    animation-timing-function: ease-in-out;	
+    -webkit-animation-timing-function: ease-in-out;
+  
+    transform-origin: 50% 100%;
+    -ms-transform-origin: 50% 100%;
+    -webkit-transform-origin: 50% 100%; 
+  
+    visibility: visible !important;		
+  }
+  
+  @keyframes hatch {
+    0% {
+      transform: rotate(0deg) scaleY(0.6);
+    }
+    20% {
+      transform: rotate(-2deg) scaleY(1.05);
+    }
+    35% {
+      transform: rotate(2deg) scaleY(1);
+    }
+    50% {
+      transform: rotate(-2deg);
+    }	
+    65% {
+      transform: rotate(1deg);
+    }	
+    80% {
+      transform: rotate(-1deg);
+    }		
+    100% {
+      transform: rotate(0deg);
+    }									
+  }
+  
+  @-webkit-keyframes hatch {
+    0% {
+      -webkit-transform: rotate(0deg) scaleY(0.6);
+    }
+    20% {
+      -webkit-transform: rotate(-2deg) scaleY(1.05);
+    }
+    35% {
+      -webkit-transform: rotate(2deg) scaleY(1);
+    }
+    50% {
+      -webkit-transform: rotate(-2deg);
+    }	
+    65% {
+      -webkit-transform: rotate(1deg);
+    }	
+    80% {
+      -webkit-transform: rotate(-1deg);
+    }		
+    100% {
+      -webkit-transform: rotate(0deg);
+    }		
   }
 `;
 
@@ -163,17 +235,28 @@ const bubbleImageSize = {
   height: "147px",
 };
 
+const Prize = styled.img`
+  position: absolute;
+  z-index: 2;
+  width: 60px;
+  height: 60px;
+  left: 0;
+`;
+
 function AuctionPrice({
   price,
   centerName,
   isActive,
   inStatus,
   isEnd,
+  isEdited,
+  isSelected,
   onClick,
 }) {
   return (
     <Container $isActive={isActive} onClick={onClick} isEnd={isEnd}>
-      <Bubble inStatus={inStatus}>
+      {isSelected && <Prize src={PrizeImg} />}
+      <Bubble className={isEdited && "hatch"}>
         <Price>{price}만</Price>
         <img src={SpeechBubble} style={bubbleImageSize} />
       </Bubble>

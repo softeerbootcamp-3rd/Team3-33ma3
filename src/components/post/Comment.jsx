@@ -35,7 +35,13 @@ const Description = styled.p`
   line-height: normal;
 `;
 
-function Comment({ centerName, contents, disabled }) {
+const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+`;
+
+function Comment({ centerName, contents, disabled, handleSelectOffer }) {
   // TODO: 문의 기능 구현
 
   return (
@@ -45,7 +51,16 @@ function Comment({ centerName, contents, disabled }) {
           <img src={Logo} style={{ width: "28px", height: "36px" }} />
           {centerName ? centerName : "익명"}
         </Writer>
-        {!disabled && <SubmitButton size={"small"} children={"문의"} />}
+        {!disabled && (
+          <ButtonContainer>
+            <SubmitButton size={"small"} children={"문의"} />
+            <SubmitButton
+              size={"small"}
+              children={"낙찰"}
+              onClick={handleSelectOffer}
+            />
+          </ButtonContainer>
+        )}
       </WriterContainer>
       <Description>{contents}</Description>
     </CommentContainer>

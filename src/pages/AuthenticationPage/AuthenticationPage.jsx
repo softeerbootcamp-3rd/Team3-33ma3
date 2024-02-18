@@ -1,15 +1,23 @@
 import AuthForm from "../../components/AuthForm";
 import { redirect, useSearchParams, Navigate } from "react-router-dom";
-import { Title, Wrapper } from "../../components/LocationModal";
 import styled from "styled-components";
 import { BASE_URL } from "../../constants/url";
 import { removeAuthToken } from "../../utils/auth";
 
 const MiddleContainer = styled.div``;
 
-const AuthWrapper = styled(Wrapper)`
+const AuthWrapper = styled.div`
   display: flex;
   gap: 80px;
+  align-items: center;
+  gap: 10px;
+  flex-direction: column;
+`;
+
+const Title = styled.p`
+  color: ${(props) => props.theme.colors.surface_black};
+  font-size: ${(props) => props.theme.fontSize.medium};
+  font-weight: 700;
 `;
 
 const TitleContainer = styled.div`
@@ -98,11 +106,15 @@ export async function action({ request }) {
 
   const resData = await response.json();
   if (mode == "login") {
-    const accessToken = resData.data.accessToken;
-    const refreshToken = resData.data.refreshToken;
+    const accessToken = resData.data.jwtToken.accessToken;
+    const refreshToken = resData.data.jwtToken.refreshToken;
+    const memberId = resData.data.memberId;
+    const memberType = resData.data.memberType;
 
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
+    localStorage.setItem("memberId", memberId);
+    localStorage.setItem("memberType", memberType);
   }
   if (mode === "signUp") {
     return redirect("/auth?mode=login");
