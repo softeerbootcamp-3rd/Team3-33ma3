@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import DummyImg from "../../../assets/person.svg";
-import StarImg from "../../../assets/star.svg";
+import StarRating from "../../../components/post/StarRating";
 
 const CenterCardContainer = styled.div`
   display: flex;
@@ -64,12 +64,6 @@ const BottomContainer = styled.div`
   font-weight: 500;
 `;
 
-const StarContainer = styled.div`
-  display: flex;
-  gap: 5px;
-  align-items: center;
-`;
-
 function CenterCardItem() {
   return (
     <CenterCardContainer>
@@ -82,10 +76,7 @@ function CenterCardItem() {
           <p>경기도 평택시 안중읍 송담 1로 65</p>
         </TextContainer>
         <BottomContainer>
-          <StarContainer>
-            <img src={StarImg} />
-            <p>4.3/5</p>
-          </StarContainer>
+          <StarRating score={4} />
           <p>리뷰 43개</p>
         </BottomContainer>
       </ContentContainer>

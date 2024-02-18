@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Page from "../../components/post/Page";
 import SideBar from "./components/SideBar";
 import CenterCardItem from "./components/CenterCardItem";
+import { Link } from "react-router-dom";
 
 const Content = styled.div`
   display: flex;
@@ -54,7 +55,9 @@ function CenterListPage() {
                 <p>3건</p>
               </ReviewListHeader>
               <ReviewList>
-                <CenterCardItem />
+                <Link to="/center-review/info">
+                  <CenterCardItem />
+                </Link>
               </ReviewList>
             </>
           )}
