@@ -1,9 +1,11 @@
 package softeer.be33ma3.exception;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
+@RequiredArgsConstructor
 public enum ErrorCode {
     //공통
     NOT_FOUND_CENTER(HttpStatus.NOT_FOUND,"존재하지 않는 센터"),
@@ -49,9 +51,4 @@ public enum ErrorCode {
 
     private final HttpStatus status;
     private final String errorMessage;
-
-    ErrorCode(HttpStatus status, String errorMessage) {
-        this.status = status;
-        this.errorMessage = errorMessage;
-    }
 }
