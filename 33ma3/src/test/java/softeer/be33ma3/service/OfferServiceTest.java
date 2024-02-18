@@ -382,20 +382,18 @@ class OfferServiceTest {
         assertThat(exception.getMessage()).isEqualTo("작성자만 낙찰 가능합니다.");
     }
 
+    @DisplayName("댓글의 평균 제시 가격을 계산하고 소수 첫째자리까지 나타낸다.")
     @Test
     void calculateAvgPrice() {
-    }
-
-    @Test
-    void sendAboutOfferUpdate() {
-    }
-
-    @Test
-    void sendOfferList2Writer() {
-    }
-
-    @Test
-    void sendAvgPrice2Others() {
+        // given
+        Offer offer1 = createAndSaveOffer(5, "offer1", null, null);
+        Offer offer2 = createAndSaveOffer(6, "offer2", null, null);
+        Offer offer3 = createAndSaveOffer(7, "offer3", null, null);
+        Offer offer4 = createAndSaveOffer(5, "offer4", null, null);
+        // when
+        double avgPrice = OfferService.calculateAvgPrice(List.of(offer1, offer2, offer3, offer4));
+        // then
+        assertThat(avgPrice).isEqualTo(5.8);
     }
 
     private Offer createAndSaveOffer(int price, String contents, Post post, Center center) {
