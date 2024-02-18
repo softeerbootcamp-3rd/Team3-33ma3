@@ -41,7 +41,7 @@ public class OfferService {
         // 1. 해당 게시글 가져오기
         postRepository.findById(postId).orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
         // 2. 해당 댓글 가져오기
-        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER);
+        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
         return OfferDetailDto.fromEntity(offer);
     }
 
@@ -66,7 +66,7 @@ public class OfferService {
         // 1. 해당 게시글이 마감 전인지 확인
         checkNotDonePost(postId);
         // 2. 센터 정보 가져오기
-        Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() ->  new BusinessException(NOT_FOUND_CENTER)));
+        Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() ->  new BusinessException(NOT_FOUND_CENTER));
         // 3. 기존 댓글 가져오기
         Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
         // 4. 수정 가능한지 검증
