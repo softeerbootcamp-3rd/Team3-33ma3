@@ -77,5 +77,4 @@ class ChatMessageRepositoryTest {
         chatMessageRepository.saveAll(List.of(chatMessage1, chatMessage2));
         return savedChatRoom;
     }
-
 }
