@@ -70,7 +70,7 @@ public class OfferService {
         Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
         // 4. 수정 가능한지 검증
         if(center.getCenterId() != offer.getCenter().getCenterId())
-            throw new UnauthorizedException("작성자만 수정 가능합니다.");
+            throw new UnauthorizedException("작성자만 가능합니다.");
         if(offerCreateDto.getPrice() > offer.getPrice())
             throw new IllegalArgumentException("기존 금액보다 낮은 금액으로만 수정 가능합니다.");
         // 5. 댓글 수정하기
@@ -90,7 +90,7 @@ public class OfferService {
         Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
         // 4. 댓글 작성자인지 검증
         if(!offer.getCenter().equals(center))
-            throw new UnauthorizedException("작성자만 삭제 가능합니다.");
+            throw new UnauthorizedException("작성자만 가능합니다.");
         // 5. 댓글 삭제
         offerRepository.delete(offer);
     }
@@ -102,7 +102,7 @@ public class OfferService {
         Post post = checkNotDonePost(postId);
         // 3. 게시글 작성자의 접근인지 검증
         if(member.getMemberId() != post.getMember().getMemberId())
-            throw new UnauthorizedException("작성자만 낙찰 가능합니다.");
+            throw new UnauthorizedException("작성자만 가능합니다.");
         // 4. 낙찰을 희망하는 댓글 가져오기
         Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
         // 5. 댓글 낙찰, 게시글 마감 처리
@@ -118,7 +118,7 @@ public class OfferService {
     private Post checkNotDonePost(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
         if(post.isDone())
-            throw new IllegalArgumentException("완료된 게시글");
+            throw new IllegalArgumentException("마감된 게시글");
         return post;
     }
 

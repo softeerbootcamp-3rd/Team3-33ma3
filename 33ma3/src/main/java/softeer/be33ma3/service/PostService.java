@@ -139,7 +139,7 @@ public class PostService {
             return null;
         // 센터 엔티티 찾기
         Center center = centerRepository.findByMember_MemberId(member.getMemberId())
-                .orElseThrow(()->new IllegalArgumentException("존재하지 않는 서비스 센터"));
+                .orElseThrow(()->new IllegalArgumentException("존재하지 않는 센터"));
         // 해당 게시글에 해당 센터가 작성한 견적 찾기
         Optional<Offer> offer = offerRepository.findByPost_PostIdAndCenter_CenterId(postId, center.getCenterId());
         return (offer.isEmpty() ? null : OfferDetailDto.fromEntity(offer.get()));
