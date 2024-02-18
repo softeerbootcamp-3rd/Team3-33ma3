@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.ChatMessageRequestDto;
+import softeer.be33ma3.dto.response.ChatHistoryDto;
 import softeer.be33ma3.dto.response.ChatRoomListDto;
 import softeer.be33ma3.jwt.CurrentUser;
 import softeer.be33ma3.response.DataResponse;
@@ -63,9 +64,22 @@ public class ChatController {
     @ApiResponse(responseCode = "200", description = "문의 내역 전송 성공", content = @Content(schema = @Schema(implementation = DataResponse.class)))
     @Operation(summary = "문의 내역", description = "문의 내역 보기 메서드 입니다.")
     @GetMapping("/chatRoom/all")
-    public ResponseEntity<?> showAllChatRoom(@CurrentUser Member member){
+    public ResponseEntity<?> showAllChatRoom(@Schema(hidden = true) @CurrentUser Member member){
         List<ChatRoomListDto> allChatRoomListDto = chatService.showAllChatRoom(member);
 
         return ResponseEntity.ok().body(DataResponse.success("문의 내역 전송 성공", allChatRoomListDto));
+    }
+
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "채팅 내역 전송 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
+            @ApiResponse(responseCode = "401", description = "해당 방의 회원이 아닙니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "400", description = "존재하지 않는 채팅 룸", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+    })
+    @Operation(summary = "채팅 내역 조회", description = "채팅 내역을 조회하는 메서드 입니다.")
+    @GetMapping("/chat/history/{roomId}")
+    public ResponseEntity<?> showOneChatHistory(@Schema(hidden = true) @CurrentUser Member member, @PathVariable("roomId") Long roomId){
+         List<ChatHistoryDto> chatHistoryDtos = chatService.showOneChatHistory(member, roomId);
+
+        return ResponseEntity.ok().body(DataResponse.success("채팅 내역 전송 성공", chatHistoryDtos));
     }
 }

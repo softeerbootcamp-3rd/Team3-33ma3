@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.domain.*;
+import softeer.be33ma3.dto.response.ChatHistoryDto;
 import softeer.be33ma3.dto.response.ChatRoomListDto;
 import softeer.be33ma3.dto.response.ChatMessageResponseDto;
 import softeer.be33ma3.exception.UnauthorizedException;
@@ -92,6 +93,34 @@ public class ChatService {
         }
 
         return allChatRoomListDto;
+    }
+
+    @Transactional
+    public List<ChatHistoryDto> showOneChatHistory(Member member, Long roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅 룸"));
+        validateMember(member, chatRoom);
+
+        List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoom_ChatRoomId(chatRoom.getChatRoomId());
+
+        List<ChatHistoryDto> chatHistoryDtos = new ArrayList<>();
+        for (ChatMessage chatMessage : chatMessages) {
+            if(!chatMessage.getSender().equals(member) && !chatMessage.isReadDone()){   //상대방이 보낸 메세지의 읽음 여부가 false인 경우
+                chatMessage.setReadDoneTrue();      //읽음 처리
+            }
+            chatHistoryDtos.add(ChatHistoryDto.getChatHistoryDto(chatMessage));
+        }
+
+        return chatHistoryDtos;
+    }
+
+    private void validateMember(Member member, ChatRoom chatRoom) {
+        if (member.getMemberType() == CLIENT_TYPE && !chatRoom.getClient().equals(member)) {
+            throw new UnauthorizedException("해당 방의 회원이 아닙니다.");
+        }
+
+        if (member.getMemberType() == CENTER_TYPE && !chatRoom.getCenter().equals(member)) {
+            throw new UnauthorizedException("해당 방의 회원이 아닙니다.");
+        }
     }
 
     private ChatRoomListDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
