@@ -69,18 +69,12 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "center-review",
-        element: <Outlet />,
-        children: [
-          {
-            path: "info",
-            element: <CenterInfoPage />,
-          },
-          {
-            path: "list",
-            element: <CenterListPage />,
-          },
-        ],
+        path: "center-review/list",
+        element: <CenterListPage />,
+      },
+      {
+        path: "center-review/info",
+        element: <CenterInfoPage />,
       },
     ],
   },

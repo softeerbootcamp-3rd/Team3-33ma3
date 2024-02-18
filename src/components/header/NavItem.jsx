@@ -19,7 +19,7 @@ const NavTitle = styled.p`
 function NavItem() {
   const navItemList = [
     { title: "견적 문의", link: "/post/create" },
-    { title: "센터 후기", link: "/center-review/info" },
+    { title: "센터 후기", link: "/center-review/list" },
   ];
 
   const navItems = navItemList.map((navItem, index) => (

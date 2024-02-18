@@ -80,7 +80,7 @@ function PostListPage() {
     ));
 
   return (
-    <Page title={"게시물 작성"}>
+    <Page title={"게시물 목록"}>
       <Content>
         <SideBar
           setRegionList={setRegionList}
