@@ -177,8 +177,100 @@ class OfferServiceTest {
         assertThat(exception.getMessage()).isEqualTo("이미 견적을 작성하였습니다.");
     }
 
+    @DisplayName("성공적으로 댓글을 수정할 수 있다.")
     @Test
     void updateOffer() {
+        // given
+        // post 저장
+        Post savedPost = createAndSavePost("승용차", "제네시스", 3, "서울시 강남구",
+                "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 내용", null, null);
+        // center 저장
+        Member member = Member.createMember(2, "center1Id", "center1Pw");
+        Member savedMember = memberRepository.save(member);
+        Center center = Center.createCenter("center1", 0.0, 0.0, savedMember);
+        centerRepository.save(center);
+        // offer 저장
+        OfferCreateDto offerCreateDto = new OfferCreateDto(10, "offer1");
+        Long offerId = offerService.createOffer(savedPost.getPostId(), offerCreateDto, savedMember);
+        offerCreateDto = new OfferCreateDto(10, "new offer1");
+        // when
+        offerService.updateOffer(savedPost.getPostId(), offerId, offerCreateDto, savedMember);
+        // then
+        Optional<Offer> actual = offerRepository.findById(offerId);
+        assertThat(actual).isPresent().get().extracting("price", "contents")
+                .containsExactly(10, "new offer1");
+    }
+
+    @DisplayName("존재하지 않는 댓글에 대해 수정 요청시 예외가 발생한다.")
+    @Test
+    void updateOfferWithNoOffer() {
+        // given
+        // post 저장
+        Post savedPost = createAndSavePost("승용차", "제네시스", 3, "서울시 강남구",
+                "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 내용", null, null);
+        // center 저장
+        Member member = Member.createMember(2, "center1Id", "center1Pw");
+        Member savedMember = memberRepository.save(member);
+        Center center = Center.createCenter("center1", 0.0, 0.0, savedMember);
+        centerRepository.save(center);
+        // when
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            offerService.updateOffer(savedPost.getPostId(), 999L, null, savedMember);
+        });
+        // then
+        assertThat(exception.getMessage()).isEqualTo("존재하지 않는 견적");
+    }
+
+    @DisplayName("댓글 작성자가 아닌 다른 유저가 댓글 수정 요청시 예외가 발생한다.")
+    @Test
+    void updateOfferWithNotWriter() {
+        // given
+        // post 저장
+        Post savedPost = createAndSavePost("승용차", "제네시스", 3, "서울시 강남구",
+                "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 내용", null, null);
+        // center 저장
+        Member member = Member.createMember(2, "center1Id", "center1Pw");
+        Member savedMember = memberRepository.save(member);
+        Center center = Center.createCenter("center1", 0.0, 0.0, savedMember);
+        centerRepository.save(center);
+        // offer 저장
+        OfferCreateDto offerCreateDto = new OfferCreateDto(10, "offer1");
+        Long offerId = offerService.createOffer(savedPost.getPostId(), offerCreateDto, savedMember);
+        // 새로운 center 생성
+        Member member2 = Member.createMember(2, "center2Id", "center2Pw");
+        Member savedMember2 = memberRepository.save(member2);
+        Center center2 = Center.createCenter("center2", 0.0, 0.0, savedMember2);
+        centerRepository.save(center2);
+        // when
+        UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
+            offerService.updateOffer(savedPost.getPostId(), offerId, null, savedMember2);
+        });
+        // then
+        assertThat(exception.getMessage()).isEqualTo("작성자만 수정 가능합니다.");
+    }
+
+    @DisplayName("기존보다 더 높은 가격으로 수정 요청시 예외가 발생한다.")
+    @Test
+    void updateOfferWithHighPrice() {
+        // given
+        // post 저장
+        Post savedPost = createAndSavePost("승용차", "제네시스", 3, "서울시 강남구",
+                "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 내용", null, null);
+        // center 저장
+        Member member = Member.createMember(2, "center1Id", "center1Pw");
+        Member savedMember = memberRepository.save(member);
+        Center center = Center.createCenter("center1", 0.0, 0.0, savedMember);
+        centerRepository.save(center);
+        // offer 저장
+        OfferCreateDto offerCreateDto = new OfferCreateDto(10, "offer1");
+        Long offerId = offerService.createOffer(savedPost.getPostId(), offerCreateDto, savedMember);
+        OfferCreateDto offerCreateDto2 = new OfferCreateDto(11, "new offer1");
+        // when
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            offerService.updateOffer(savedPost.getPostId(), offerId, offerCreateDto2, savedMember);
+        });
+        // then
+        assertThat(exception.getMessage()).isEqualTo("기존 금액보다 낮은 금액으로만 수정 가능합니다.");
     }
 
     @Test
