@@ -8,7 +8,7 @@ import lombok.Getter;
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long reviewId;
+    private Long reviewId;
 
     private String contents;
 

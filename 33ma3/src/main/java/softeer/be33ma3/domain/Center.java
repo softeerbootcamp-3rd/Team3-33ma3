@@ -14,7 +14,7 @@ import softeer.be33ma3.domain.calcuator.DistanceCalculator;
 public class Center {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long centerId;
+    private Long centerId;
 
     private String centerName;
 
