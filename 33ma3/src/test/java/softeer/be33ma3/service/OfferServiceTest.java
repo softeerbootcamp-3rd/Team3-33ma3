@@ -6,24 +6,27 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import softeer.be33ma3.domain.Center;
-import softeer.be33ma3.domain.Member;
-import softeer.be33ma3.domain.Offer;
-import softeer.be33ma3.domain.Post;
+import org.springframework.transaction.annotation.Transactional;
+import softeer.be33ma3.domain.*;
+import softeer.be33ma3.dto.request.OfferCreateDto;
 import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
+import softeer.be33ma3.exception.UnauthorizedException;
 import softeer.be33ma3.repository.CenterRepository;
 import softeer.be33ma3.repository.MemberRepository;
 import softeer.be33ma3.repository.OfferRepository;
 import softeer.be33ma3.repository.PostRepository;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ActiveProfiles("test")
 @SpringBootTest
+@Transactional
 class OfferServiceTest {
 
     @Autowired private OfferService offerService;
@@ -45,10 +48,8 @@ class OfferServiceTest {
     void showOffer() {
         // given
         // post 저장하기
-        PostCreateDto postCreateDto = new PostCreateDto("승용차", "제네시스", 3, "서울시 강남구",
-                "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 내용");
-        Post post = Post.createPost(postCreateDto, null, null);
-        Post savedPost = postRepository.save(post);
+        Post savedPost = createAndSavePost("승용차", "제네시스", 3, "서울시 강남구",
+                "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 내용", null, null);
         // offer 저장하기
         Member member = Member.createMember(2, "center1Id", "center1Pw");
         Member savedMember = memberRepository.save(member);
@@ -68,7 +69,7 @@ class OfferServiceTest {
         // given
         // when
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            offerService.showOffer(1L, 1L);
+            offerService.showOffer(999L, 999L);
         });
         // then
         assertThat(exception.getMessage()).isEqualTo("존재하지 않는 게시글");
@@ -78,20 +79,102 @@ class OfferServiceTest {
     @Test
     void showOfferWithNoOffer() {
         // given
-        PostCreateDto postCreateDto = new PostCreateDto("승용차", "제네시스", 3, "서울시 강남구",
-                "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 내용");
-        Post post = Post.createPost(postCreateDto, null, null);
-        Post savedPost = postRepository.save(post);
+        Post savedPost = createAndSavePost("승용차", "제네시스", 3, "서울시 강남구",
+                "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 내용", null, null);
         // when
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            offerService.showOffer(savedPost.getPostId(), 1L);
+            offerService.showOffer(savedPost.getPostId(), 999L);
         });
         // then
         assertThat(exception.getMessage()).isEqualTo("존재하지 않는 견적");
     }
 
+    @DisplayName("성공적으로 견적 댓글을 생성할 수 있다.")
     @Test
     void createOffer() {
+        // given
+        // post 저장
+        Post savedPost = createAndSavePost("승용차", "제네시스", 3, "서울시 강남구",
+                "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 내용", null, null);
+        // center 저장
+        Member member = Member.createMember(2, "center1Id", "center1Pw");
+        Member savedMember = memberRepository.save(member);
+        Center center = Center.createCenter("center1", 0.0, 0.0, savedMember);
+        centerRepository.save(center);
+        // OfferCreateDto 생성
+        OfferCreateDto offerCreateDto = new OfferCreateDto(10, "offer1");
+        // when
+        Long offerId = offerService.createOffer(savedPost.getPostId(), offerCreateDto, savedMember);
+        // then
+        Optional<Offer> actual = offerRepository.findById(offerId);
+        assertThat(actual).isPresent().get().extracting("price", "contents")
+                .containsExactly(10, "offer1");
+    }
+
+    @DisplayName("존재하지 않는 게시글에 대해 댓글 생성 요청시 예외가 발생한다.")
+    @Test
+    void createOfferWithNoPost() {
+        // given
+        // when
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            offerService.createOffer(1L, null, null);
+        });
+        // then
+        assertThat(exception.getMessage()).isEqualTo("존재하지 않는 게시글");
+    }
+
+    @DisplayName("경매 완료된 게시글에 대해 댓글 생성 요청시 예외가 발생한다.")
+    @Test
+    void createOfferWithAlreadyDonePost() {
+        // given
+        // post 저장
+        Post savedPost = createAndSavePost("승용차", "제네시스", 3, "서울시 강남구",
+                "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 내용", null, null);
+        savedPost.setDone();
+        postRepository.save(savedPost);
+        // when
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            offerService.createOffer(savedPost.getPostId(), null, null);
+        });
+        // then
+        assertThat(exception.getMessage()).isEqualTo("완료된 게시글");
+    }
+
+    @DisplayName("존재하지 않는 센터로 댓글 생성 요청시 예외가 발생한다.")
+    @Test
+    void createOfferWithNoCenter() {
+        // given
+        Post savedPost = createAndSavePost("승용차", "제네시스", 3, "서울시 강남구",
+                "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 내용", null, null);
+        Member member = Member.createMember(2, "center1Id", "center1Pw");
+        Member savedMember = memberRepository.save(member);
+        // when
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            offerService.createOffer(savedPost.getPostId(), null, savedMember);
+        });
+        // then
+        assertThat(exception.getMessage()).isEqualTo("존재하지 않는 센터");
+    }
+
+    @DisplayName("이미 견적을 제시한 서비스 센터가 댓글 생성 요청시 예외가 발생한다.")
+    @Test
+    void createOfferWithAlreadyWroteCenter() {
+        // given
+        Post savedPost = createAndSavePost("승용차", "제네시스", 3, "서울시 강남구",
+                "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 내용", null, null);
+        Member member = Member.createMember(2, "center1Id", "center1Pw");
+        Member savedMember = memberRepository.save(member);
+        Center center = Center.createCenter("center1", 0.0, 0.0, savedMember);
+        centerRepository.save(center);
+        offerService.createOffer(savedPost.getPostId(), new OfferCreateDto(10, "offer1"), savedMember);
+        // 새로운 견적 제시 dto 생성하기
+        OfferCreateDto offerCreateDto = new OfferCreateDto(1, "offer2");
+        // when
+        UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
+            offerService.createOffer(savedPost.getPostId(), offerCreateDto, savedMember);
+        });
+        // then
+        assertThat(exception.getMessage()).isEqualTo("이미 견적을 작성하였습니다.");
     }
 
     @Test
@@ -129,5 +212,13 @@ class OfferServiceTest {
                 .post(post)
                 .center(center).build();
         return offerRepository.save(offer);
+    }
+
+    private Post createAndSavePost(String carType, String modelName, int deadLine, String location, String repairService, String tuneUpService,
+                                   List<Long> centers, String contents, Region region, Member member) {
+        PostCreateDto postCreateDto = new PostCreateDto(carType, modelName, deadLine, location,
+                repairService, tuneUpService, centers, contents);
+        Post post = Post.createPost(postCreateDto, region, member);
+        return postRepository.save(post);
     }
 }
