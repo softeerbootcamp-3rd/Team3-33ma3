@@ -39,7 +39,7 @@ public class OfferService {
         // 1. 해당 게시글 가져오기
         postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
         // 2. 해당 댓글 가져오기
-        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
+        Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
         return OfferDetailDto.fromEntity(offer);
     }
 
@@ -67,7 +67,7 @@ public class OfferService {
         // 2. 센터 정보 가져오기
         Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() ->  new IllegalArgumentException("존재하지 않는 센터"));
         // 3. 기존 댓글 가져오기
-        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
+        Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
         // 4. 수정 가능한지 검증
         if(center.getCenterId() != offer.getCenter().getCenterId())
             throw new UnauthorizedException("작성자만 수정 가능합니다.");
@@ -87,7 +87,7 @@ public class OfferService {
         // 2. 센터 정보 가져오기
         Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 센터"));
         // 3. 기존 댓글 가져오기
-        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
+        Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
         // 4. 댓글 작성자인지 검증
         if(!offer.getCenter().equals(center))
             throw new UnauthorizedException("작성자만 삭제 가능합니다.");
@@ -104,7 +104,7 @@ public class OfferService {
         if(member.getMemberId() != post.getMember().getMemberId())
             throw new UnauthorizedException("작성자만 낙찰 가능합니다.");
         // 4. 낙찰을 희망하는 댓글 가져오기
-        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
+        Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
         // 5. 댓글 낙찰, 게시글 마감 처리
         offer.setSelected();
         post.setDone();
