@@ -17,6 +17,7 @@ public class OfferCreateDto {
     @Min(value = 1, message = "제시 금액은 1만원 이상이어야 합니다.")
     @Max(value = 1000, message = "제시 금액은 1000만원 이하여야 합니다.")
     private int price;
+    @Schema(description = "내용", example = "견적 제시합니다.")
     private String contents;
 
     public Offer toEntity(Post post, Center center) {

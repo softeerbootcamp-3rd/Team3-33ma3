@@ -36,6 +36,7 @@ public class WebSocketRepository {
         members.add(memberId);
         postRoom.put(postId, members);
         log.info("{}번 게시글에 {}번 유저 입장", postId, memberId);
+        log.info("{}번 게시글에 들어와있는 유저: {}명", postId, postRoom.get(postId).size());
     }
 
     public void saveMemberInChat(Long roomId, Long memberId) {
@@ -51,6 +52,7 @@ public class WebSocketRepository {
     public void saveSessionWithMemberId(Long memberId, WebSocketSession webSocketSession) {
         sessions.put(memberId, webSocketSession);
         log.info("{}번 유저 웹소켓 세션 저장 성공", memberId);
+        log.info("웹소켓 세션 저장소 크기: {}" , sessions.size());
     }
 
     public void saveAllChatRoomSessionWithMemberId(Long memberId, WebSocketSession session) {

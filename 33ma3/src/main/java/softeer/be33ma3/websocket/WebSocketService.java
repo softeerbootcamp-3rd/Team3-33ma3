@@ -25,12 +25,14 @@ public class WebSocketService {
             ExitRoomMember exitRoomMember = objectMapper.readValue(payload, ExitRoomMember.class);
             closePostConnection(exitRoomMember.getRoomId(), exitRoomMember.getMemberId());
         }
-        if(payload.contains("chat") && payload.contains("memberId")) {
-            ExitRoomMember exitRoomMember = objectMapper.readValue(payload, ExitRoomMember.class);
-            closeChatConnection(exitRoomMember.getRoomId(), exitRoomMember.getMemberId());
-        }
         if(payload.contains("chatRoom") && payload.contains("memberId")){
+            log.info("게시글에서 유저가 나갔습니다.");
             ExitMember exitMember = objectMapper.readValue(payload, ExitMember.class);
+            closePostConnection(exitMember.getRoomId(), exitMember.getMemberId());
+        }
+        if(payload.contains("chat") && payload.contains("memberId")) {
+            log.info("채팅방에서 유저가 나갔습니다.");
+            ExitMember exitMember = objectMapper.readValue(payload, ExitRoomMember.class);
             closeAllChatRoomConnection(exitMember.getMemberId());
         }
 
