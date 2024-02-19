@@ -11,7 +11,7 @@ import softeer.be33ma3.domain.*;
 import softeer.be33ma3.dto.request.OfferCreateDto;
 import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
-import softeer.be33ma3.exception.UnauthorizedException;
+import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.CenterRepository;
 import softeer.be33ma3.repository.MemberRepository;
 import softeer.be33ma3.repository.OfferRepository;
@@ -68,11 +68,11 @@ class OfferServiceTest {
     void showOfferWithNoPost() {
         // given
         // when
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        BusinessException exception = assertThrows(BusinessException.class, () -> {
             offerService.showOffer(999L, 999L);
         });
         // then
-        assertThat(exception.getMessage()).isEqualTo("존재하지 않는 게시글");
+        assertThat(exception.getErrorCode().getErrorMessage()).isEqualTo("존재하지 않는 게시글");
     }
 
     @DisplayName("존재하지 않는 댓글에 대한 조회 요청일 경우 예외가 발생한다.")
@@ -82,11 +82,11 @@ class OfferServiceTest {
         Post savedPost = createAndSavePost("승용차", "제네시스", 3, "서울시 강남구",
                 "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 내용", null, null);
         // when
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        BusinessException exception = assertThrows(BusinessException.class, () -> {
             offerService.showOffer(savedPost.getPostId(), 999L);
         });
         // then
-        assertThat(exception.getMessage()).isEqualTo("존재하지 않는 견적");
+        assertThat(exception.getErrorCode().getErrorMessage()).isEqualTo("존재하지 않는 견적");
     }
 
     @DisplayName("성공적으로 견적 댓글을 생성할 수 있다.")
@@ -116,11 +116,11 @@ class OfferServiceTest {
     void createOfferWithNoPost() {
         // given
         // when
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        BusinessException exception = assertThrows(BusinessException.class, () -> {
             offerService.createOffer(1L, null, null);
         });
         // then
-        assertThat(exception.getMessage()).isEqualTo("존재하지 않는 게시글");
+        assertThat(exception.getErrorCode().getErrorMessage()).isEqualTo("존재하지 않는 게시글");
     }
 
     @DisplayName("경매 완료된 게시글에 대해 댓글 생성 요청시 예외가 발생한다.")
@@ -133,11 +133,11 @@ class OfferServiceTest {
         savedPost.setDone();
         postRepository.save(savedPost);
         // when
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        BusinessException exception = assertThrows(BusinessException.class, () -> {
             offerService.createOffer(savedPost.getPostId(), null, null);
         });
         // then
-        assertThat(exception.getMessage()).isEqualTo("완료된 게시글");
+        assertThat(exception.getErrorCode().getErrorMessage()).isEqualTo("마감된 게시글");
     }
 
     @DisplayName("존재하지 않는 센터로 댓글 생성 요청시 예외가 발생한다.")
@@ -149,11 +149,11 @@ class OfferServiceTest {
         Member member = Member.createMember(2, "center1Id", "center1Pw");
         Member savedMember = memberRepository.save(member);
         // when
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        BusinessException exception = assertThrows(BusinessException.class, () -> {
             offerService.createOffer(savedPost.getPostId(), null, savedMember);
         });
         // then
-        assertThat(exception.getMessage()).isEqualTo("존재하지 않는 센터");
+        assertThat(exception.getErrorCode().getErrorMessage()).isEqualTo("존재하지 않는 센터");
     }
 
     @DisplayName("이미 견적을 제시한 서비스 센터가 댓글 생성 요청시 예외가 발생한다.")
@@ -170,11 +170,11 @@ class OfferServiceTest {
         // 새로운 견적 제시 dto 생성하기
         OfferCreateDto offerCreateDto = new OfferCreateDto(1, "offer2");
         // when
-        UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
+        BusinessException exception = assertThrows(BusinessException.class, () -> {
             offerService.createOffer(savedPost.getPostId(), offerCreateDto, savedMember);
         });
         // then
-        assertThat(exception.getMessage()).isEqualTo("이미 견적을 작성하였습니다.");
+        assertThat(exception.getErrorCode().getErrorMessage()).isEqualTo("이미 견적을 작성하였습니다.");
     }
 
     @DisplayName("성공적으로 댓글을 수정할 수 있다.")
@@ -220,11 +220,11 @@ class OfferServiceTest {
         Long offerId = offerService.createOffer(savedPost.getPostId(), offerCreateDto, savedMember);
         OfferCreateDto offerCreateDto2 = new OfferCreateDto(9, "new offer1");
         // when
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        BusinessException exception = assertThrows(BusinessException.class, () -> {
             offerService.updateOffer(savedPost2.getPostId(), offerId, offerCreateDto2, savedMember);
         });
         // then
-        assertThat(exception.getMessage()).isEqualTo("존재하지 않는 견적");
+        assertThat(exception.getErrorCode().getErrorMessage()).isEqualTo("존재하지 않는 견적");
     }
 
     @DisplayName("댓글 작성자가 아닌 다른 유저가 댓글 수정 요청시 예외가 발생한다.")
@@ -248,11 +248,11 @@ class OfferServiceTest {
         Center center2 = Center.createCenter("center2", 0.0, 0.0, savedMember2);
         centerRepository.save(center2);
         // when
-        UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
+        BusinessException exception = assertThrows(BusinessException.class, () -> {
             offerService.updateOffer(savedPost.getPostId(), offerId, null, savedMember2);
         });
         // then
-        assertThat(exception.getMessage()).isEqualTo("작성자만 수정 가능합니다.");
+        assertThat(exception.getErrorCode().getErrorMessage()).isEqualTo("작성자만 가능합니다.");
     }
 
     @DisplayName("기존보다 더 높은 가격으로 수정 요청시 예외가 발생한다.")
@@ -272,11 +272,11 @@ class OfferServiceTest {
         Long offerId = offerService.createOffer(savedPost.getPostId(), offerCreateDto, savedMember);
         OfferCreateDto offerCreateDto2 = new OfferCreateDto(11, "new offer1");
         // when
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        BusinessException exception = assertThrows(BusinessException.class, () -> {
             offerService.updateOffer(savedPost.getPostId(), offerId, offerCreateDto2, savedMember);
         });
         // then
-        assertThat(exception.getMessage()).isEqualTo("기존 금액보다 낮은 금액으로만 수정 가능합니다.");
+        assertThat(exception.getErrorCode().getErrorMessage()).isEqualTo("기존 금액보다 낮은 금액으로만 수정 가능합니다.");
     }
 
     @DisplayName("성공적으로 댓글을 삭제할 수 있다.")
@@ -322,11 +322,11 @@ class OfferServiceTest {
         Center center2 = Center.createCenter("center2", 0.0, 0.0, savedMember2);
         centerRepository.save(center2);
         // when
-        UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
+        BusinessException exception = assertThrows(BusinessException.class, () -> {
             offerService.deleteOffer(savedPost.getPostId(), offerId, savedMember2);
         });
         // then
-        assertThat(exception.getMessage()).isEqualTo("작성자만 삭제 가능합니다.");
+        assertThat(exception.getErrorCode().getErrorMessage()).isEqualTo("작성자만 가능합니다.");
     }
 
     @DisplayName("성공적으로 댓글을 낙찰할 수 있다.")
@@ -375,11 +375,11 @@ class OfferServiceTest {
         OfferCreateDto offerCreateDto = new OfferCreateDto(10, "offer1");
         Long offerId = offerService.createOffer(savedPost.getPostId(), offerCreateDto, savedMember);
         // when
-        UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
+        BusinessException exception = assertThrows(BusinessException.class, () -> {
             offerService.selectOffer(savedPost.getPostId(), offerId, savedMember);
         });
         // then
-        assertThat(exception.getMessage()).isEqualTo("작성자만 낙찰 가능합니다.");
+        assertThat(exception.getErrorCode().getErrorMessage()).isEqualTo("작성자만 가능합니다.");
     }
 
     @DisplayName("댓글의 평균 제시 가격을 계산하고 소수 첫째자리까지 나타낸다.")
