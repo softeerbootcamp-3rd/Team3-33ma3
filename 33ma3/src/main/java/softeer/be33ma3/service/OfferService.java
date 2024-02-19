@@ -184,10 +184,10 @@ public class OfferService {
     // 낙찰 처리 후 서비스 센터들에게 낙찰 메세지, 경매 마감 메세지 전송
     private void sendMessageAfterSelection(Long postId, Long selectedMemberId) {
         // 낙찰 메세지
-        DataResponse<Long> selectAlert = DataResponse.success("제시한 견적이 낙찰되었습니다.", postId);
+        DataResponse<Boolean> selectAlert = DataResponse.success("제시한 견적이 낙찰되었습니다.", true);
         webSocketHandler.sendData2Client(selectedMemberId, selectAlert);
         // 경매 마감 메세지
-        DataResponse<Long> endAlert = DataResponse.success("견적 미선정으로 경매가 마감되었습니다. 다음 기회를 노려보세요!", postId);
+        DataResponse<Boolean> endAlert = DataResponse.success("견적 미선정으로 경매가 마감되었습니다. 다음 기회를 노려보세요!", false);
         List<Offer> offerList = offerRepository.findByPost_PostId(postId);
         List<Long> memberIdsInPost = findMemberIdsWithOfferList(offerList);
         memberIdsInPost.stream()
