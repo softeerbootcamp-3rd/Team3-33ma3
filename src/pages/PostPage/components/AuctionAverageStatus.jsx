@@ -44,7 +44,7 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
   const [offerDetail, setOfferDetail] = useState(curOfferDetail);
   const { memberId, memberType } = useRouteLoaderData("root");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEnd, setIsEnd] = useState(false);
+  const [endMessage, setEndMessage] = useState();
   const navigate = useNavigate();
 
   // TODO: 웹 소켓 연결
@@ -61,11 +61,21 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
       console.log("closed");
     };
 
+    webSocket.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log(data);
+      if (data.message) {
+        setEndMessage(data);
+      } else {
+        setAvgPrice(JSON.parse(event.data).avgPrice);
+      }
+    };
+
     return () => {
       if (webSocket.current.readyState === WebSocket.OPEN) {
         const closeMessage = {
           type: "post",
-          postId: postId,
+          roomId: postId,
           memberId: memberId,
         };
         webSocket.current.send(JSON.stringify(closeMessage));
@@ -73,25 +83,6 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
       }
     };
   }, []);
-
-  useEffect(() => {
-    webSocket.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log(data);
-      if (data.message && offerDetail) {
-        console.log("끝!");
-        const selected = offerDetail.offerId === data.data;
-        selectedMine.current = selected;
-        setIsEnd(true);
-      } else {
-        setAvgPrice(JSON.parse(event.data).avgPrice);
-      }
-    };
-
-    return () => {
-      webSocket.current.onmessage = null;
-    };
-  }, [offerDetail]);
 
   // type 이 center인 경우 경매 참여하기 or 수정하기 버튼 보여주기
   // type 이 user인 경우 평균만 보여주기
@@ -105,10 +96,10 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
           updateOfferDetail={setOfferDetail}
         />
       )}
-      {isEnd && (
+      {isEnd && offerDetail && (
         <ResultModal
-          selected={selectedMine.current}
           handleClose={() => navigate(`/`)}
+          endMessage={endMessage}
         />
       )}
       <AverageContainer>
