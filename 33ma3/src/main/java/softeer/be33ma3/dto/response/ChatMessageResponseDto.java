@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-@Schema(description = "채팅 메세지 응답")
+@Schema(description = "채팅 메세지 응답 DTO")
 public class ChatMessageResponseDto {
     @Schema(description = "내용", example = "문의문의문의합니다")
     private String contents;

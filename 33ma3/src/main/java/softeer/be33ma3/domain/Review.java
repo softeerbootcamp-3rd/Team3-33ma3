@@ -1,10 +1,14 @@
 package softeer.be33ma3.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,6 +23,19 @@ public class Review {
     private Post post;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "writer_id")
+    private Member writer;
+
+    @ManyToOne
+    @JoinColumn(name = "center_id")
+    private Center center;
+
+    @Builder
+    private Review(String contents, double score, Post post, Member writer, Center center) {
+        this.contents = contents;
+        this.score = score;
+        this.post = post;
+        this.writer = writer;
+        this.center = center;
+    }
 }
