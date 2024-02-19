@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import CenterLogo from "/src/assets/33MA3_logo.png";
-
+import { useEffect } from "react";
+import { BASE_URL } from "../../../constants/url";
+import { useLoaderData } from "react-router-dom";
 const ChatContainer = styled.div`
   width: 970px;
   padding: 20px;
@@ -68,7 +70,23 @@ const CenterContainer = styled.div`
   gap: 20px;
 `;
 
-function ChatList() {
+function ChatList(props) {
+  console.log(props.roomId);
+
+  const authData = useLoaderData();
+  const accessToken = authData.accessToken;
+
+  useEffect(() => {
+    fetch(`${BASE_URL}chat/history/${props.roomId}`, {
+      headers: {
+        Authorization: accessToken,
+        Accept: "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => console.log(data));
+  }, []);
+
   return (
     <ChatContainer>
       <ChatHeader>
