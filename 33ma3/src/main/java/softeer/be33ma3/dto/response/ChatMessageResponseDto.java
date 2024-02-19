@@ -5,18 +5,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import softeer.be33ma3.domain.ChatMessage;
 
-import java.time.LocalDateTime;
-
 @Data
 @AllArgsConstructor
 @Schema(description = "채팅 메세지 응답 DTO")
 public class ChatMessageResponseDto {
     @Schema(description = "내용", example = "문의문의문의합니다")
     private String contents;
-    @Schema(description = "메세지 보낸 시간", example = "2024-02-06T02:23:25.043239")
-    private LocalDateTime createTime;
+    @Schema(description = "메세지 보낸 시간", example = "오전 11:00")
+    private String createTime;
 
-    public static ChatMessageResponseDto create(ChatMessage chatMessage){
-        return new ChatMessageResponseDto(chatMessage.getContents(), chatMessage.getCreateTime());
+    public static ChatMessageResponseDto create(ChatMessage chatMessage, String createTime){
+        return new ChatMessageResponseDto(chatMessage.getContents(), createTime);
     }
 }

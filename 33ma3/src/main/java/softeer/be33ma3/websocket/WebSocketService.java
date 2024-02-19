@@ -22,14 +22,18 @@ public class WebSocketService {
         String payload = message.getPayload();
         // 게시글 관련 웹 소켓 연결이 종료된 유저가 있다고 메세지를 받았을 경우
         if(payload.contains("post") && payload.contains("memberId")) {
+            ExitRoomMember exitRoomMember = objectMapper.readValue(payload, ExitRoomMember.class);
+            closePostConnection(exitRoomMember.getRoomId(), exitRoomMember.getMemberId());
+        }
+        if(payload.contains("chatRoom") && payload.contains("memberId")){
             log.info("게시글에서 유저가 나갔습니다.");
             ExitMember exitMember = objectMapper.readValue(payload, ExitMember.class);
             closePostConnection(exitMember.getRoomId(), exitMember.getMemberId());
         }
         if(payload.contains("chat") && payload.contains("memberId")) {
             log.info("채팅방에서 유저가 나갔습니다.");
-            ExitMember exitMember = objectMapper.readValue(payload, ExitMember.class);
-            closeChatConnection(exitMember.getRoomId(), exitMember.getMemberId());
+            ExitMember exitMember = objectMapper.readValue(payload, ExitRoomMember.class);
+            closeAllChatRoomConnection(exitMember.getMemberId());
         }
 
         log.info("메세지 수신 성공: {}", payload); // 수신한 메세지 log
@@ -42,9 +46,13 @@ public class WebSocketService {
         webSocketRepository.saveSessionWithMemberId(memberId, session);
     }
 
-    public void saveInChat(Long roomId, Long receiverId, WebSocketSession session) {
-        webSocketRepository.saveMemberInChat(roomId, receiverId);
-        webSocketRepository.saveSessionWithMemberId(receiverId, session);
+    public void saveInChat(Long roomId, Long memberId, WebSocketSession session) {
+        webSocketRepository.saveMemberInChat(roomId, memberId);
+        webSocketRepository.saveSessionWithMemberId(memberId, session);
+    }
+
+    public void saveInAllChatRoom(Long memberId, WebSocketSession session) {
+        webSocketRepository.saveAllChatRoomSessionWithMemberId(memberId, session);
     }
 
     // 데이터 (클래스 객체) 전송
@@ -63,6 +71,15 @@ public class WebSocketService {
         session.sendMessage(new TextMessage(jsonString));
     }
 
+    public void sendAllChatRoomData(Long memberId, Object data) throws IOException {
+        // 클라이언트에 해당하는 세션 가져오기
+        WebSocketSession session = webSocketRepository.findAllChatRoomSessionByMemberId(memberId);
+        // data 직렬화
+        String jsonString = objectMapper.writeValueAsString(data);
+        // 데이터 전송
+        session.sendMessage(new TextMessage(jsonString));
+    }
+
     private void closePostConnection(Long postId, Long memberId) {
         webSocketRepository.deleteMemberInPost(postId, memberId);
         webSocketRepository.deleteSessionWithMemberId(memberId);
@@ -71,6 +88,10 @@ public class WebSocketService {
     private void closeChatConnection(Long roomId, Long memberId) {
         webSocketRepository.deleteMemberInChatRoom(roomId, memberId);
         webSocketRepository.deleteSessionWithMemberId(memberId);
+    }
+
+    private void closeAllChatRoomConnection(Long memberId) {
+        webSocketRepository.deleteAllChatRoomSessionWithMemberId(memberId);
     }
 
     public void deletePostRoom(Long postId) {

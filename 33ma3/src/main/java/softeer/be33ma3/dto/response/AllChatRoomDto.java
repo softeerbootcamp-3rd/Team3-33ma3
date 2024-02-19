@@ -6,7 +6,7 @@ import softeer.be33ma3.domain.ChatRoom;
 
 @Data
 @Schema(description = "문의 내역 리스트 응답")
-public class ChatRoomListDto {
+public class AllChatRoomDto {
     @Schema(description = "방 아이디", example = "1")
     private Long roomId;
     @Schema(description = "센터 아이디", example = "1")
@@ -19,16 +19,19 @@ public class ChatRoomListDto {
     private String lastMessage;     // 마지막 메세지
     @Schema(description = "읽지 않은 메세지 개수", example = "5")
     private int noReadCount;        // 읽지 않은 메세지 개수
+    @Schema(description = "메세지 생성 시간", example = "오전 07:12")
+    private String createTime;
 
-    public static ChatRoomListDto createChatRoomDto(ChatRoom chatRoom, String lastMessage, String memberName, int noReadCount) {
-        ChatRoomListDto chatRoomListDto = new ChatRoomListDto();
-        chatRoomListDto.roomId = chatRoom.getChatRoomId();
-        chatRoomListDto.centerId = chatRoom.getCenter().getMemberId();
-        chatRoomListDto.clientId = chatRoom.getClient().getMemberId();
-        chatRoomListDto.memberName = memberName;
-        chatRoomListDto.lastMessage = lastMessage;
-        chatRoomListDto.noReadCount = noReadCount;
+    public static AllChatRoomDto create(ChatRoom chatRoom, String lastMessage, String memberName, int noReadCount, String createTime) {
+        AllChatRoomDto allChatRoomDto = new AllChatRoomDto();
+        allChatRoomDto.roomId = chatRoom.getChatRoomId();
+        allChatRoomDto.centerId = chatRoom.getCenter().getMemberId();
+        allChatRoomDto.clientId = chatRoom.getClient().getMemberId();
+        allChatRoomDto.memberName = memberName;
+        allChatRoomDto.lastMessage = lastMessage;
+        allChatRoomDto.noReadCount = noReadCount;
+        allChatRoomDto.createTime = createTime;
 
-        return chatRoomListDto;
+        return allChatRoomDto;
     }
 }

@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import softeer.be33ma3.exception.BusinessException;
-import softeer.be33ma3.repository.MemberRepository;
 
 import java.security.Key;
 import java.util.Date;
@@ -19,13 +18,11 @@ import static softeer.be33ma3.jwt.JwtProperties.*;
 @Slf4j
 @Component //빈으로 등록
 public class JwtProvider {  //jwt 토큰을 만들고 검증하는 역할
-    private final MemberRepository memberRepository;
     private final Key key;
 
-    public JwtProvider(@Value("${jwt.secret}") String secret, MemberRepository memberRepository) {
+    public JwtProvider(@Value("${jwt.secret}") String secret) {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
-        this.memberRepository = memberRepository;
     }
 
     public JwtToken createJwtToken(int memberType, Long memberId, String longinId){

@@ -70,15 +70,19 @@ public class PostService {
         }
         Region region = getRegion(postCreateDto.getLocation());
 
-        //이미지 저장
-        ImageListDto imageListDto = imageService.saveImage(multipartFiles);
-
         //게시글 저장
         Post post = Post.createPost(postCreateDto, region, currentMember);
         Post savedPost = postRepository.save(post);
 
         //정비소랑 게시물 매핑하기
         centerAndPostMapping(postCreateDto, savedPost);
+
+        if(multipartFiles == null){     //이미지가 없는 경우
+            return savedPost.getPostId();
+        }
+
+        //이미지 저장
+        ImageListDto imageListDto = imageService.saveImage(multipartFiles);
 
         //이미지랑 게시물 매핑하기
         List<Image> images = imageRepository.findAllById(imageListDto.getImageIds());
@@ -171,7 +175,7 @@ public class PostService {
     private Post validPostAndMember(Member member, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
 
-        if (!post.getMember().equals(member)) {
+        if (!post.getMember().getMemberId().equals(member.getMemberId())) {
             throw new BusinessException(AUTHOR_ONLY_ACCESS);
         }
 

@@ -47,6 +47,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 Long senderId = (Long) attributes.get("memberId");
                 webSocketService.saveInChat(roomId, senderId, session);
             }
+            if(type.equals("chatRoom")){
+                Long memberId = (Long) attributes.get("memberId");
+                webSocketService.saveInAllChatRoom(memberId, session);
+            }
         }
     }
     @Override
@@ -62,6 +66,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
     public void sendData2Client(Long memberId, Object data) {
         try {
             webSocketService.sendData(memberId, data);
+        } catch(IOException e) {
+            log.error("실시간 데이터 전송 에러");
+        }
+    }
+
+    public void sendAllChatData2Client(Long memberId, Object data) {
+        try {
+            webSocketService.sendAllChatRoomData(memberId, data);
         } catch(IOException e) {
             log.error("실시간 데이터 전송 에러");
         }

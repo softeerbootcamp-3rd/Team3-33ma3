@@ -6,13 +6,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.domain.*;
 import softeer.be33ma3.dto.response.ChatHistoryDto;
-import softeer.be33ma3.dto.response.ChatRoomListDto;
+import softeer.be33ma3.dto.response.AllChatRoomDto;
 import softeer.be33ma3.dto.response.ChatMessageResponseDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.*;
 import softeer.be33ma3.websocket.WebSocketHandler;
 import softeer.be33ma3.websocket.WebSocketRepository;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,67 +56,84 @@ public class ChatService {
     public void sendMessage(Member sender, Long roomId, Long receiverId, String contents) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BusinessException(NOT_FOUND_CHAT_ROOM));
         Member receiver = memberRepository.findById(receiverId).orElseThrow(() -> new BusinessException(NOT_FOUND_MEMBER));
-
-        if(sender.getMemberType() == CLIENT_TYPE){
-            if(!(chatRoom.getClient().equals(sender) && chatRoom.getCenter().equals(receiver))){
-                throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
-            }
-        }
+        isValidSenderAndReceiver(sender, chatRoom, receiver);      //보내는 사람, 받는 사람이 해당 방의 멤버가 맞는지 검증
 
         ChatMessage chatMessage = ChatMessage.createChatMessage(sender, chatRoom, contents);
-        chatMessage = chatMessageRepository.save(chatMessage);
+        ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
 
-        if(webSocketRepository.findSessionByMemberId(receiver.getMemberId()) == null){  //채팅룸에 상대방이 존재하지 않을 경우
-            Alert alert = Alert.createAlert(chatRoom.getChatRoomId(), receiver);  //알림 테이블에 저장
-            alertRepository.save(alert);
+        if(webSocketRepository.findSessionByMemberId(receiver.getMemberId()) == null){      //채팅룸에 상대방이 존재하지 않을 경우
+            if(webSocketRepository.findAllChatRoomSessionByMemberId(receiver.getMemberId()) == null){       //상대방이 채팅 목록 세션을 연결 안하고 있는 경우
+                Alert alert = Alert.createAlert(chatRoom.getChatRoomId(), receiver);        //채팅방 & 채팅 목록에도 없는 경우는 알림 테이블에 저장
+                alertRepository.save(alert);
+                return;
+            }
+            updateAllChatRoom(receiver, chatRoom);    //실시간 전송 - 채팅 목록
             return;
         }
         //채팅룸에 상대방이 존재하는 경우
-        chatMessage.setReadDoneTrue();   //읽음 처리
-        ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.create(chatMessage);
-        webSocketHandler.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);   //실시간 전송
+        savedChatMessage.setReadDoneTrue();   //읽음 처리
+        ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.create(savedChatMessage, createTimeFormatting(savedChatMessage.getCreateTime()));
+        webSocketHandler.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);   //실시간 전송 - 채팅 내용
     }
 
-    public List<ChatRoomListDto> showAllChatRoom(Member member) {
-        List<ChatRoomListDto> allChatRoomListDto = new ArrayList<>();
+    public List<AllChatRoomDto> showAllChatRoom(Member member) {
+        List<AllChatRoomDto> allChatRoomDto = new ArrayList<>();
 
         if(member.getMemberType() == CLIENT_TYPE){
             List<ChatRoom> chatRooms = chatRoomRepository.findByClient_MemberId(member.getMemberId());
             for (ChatRoom chatRoom : chatRooms) {
                 Center center = centerRepository.findByMember_MemberId(chatRoom.getCenter().getMemberId()).get();
-                allChatRoomListDto.add(getChatDto(chatRoom, center.getCenterName(), member));
+                allChatRoomDto.add(getChatDto(chatRoom, center.getCenterName(), member));
             }
         }
-
         if(member.getMemberType() == CENTER_TYPE) {
             List<ChatRoom> chatRooms = chatRoomRepository.findByCenter_MemberId(member.getMemberId());
             for (ChatRoom chatRoom : chatRooms) {
-                allChatRoomListDto.add(getChatDto(chatRoom, chatRoom.getClient().getLoginId(), member));
+                allChatRoomDto.add(getChatDto(chatRoom, chatRoom.getClient().getLoginId(), member));
             }
         }
 
-        return allChatRoomListDto;
+        return allChatRoomDto;
     }
 
     @Transactional
     public List<ChatHistoryDto> showOneChatHistory(Member member, Long roomId) {
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅 룸"));
-        validateMember(member, chatRoom);
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BusinessException(NOT_FOUND_CHAT_ROOM));
+        isValidRoomMember(member, chatRoom);
 
         List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoom_ChatRoomId(chatRoom.getChatRoomId());
 
         List<ChatHistoryDto> chatHistoryDtos = new ArrayList<>();
         for (ChatMessage chatMessage : chatMessages) {
-            if(!chatMessage.getSender().equals(member) && !chatMessage.isReadDone()){   //상대방이 보낸 메세지의 읽음 여부가 false인 경우
+            if(!chatMessage.getSender().getMemberId().equals(member.getMemberId()) && !chatMessage.isReadDone()){   //상대방이 보낸 메세지의 읽음 여부가 false인 경우
                 chatMessage.setReadDoneTrue();      //읽음 처리
             }
-            chatHistoryDtos.add(ChatHistoryDto.getChatHistoryDto(chatMessage));
+            chatHistoryDtos.add(ChatHistoryDto.getChatHistoryDto(chatMessage, createTimeFormatting(chatMessage.getCreateTime())));
         }
 
         return chatHistoryDtos;
     }
 
-    private void validateMember(Member member, ChatRoom chatRoom) {
+    private void updateAllChatRoom(Member receiver, ChatRoom chatRoom) {
+        if(receiver.getMemberId() == CENTER_TYPE){      //받는 사람이 센터인 경우
+            Center center = centerRepository.findByMember_MemberId(receiver.getMemberId()).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
+            AllChatRoomDto chatDto = getChatDto(chatRoom, center.getCenterName(), receiver);
+            webSocketHandler.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //목록 실시간 전송
+            return;
+        }
+        //받는 사람이 일반 회원인 경우
+        AllChatRoomDto chatDto = getChatDto(chatRoom, receiver.getLoginId(), receiver);
+        webSocketHandler.sendAllChatData2Client(receiver.getMemberId(), chatDto);
+    }
+
+    private AllChatRoomDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
+        ChatMessage lastChatMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());      //마지막 메세지
+        int count = (int) chatMessageRepository.countReadDoneIsFalse(chatRoom.getChatRoomId(), member.getMemberId());     //안읽은 메세지 개수
+
+        return AllChatRoomDto.create(chatRoom, lastChatMessage.getContents(), memberName, count, createTimeFormatting(lastChatMessage.getCreateTime()));
+    }
+
+    private void isValidRoomMember(Member member, ChatRoom chatRoom) {
         if (member.getMemberType() == CLIENT_TYPE && !chatRoom.getClient().equals(member)) {
             throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
         }
@@ -124,10 +143,26 @@ public class ChatService {
         }
     }
 
-    private ChatRoomListDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
-        String lastChatMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());      //마지막 메세지
-        int count = (int) chatMessageRepository.countReadDoneIsFalse(chatRoom.getChatRoomId(), member.getMemberId());     //안읽은 메세지 개수
+    private void isValidSenderAndReceiver(Member sender, ChatRoom chatRoom, Member receiver) {
+        Member client = chatRoom.getClient();
+        Member center = chatRoom.getCenter();
 
-        return ChatRoomListDto.createChatRoomDto(chatRoom, lastChatMessage, memberName, count);
+        if (sender.getMemberType() == CLIENT_TYPE) {
+            if (!(client.getMemberId().equals(sender.getMemberId()) && center.getMemberId().equals(receiver.getMemberId()))) {
+                throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
+            }
+        }
+        if (sender.getMemberType() == CENTER_TYPE) {
+            if (!(client.getMemberId().equals(receiver.getMemberId()) && center.getMemberId().equals(sender.getMemberId()))) {
+                throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
+            }
+        }
+    }
+
+    private String createTimeFormatting(LocalDateTime createTime) {
+        String periodOfDay = createTime.getHour() < 12 ? "오전 " : "오후 ";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        return periodOfDay + createTime.format(formatter);
     }
 }

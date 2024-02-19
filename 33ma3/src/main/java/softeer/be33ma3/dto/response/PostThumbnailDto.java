@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import softeer.be33ma3.domain.Image;
 import softeer.be33ma3.domain.Post;
-import softeer.be33ma3.service.PostService;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

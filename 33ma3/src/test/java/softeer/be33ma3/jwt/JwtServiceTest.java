@@ -16,6 +16,7 @@ import softeer.be33ma3.service.MemberService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static softeer.be33ma3.exception.ErrorCode.REFRESH_TOKEN_NOT_VALID;
 
 @SpringBootTest
 @ActiveProfiles("test")
