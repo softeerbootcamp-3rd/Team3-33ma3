@@ -1,11 +1,12 @@
 package softeer.be33ma3.websocket;
 
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Data
-@RequiredArgsConstructor
-public class ExitMember {
+@NoArgsConstructor
+public class ExitRoomMember {
     private String type;
+    private Long roomId;
     private Long memberId;
 }

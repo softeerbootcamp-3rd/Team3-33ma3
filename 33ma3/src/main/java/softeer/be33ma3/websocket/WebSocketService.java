@@ -22,12 +22,16 @@ public class WebSocketService {
         String payload = message.getPayload();
         // 게시글 관련 웹 소켓 연결이 종료된 유저가 있다고 메세지를 받았을 경우
         if(payload.contains("post") && payload.contains("memberId")) {
-            ExitMember exitMember = objectMapper.readValue(payload, ExitMember.class);
-            closePostConnection(exitMember.getRoomId(), exitMember.getMemberId());
+            ExitRoomMember exitRoomMember = objectMapper.readValue(payload, ExitRoomMember.class);
+            closePostConnection(exitRoomMember.getRoomId(), exitRoomMember.getMemberId());
         }
         if(payload.contains("chat") && payload.contains("memberId")) {
+            ExitRoomMember exitRoomMember = objectMapper.readValue(payload, ExitRoomMember.class);
+            closeChatConnection(exitRoomMember.getRoomId(), exitRoomMember.getMemberId());
+        }
+        if(payload.contains("chatRoom") && payload.contains("memberId")){
             ExitMember exitMember = objectMapper.readValue(payload, ExitMember.class);
-            closeChatConnection(exitMember.getRoomId(), exitMember.getMemberId());
+            closeChatRoomListConnection(exitMember.getMemberId());
         }
 
         log.info("메세지 수신 성공: {}", payload); // 수신한 메세지 log
@@ -46,7 +50,7 @@ public class WebSocketService {
     }
 
     public void saveInChatRoom(Long memberId, WebSocketSession session) {
-        webSocketRepository.saveAllChatRoomSessionWithMemberId(memberId, session);
+        webSocketRepository.saveChatRoomListSessionWithMemberId(memberId, session);
     }
 
     // 데이터 (클래스 객체) 전송
@@ -82,6 +86,10 @@ public class WebSocketService {
     private void closeChatConnection(Long roomId, Long memberId) {
         webSocketRepository.deleteMemberInChatRoom(roomId, memberId);
         webSocketRepository.deleteSessionWithMemberId(memberId);
+    }
+
+    private void closeChatRoomListConnection(Long memberId) {
+        webSocketRepository.deleteChatRoomListSessionWithMemberId(memberId);
     }
 
     public void deletePostRoom(Long postId) {

@@ -15,7 +15,7 @@ public class WebSocketRepository {
     private final Map<Long, Set<Long>> postRoom = new ConcurrentHashMap<>();    // postId : set of memberId
     private final Map<Long, Set<Long>> chatRoom = new ConcurrentHashMap<>();    // roomId : set of memberId
     private final Map<Long, WebSocketSession> sessions = new ConcurrentHashMap<>();     // memberId : WebSocketSession
-    private final Map<Long, WebSocketSession> allChatRoomSessions = new ConcurrentHashMap<>();      //memberId: WebSocketSession
+    private final Map<Long, WebSocketSession> chatRoomListSessions = new ConcurrentHashMap<>();      //memberId: WebSocketSession
 
     public Set<Long> findAllMemberInPost(Long postId) {
         return postRoom.get(postId);
@@ -26,7 +26,7 @@ public class WebSocketRepository {
     }
 
     public WebSocketSession findAllChatRoomSessionByMemberId(Long memberId) {
-        return allChatRoomSessions.get(memberId);
+        return chatRoomListSessions.get(memberId);
     }
     public void saveMemberInPost(Long postId, Long memberId) {
         Set<Long> members = new HashSet<>();
@@ -53,8 +53,8 @@ public class WebSocketRepository {
         log.info("{}번 유저 웹소켓 세션 저장 성공", memberId);
     }
 
-    public void saveAllChatRoomSessionWithMemberId(Long memberId, WebSocketSession session) {
-        allChatRoomSessions.put(memberId, session);
+    public void saveChatRoomListSessionWithMemberId(Long memberId, WebSocketSession session) {
+        chatRoomListSessions.put(memberId, session);
         log.info("{}번 유저 웹소켓 세션 저장 성공 - 목록", memberId);
     }
 
@@ -67,16 +67,6 @@ public class WebSocketRepository {
             postRoom.remove(postId);
     }
 
-    public void deleteSessionWithMemberId(Long memberId) {
-        sessions.remove(memberId);
-        log.info("세션 삭제 완료! 세션 저장소 크키: {}", sessions.size());
-    }
-
-    // 게시글 만료시 호출
-    public void deletePostRoom(Long postId) {
-        postRoom.remove(postId);
-    }
-
     public void deleteMemberInChatRoom(Long roomId, Long memberId) {
         Set<Long> members = chatRoom.get(roomId);
         if (members != null) {
@@ -86,4 +76,19 @@ public class WebSocketRepository {
             }
         }
     }
+
+    public void deleteSessionWithMemberId(Long memberId) {
+        sessions.remove(memberId);
+        log.info("세션 삭제 완료! 세션 저장소 크키: {}", sessions.size());
+    }
+    public void deleteChatRoomListSessionWithMemberId(Long memberId) {
+        chatRoomListSessions.remove(memberId);
+        log.info("목록: 세션 삭제 완료! 세션 저장소 크키: {}", sessions.size());
+    }
+
+    // 게시글 만료시 호출
+    public void deletePostRoom(Long postId) {
+        postRoom.remove(postId);
+    }
+
 }
