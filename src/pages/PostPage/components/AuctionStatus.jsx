@@ -8,9 +8,9 @@ function AuctionStatus({ postId, curOfferDetails }) {
   const webSocket = useRef(null);
   const [offerList, setOfferList] = useState(curOfferDetails);
   const { memberId, accessToken } = useRouteLoaderData("root");
-  const prevOfferList = useRef(
-    new Set(curOfferDetails.map((offer) => offer.offerId))
-  );
+  const prevOfferList = useRef([
+    new Set(curOfferDetails.map((offer) => offer.offerId)),
+  ]);
 
   useEffect(() => {
     // /connect/{postId}/{memberId}
@@ -31,9 +31,10 @@ function AuctionStatus({ postId, curOfferDetails }) {
 
     // socket에서 메세지 전달 시 이벤트
     webSocket.current.onmessage = (event) => {
-      console.log(event.data);
-      prevOfferList.current = new Set(offerList.map((offer) => offer.offerId));
-      setOfferList(JSON.parse(event.data));
+      const data = JSON.parse(event.data);
+      prevOfferList.current.push(new Set(data.map((offer) => offer.offerId)));
+      prevOfferList.current.shift();
+      setOfferList(data);
     };
 
     // socket 에러 발생 시 이벤트
@@ -47,13 +48,11 @@ function AuctionStatus({ postId, curOfferDetails }) {
       if (webSocket.current.readyState === WebSocket.OPEN) {
         const closeMessage = {
           type: "post",
-          postId: postId,
+          roomId: postId,
           memberId: memberId,
         };
         webSocket.current.send(JSON.stringify(closeMessage));
         webSocket.current.close();
-      } else {
-        alert("연결이 끊어졌습니다.");
       }
     };
   }, []);
@@ -69,14 +68,18 @@ function AuctionStatus({ postId, curOfferDetails }) {
       },
     })
       .then((res) => res.json())
-      .then((json) => console.log(json));
+      .then((json) => console.log(json))
+      .finally(() => {
+        console.log("끝");
+        window.location.reload();
+      });
   }
 
   return (
     <OptionType title={"경매 현황"}>
       <OfferList
         offerList={offerList}
-        prevOfferList={prevOfferList}
+        prevOfferList={prevOfferList.current[0]}
         handleSelectOffer={handleSelectOffer}
       />
     </OptionType>
