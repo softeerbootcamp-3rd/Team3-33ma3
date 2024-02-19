@@ -24,6 +24,7 @@ public class ReviewService {
     private final PostRepository postRepository;
     private final OfferRepository offerRepository;
 
+    // 리뷰 생성하기
     @Transactional
     public Long createReview(Long postId, ReviewCreateDto reviewCreateDto, Member member) {
         // 1. 해당하는 게시글 가져오기
@@ -44,5 +45,17 @@ public class ReviewService {
         Review review = reviewCreateDto.toEntity(post, member, center);
         Review savedReview = reviewRepository.save(review);
         return savedReview.getReviewId();
+    }
+
+    // 리뷰 삭제하기
+    @Transactional
+    public void deleteReview(Long reviewId, Member member) {
+        // 1. 기존 리뷰 가져오기
+        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new BusinessException(NOT_FOUND_REVIEW));
+        // 2. 리뷰 작성자인지 검증
+        if(!review.getWriter().equals(member)) {
+            throw new BusinessException(AUTHOR_ONLY_ACCESS);
+        }
+        reviewRepository.delete(review);
     }
 }
