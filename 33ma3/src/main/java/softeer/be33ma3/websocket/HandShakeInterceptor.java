@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
+import java.io.IOException;
 import java.util.Map;
 
 @Component
@@ -60,7 +61,28 @@ public class HandShakeInterceptor implements HandshakeInterceptor {
             }
         }
 
+        if(parts[2].equals("chatRoom")) {
+            return putChatRoom(response, attributes, parts);
+        }
+
         return false;
+    }
+
+    private static boolean putChatRoom(ServerHttpResponse response, Map<String, Object> attributes, String[] parts) throws IOException {
+        try {
+            // 연결 요청 엔드 포인트에서 데이터 파싱
+            Long memberId = Long.parseLong(parts[4]);
+            // WebSocketHandler 에 전달될 속성 추가하기
+            attributes.put("type", parts[2]);
+            attributes.put("roomId", "all");
+            attributes.put("memberId", memberId);
+            return true;
+        } catch(NumberFormatException e) {
+            log.error("웹소켓 연결 실패: 멤버 아이디가 포함되어야 합니다.");
+            response.setStatusCode(HttpStatus.FORBIDDEN);
+            response.getBody().write("웹소켓 연결 실패, 멤버 아이디를 포함해주세요.".getBytes());
+            return false;
+        }
     }
 
     @Override

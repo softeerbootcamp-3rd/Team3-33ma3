@@ -15,9 +15,14 @@ public class WebSocketRepository {
     private final Map<Long, Set<Long>> postRoom = new ConcurrentHashMap<>();    // postId : set of memberId
     private final Map<Long, Set<Long>> chatRoom = new ConcurrentHashMap<>();    // roomId : set of memberId
     private final Map<Long, WebSocketSession> sessions = new ConcurrentHashMap<>();     // memberId : WebSocketSession
+    private final Map<Long, WebSocketSession> allChatRoomSessions = new ConcurrentHashMap<>();      //memberId: WebSocketSession
 
     public Set<Long> findAllMemberInPost(Long postId) {
         return postRoom.get(postId);
+    }
+
+    public WebSocketSession findSessionByMemberId(Long memberId) {
+        return sessions.get(memberId);
     }
 
     public void saveMemberInPost(Long postId, Long memberId) {
@@ -45,8 +50,9 @@ public class WebSocketRepository {
         log.info("{}번 유저 웹소켓 세션 저장 성공", memberId);
     }
 
-    public WebSocketSession findSessionByMemberId(Long memberId) {
-        return sessions.get(memberId);
+    public void saveAllChatRoomSessionWithMemberId(Long memberId, WebSocketSession session) {
+        allChatRoomSessions.put(memberId, session);
+        log.info("{}번 유저 웹소켓 세션 저장 성공 - 목록", memberId);
     }
 
     public void deleteMemberInPost(Long postId, Long memberId) {

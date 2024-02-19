@@ -47,6 +47,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 Long senderId = (Long) attributes.get("memberId");
                 webSocketService.saveInChat(roomId, senderId, session);
             }
+            if(type.equals("chatRoom")){
+                Long memberId = (Long) attributes.get("memberId");
+                webSocketService.saveInChatRoom(memberId, session);
+            }
         }
     }
     @Override

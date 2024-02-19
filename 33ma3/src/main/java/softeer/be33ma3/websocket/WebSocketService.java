@@ -40,9 +40,13 @@ public class WebSocketService {
         webSocketRepository.saveSessionWithMemberId(memberId, session);
     }
 
-    public void saveInChat(Long roomId, Long receiverId, WebSocketSession session) {
-        webSocketRepository.saveMemberInChat(roomId, receiverId);
-        webSocketRepository.saveSessionWithMemberId(receiverId, session);
+    public void saveInChat(Long roomId, Long memberId, WebSocketSession session) {
+        webSocketRepository.saveMemberInChat(roomId, memberId);
+        webSocketRepository.saveSessionWithMemberId(memberId, session);
+    }
+
+    public void saveInChatRoom(Long memberId, WebSocketSession session) {
+        webSocketRepository.saveAllChatRoomSessionWithMemberId(memberId, session);
     }
 
     // 데이터 (클래스 객체) 전송
