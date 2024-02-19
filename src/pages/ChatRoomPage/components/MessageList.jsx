@@ -30,11 +30,6 @@ const MessageContainer = styled.div`
 
 function MessageList() {
   const [isChatMode, setIsChatMode] = useState(false);
-  const data = {
-    name: "민우",
-    content: "안녕하세요~.",
-    count: 2,
-  };
 
   const [messages, setMessages] = useState([]);
   const [webSocket, setWebSocket] = useState(null);
@@ -85,12 +80,6 @@ function MessageList() {
     // 컴포넌트 언마운트 시 웹소켓 연결 종료
     return () => {
       if (ws.readyState === WebSocket.OPEN) {
-        const closeMessage = {
-          type: "chat",
-          roomId: postId,
-          memberId: memberId,
-        };
-        ws.send(JSON.stringify(closeMessage));
         ws.close();
       }
     };
