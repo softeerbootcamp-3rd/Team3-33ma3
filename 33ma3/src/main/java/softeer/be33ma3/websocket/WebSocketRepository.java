@@ -25,6 +25,9 @@ public class WebSocketRepository {
         return sessions.get(memberId);
     }
 
+    public WebSocketSession findAllChatRoomSessionByMemberId(Long memberId) {
+        return allChatRoomSessions.get(memberId);
+    }
     public void saveMemberInPost(Long postId, Long memberId) {
         Set<Long> members = new HashSet<>();
         if (postRoom.containsKey(postId)) {
