@@ -51,7 +51,7 @@ public enum ErrorCode {
     //review
     NOT_DONE_POST(HttpStatus.BAD_REQUEST, "경매가 진행 중입니다."),
     ALREADY_WROTE_REVIEW(HttpStatus.BAD_REQUEST, "이미 리뷰를 작성하였습니다."),
-    NO_SELECTED_CENTER(HttpStatus.BAD_REQUEST, "낙찰 처리된 센터가 없습니다.");
+    NO_SELECTED_CENTER(HttpStatus.NOT_FOUND, "낙찰 처리된 센터가 없습니다.");
 
     private final HttpStatus status;
     private final String errorMessage;

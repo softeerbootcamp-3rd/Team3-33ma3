@@ -3,6 +3,7 @@ package softeer.be33ma3.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ public class ReviewCreateDto {
     @Max(value = 5, message = "별점은 5점 이하여야 합니다.")
     private double score;
     @Schema(description = "센터 리뷰글", example = "센터 리뷰글입니다.")
+    @NotBlank
     private String contents;
 
     public Review toEntity(Post post, Member writer, Center center) {
