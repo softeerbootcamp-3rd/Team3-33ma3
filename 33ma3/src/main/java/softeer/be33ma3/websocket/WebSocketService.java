@@ -22,10 +22,12 @@ public class WebSocketService {
         String payload = message.getPayload();
         // 게시글 관련 웹 소켓 연결이 종료된 유저가 있다고 메세지를 받았을 경우
         if(payload.contains("post") && payload.contains("memberId")) {
+            log.info("게시글에서 유저가 나갔습니다.");
             ExitMember exitMember = objectMapper.readValue(payload, ExitMember.class);
             closePostConnection(exitMember.getRoomId(), exitMember.getMemberId());
         }
         if(payload.contains("chat") && payload.contains("memberId")) {
+            log.info("채팅방에서 유저가 나갔습니다.");
             ExitMember exitMember = objectMapper.readValue(payload, ExitMember.class);
             closeChatConnection(exitMember.getRoomId(), exitMember.getMemberId());
         }
