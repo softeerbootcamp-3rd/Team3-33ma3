@@ -88,7 +88,7 @@ function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
     console.log("수정");
 
     fetch(BASE_URL + `post/${postId}/offer/${offerDetail.offerId}`, {
-      method: "POST",
+      method: "PATCH",
       headers: {
         Authorization: accessToken,
         "Content-Type": "application/json",
@@ -96,15 +96,16 @@ function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
       body: JSON.stringify({ ...offerDetail, ...newOffer }),
     })
       .then((res) => {
-        if (res.ok) {
-          return res.json();
-        } else {
-          throw new Error("not ok");
-        }
+        // if (res.ok) {
+        //   return res.json();
+        // } else {
+        //   throw new Error("not ok");
+        // }
+        return res.json();
       })
       .then((json) => {
         console.log(json);
-        updateOfferDetail(newOffer);
+        updateOfferDetail({ ...offerDetail, ...newOffer });
         setIsLoading(false);
         handleClose();
       });
