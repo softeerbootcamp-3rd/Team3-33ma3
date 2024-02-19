@@ -76,8 +76,8 @@ public class ChatController {
             @ApiResponse(responseCode = "400", description = "존재하지 않는 채팅 룸", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "채팅 내역 조회", description = "채팅 내역을 조회하는 메서드 입니다.")
-    @GetMapping("/chat/history/{roomId}")
-    public ResponseEntity<?> showOneChatHistory(@Schema(hidden = true) @CurrentUser Member member, @PathVariable("roomId") Long roomId){
+    @GetMapping("/chat/history/{room_id}")
+    public ResponseEntity<?> showOneChatHistory(@Schema(hidden = true) @CurrentUser Member member, @PathVariable("room_id") Long roomId){
          List<ChatHistoryDto> chatHistoryDtos = chatService.showOneChatHistory(member, roomId);
 
         return ResponseEntity.ok().body(DataResponse.success("채팅 내역 전송 성공", chatHistoryDtos));
