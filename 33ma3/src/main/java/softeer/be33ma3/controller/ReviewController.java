@@ -1,10 +1,21 @@
 package softeer.be33ma3.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import softeer.be33ma3.domain.Member;
+import softeer.be33ma3.dto.request.ReviewCreateDto;
+import softeer.be33ma3.jwt.CurrentUser;
+import softeer.be33ma3.response.DataResponse;
+import softeer.be33ma3.response.SingleResponse;
+import softeer.be33ma3.service.ReviewService;
 
 @Tag(name = "Review", description = "센터 리뷰 관련 api")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -12,4 +23,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/review")
 public class ReviewController {
+
+    private final ReviewService reviewService;
+
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "센터 리뷰 작성 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
+            @ApiResponse(responseCode = "400", description = "이미 리뷰를 작성하였습니다." + "<br>경매가 진행 중입니다", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "401", description = "작성자만 가능합니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 게시글" + "<br>낙찰 처리된 센터가 없습니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+    })
+    @Operation(summary = "센터 리뷰 작성", description = "센터 리뷰 작성 메서드 입니다.")
+    @PostMapping("/{post_id}")
+    public ResponseEntity<?> createReview(@PathVariable("post_id") Long postId,
+                                          @RequestBody @Valid ReviewCreateDto reviewCreateDto,
+                                          @Schema(hidden = true) @CurrentUser Member member) {
+        Long reviewId = reviewService.createReview(postId, reviewCreateDto, member);
+        return ResponseEntity.ok().body(DataResponse.success("센터 리뷰 작성 성공", reviewId));
+    }
 }

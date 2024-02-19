@@ -46,8 +46,12 @@ public enum ErrorCode {
     JWT_NOT_VALID(HttpStatus.UNAUTHORIZED, "JWT_NOT_VALID"),
     REFRESH_TOKEN_REQUIRED(HttpStatus.UNAUTHORIZED, "REFRESH TOKEN 필요"),
     REFRESH_TOKEN_NOT_VALID(HttpStatus.UNAUTHORIZED, "올바르지 않은 리프레시 토큰"),
-    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰");
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰"),
 
+    //review
+    NOT_DONE_POST(HttpStatus.BAD_REQUEST, "경매가 진행 중입니다."),
+    ALREADY_WROTE_REVIEW(HttpStatus.BAD_REQUEST, "이미 리뷰를 작성하였습니다."),
+    NO_SELECTED_CENTER(HttpStatus.BAD_REQUEST, "낙찰 처리된 센터가 없습니다.");
 
     private final HttpStatus status;
     private final String errorMessage;
