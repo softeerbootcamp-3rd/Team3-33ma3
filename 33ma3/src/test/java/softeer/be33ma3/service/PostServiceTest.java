@@ -11,6 +11,7 @@ import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.domain.Region;
 import softeer.be33ma3.dto.request.PostCreateDto;
+import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.MemberRepository;
 import softeer.be33ma3.repository.PostRepository;
 import softeer.be33ma3.repository.RegionRepository;
@@ -78,8 +79,7 @@ class PostServiceTest {
 
         //when //then
         assertThatThrownBy(() -> postService.editPost(member2, savedPost.getPostId(), postEditDto))
-                .isInstanceOf(UnauthorizedException.class)
-                .hasMessage("작성자만 가능합니다.");
+                .isInstanceOf(BusinessException.class);
     }
 
     private Post savePost(Region region, Member member1) {

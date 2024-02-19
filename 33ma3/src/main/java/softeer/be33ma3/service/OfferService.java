@@ -41,7 +41,7 @@ public class OfferService {
         // 1. 해당 게시글 가져오기
         postRepository.findById(postId).orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
         // 2. 해당 댓글 가져오기
-        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
+        Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
         return OfferDetailDto.fromEntity(offer);
     }
 
@@ -68,7 +68,7 @@ public class OfferService {
         // 2. 센터 정보 가져오기
         Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() ->  new BusinessException(NOT_FOUND_CENTER));
         // 3. 기존 댓글 가져오기
-        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
+        Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
         // 4. 수정 가능한지 검증
         if(center.getCenterId() != offer.getCenter().getCenterId())
             throw new BusinessException(AUTHOR_ONLY_ACCESS);
@@ -88,7 +88,7 @@ public class OfferService {
         // 2. 센터 정보 가져오기
         Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
         // 3. 기존 댓글 가져오기
-        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
+        Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
         // 4. 댓글 작성자인지 검증
         if(!offer.getCenter().equals(center))
             throw new BusinessException(AUTHOR_ONLY_ACCESS);
@@ -105,7 +105,7 @@ public class OfferService {
         if(member.getMemberId() != post.getMember().getMemberId())
             throw new BusinessException(AUTHOR_ONLY_ACCESS);
         // 4. 낙찰을 희망하는 댓글 가져오기
-        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
+        Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
         // 5. 댓글 낙찰, 게시글 마감 처리
         offer.setSelected();
         post.setDone();
@@ -132,13 +132,11 @@ public class OfferService {
 
     // 견적 제시 댓글 목록의 평균 제시 가격 계산하여 반환하기
     public static double calculateAvgPrice(List<Offer> offerList) {
-        // 제시 가격의 합계, 개수 구하기
-        IntSummaryStatistics stats = offerList.stream()
-                .collect(Collectors.summarizingInt(Offer::getPrice));
-
-        if(stats.getSum() == 0)
-            return 0;
-        return Math.round(stats.getAverage() * 10) / 10.0;      // 소수점 첫째 자리까지 반올림
+        if(offerList.isEmpty()) {
+            return 0.0;
+        }
+        int total = offerList.stream().mapToInt(Offer::getPrice).sum();
+        return Math.round( (double)total/offerList.size() * 10 ) / 10.0;      // 소수점 첫째 자리까지 반올림
     }
 
     public void sendAboutOfferUpdate(Long postId) {
@@ -182,14 +180,14 @@ public class OfferService {
         // 4. 전송하기
         memberList.forEach(memberId -> webSocketHandler.sendData2Client(memberId, avgPriceDto));
     }
-  
+
     // 낙찰 처리 후 서비스 센터들에게 낙찰 메세지, 경매 마감 메세지 전송
     private void sendMessageAfterSelection(Long postId, Long selectedMemberId) {
         // 낙찰 메세지
-        DataResponse<Long> selectAlert = DataResponse.success("제시한 견적이 낙찰되었습니다.", postId);
+        DataResponse<Boolean> selectAlert = DataResponse.success("제시한 견적이 낙찰되었습니다.", true);
         webSocketHandler.sendData2Client(selectedMemberId, selectAlert);
         // 경매 마감 메세지
-        DataResponse<Long> endAlert = DataResponse.success("견적 미선정으로 경매가 마감되었습니다. 다음 기회를 노려보세요!", postId);
+        DataResponse<Boolean> endAlert = DataResponse.success("견적 미선정으로 경매가 마감되었습니다. 다음 기회를 노려보세요!", false);
         List<Offer> offerList = offerRepository.findByPost_PostId(postId);
         List<Long> memberIdsInPost = findMemberIdsWithOfferList(offerList);
         memberIdsInPost.stream()

@@ -116,11 +116,11 @@ public class ChatService {
 
     private void validateMember(Member member, ChatRoom chatRoom) {
         if (member.getMemberType() == CLIENT_TYPE && !chatRoom.getClient().equals(member)) {
-            throw new UnauthorizedException("해당 방의 회원이 아닙니다.");
+            throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
         }
 
         if (member.getMemberType() == CENTER_TYPE && !chatRoom.getCenter().equals(member)) {
-            throw new UnauthorizedException("해당 방의 회원이 아닙니다.");
+            throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
         }
     }
 
