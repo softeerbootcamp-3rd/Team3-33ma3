@@ -45,7 +45,7 @@ public class ReviewController {
     }
 
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "센터 리뷰 삭제 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
+            @ApiResponse(responseCode = "200", description = "센터 리뷰 삭제 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
             @ApiResponse(responseCode = "401", description = "작성자만 가능합니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 리뷰", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
@@ -55,6 +55,6 @@ public class ReviewController {
     public ResponseEntity<?> deleteReview(@PathVariable("review_id") Long reviewId,
                                           @Schema(hidden = true) @CurrentUser Member member) {
         reviewService.deleteReview(reviewId, member);
-        return ResponseEntity.ok().body(DataResponse.success("센터 리뷰 삭제 성공", reviewId));
+        return ResponseEntity.ok().body(SingleResponse.success("센터 리뷰 삭제 성공"));
     }
 }
