@@ -16,7 +16,7 @@ const MessageBody = styled.ul`
 `;
 
 const MessageContainer = styled.div`
-  width: auto;
+  width: ${(props) => (props.chatmode === "true" ? "400px;" : "auto;")}
   display: ${(props) => (props.chatmode === "true" ? ";" : "flex;")}
   flex-direction: column;
   align-items: center;
