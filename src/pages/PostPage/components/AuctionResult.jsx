@@ -1,26 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import AuctionPrice from "../../../components/post/AuctionPrice";
-import Comment from "../../../components/post/Comment";
 import OptionType from "../../../components/post/OptionType";
 import OfferList from "./OfferList";
+import SubmitButton from "../../../components/button/SubmitButton";
+import CreateReviewModal from "./CreateReviewModal";
 
-const AwardedBid = styled.div`
+const AuctionContainer = styled.div`
   display: flex;
-  flex-direction: row;
-  gap: 30px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 55px;
 `;
 
-function AuctionResult({ offerList }) {
-  console.log("result");
+function AuctionResult({ isWriter, offerList }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
-    <OptionType title={"경매 결과"}>
-      {/* <AwardedBid>
-        <AuctionPrice centerName={"강남"} price={"12"} isActive />
-        <Comment centerName={"강남"} contents={"경매 성공자!"} disabled />
-      </AwardedBid> */}
-      <OfferList offerList={offerList} disabled />
-    </OptionType>
+    <>
+      {isModalOpen && (
+        <CreateReviewModal handleClose={() => setIsModalOpen(false)} />
+      )}
+      <AuctionContainer>
+        <OptionType title={"경매 결과"}>
+          <OfferList offerList={offerList} disabled />
+        </OptionType>
+        {isWriter && (
+          <SubmitButton onClick={() => setIsModalOpen(true)}>
+            후기 작성하기
+          </SubmitButton>
+        )}
+      </AuctionContainer>
+    </>
   );
 }
 

@@ -106,7 +106,10 @@ function PostPage() {
                   />
                 )
               ) : (
-                <AuctionResult offerList={postData.offerDetails} />
+                <AuctionResult
+                  offerList={postData.offerDetails}
+                  isWriter={isWriter}
+                />
               )}
             </FullColumn>
           </PostInfo>

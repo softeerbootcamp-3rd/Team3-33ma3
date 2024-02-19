@@ -8,7 +8,6 @@ import OptionItem from "../../components/post/OptionItem";
 import StarRating from "../../components/post/StarRating";
 import StarImg from "../../assets/star.svg";
 import ReviewComment from "./components/ReviewComment";
-import CreateReviewModal from "./components/CreateReviewModal";
 
 const Content = styled.div`
   display: flex;
@@ -16,27 +15,11 @@ const Content = styled.div`
   gap: 45px;
 `;
 
-const Img = styled.img`
-  width: 20px;
-  height: 20px;
-`;
-
-const StarContainer = styled.div`
-  display: flex;
-  gap: 5px;
-  align-items: center;
-`;
-
 const TopContainer = styled.div`
   padding-top: 70px;
   display: flex;
   gap: 45px;
   width: 100%;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  align-items: center;
 `;
 
 const TopContentContainer = styled.div`
@@ -47,13 +30,8 @@ const TopContentContainer = styled.div`
 const imgs = [StarImg, StarImg];
 
 function CenterInfoPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   return (
     <Page>
-      {isModalOpen && (
-        <CreateReviewModal handleClose={() => setIsModalOpen(false)} />
-      )}
       <Content>
         <TopContainer>
           <Carousel imgList={imgs} thumbnail size="large" />
@@ -66,11 +44,6 @@ function CenterInfoPage() {
               <OptionItem title={"별점"}>
                 <StarRating score={4} />
               </OptionItem>
-              <ButtonContainer>
-                <SubmitButton size="small" onClick={() => setIsModalOpen(true)}>
-                  리뷰 작성
-                </SubmitButton>
-              </ButtonContainer>
             </OptionType>
           </TopContentContainer>
         </TopContainer>
