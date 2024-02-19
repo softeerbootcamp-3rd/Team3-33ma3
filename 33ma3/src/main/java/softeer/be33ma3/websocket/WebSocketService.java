@@ -66,14 +66,8 @@ public class WebSocketService {
     }
 
     public void sendAllChatRoomData(Long memberId, Object data) throws IOException {
-        if(memberId == null || data == null)
-            return;
         // 클라이언트에 해당하는 세션 가져오기
         WebSocketSession session = webSocketRepository.findAllChatRoomSessionByMemberId(memberId);
-        if(session == null) {
-            log.info("웹 소켓 연결이 되어있지 않음");
-            return;
-        }
         // data 직렬화
         String jsonString = objectMapper.writeValueAsString(data);
         // 데이터 전송

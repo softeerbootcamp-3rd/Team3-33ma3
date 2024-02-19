@@ -26,61 +26,39 @@ public class HandShakeInterceptor implements HandshakeInterceptor {
         }
         // 게시글 조회 관련 실시간 통신 요청일 경우
         if(parts[2].equals("post")) {
-            try {
-                // 연결 요청 엔드 포인트에서 데이터 파싱
-                Long postId = Long.parseLong(parts[3]);
-                Long memberId = Long.parseLong(parts[4]);
-                // WebSocketHandler 에 전달될 속성 추가하기
-                attributes.put("type", parts[2]);
-                attributes.put("postId", postId);
-                attributes.put("memberId", memberId);
-                return true;
-            } catch(NumberFormatException e) {
-                log.error("웹소켓 연결 실패: 게시글 아이디, 멤버 아이디가 포함되어야 합니다.");
-                response.setStatusCode(HttpStatus.FORBIDDEN);
-                response.getBody().write("웹소켓 연결 실패, 게시글 아이디와 멤버 아이디를 포함해주세요.".getBytes());
-                return false;
-            }
+            return attributesToHandler(response, attributes, parts, "postId");
         }
 
         if(parts[2].equals("chat")) {
-            try {
-                // 연결 요청 엔드 포인트에서 데이터 파싱
-                Long roomId = Long.parseLong(parts[3]);
-                Long memberId = Long.parseLong(parts[4]);
-                // WebSocketHandler 에 전달될 속성 추가하기
-                attributes.put("type", parts[2]);
-                attributes.put("roomId", roomId);
-                attributes.put("memberId", memberId);
-                return true;
-        } catch(NumberFormatException e) {
-            log.error("웹소켓 연결 실패: 채팅방 아이디, 멤버 아이디가 포함되어야 합니다.");
-            response.setStatusCode(HttpStatus.FORBIDDEN);
-            response.getBody().write("웹소켓 연결 실패, 채팅방 아이디와 멤버 아이디를 포함해주세요.".getBytes());
-            return false;
-            }
+            return attributesToHandler(response, attributes, parts, "roomId");
         }
 
         if(parts[2].equals("chatRoom")) {
-            return putChatRoom(response, attributes, parts);
+            return attributesToHandler(response, attributes, parts, "all");
         }
 
         return false;
     }
 
-    private static boolean putChatRoom(ServerHttpResponse response, Map<String, Object> attributes, String[] parts) throws IOException {
-        try {
-            // 연결 요청 엔드 포인트에서 데이터 파싱
+    private static boolean attributesToHandler(ServerHttpResponse response, Map<String, Object> attributes, String[] parts, String part3) throws IOException {
+        try{
             Long memberId = Long.parseLong(parts[4]);
             // WebSocketHandler 에 전달될 속성 추가하기
             attributes.put("type", parts[2]);
-            attributes.put("roomId", "all");
             attributes.put("memberId", memberId);
+
+            if(parts[2] == "chatRoom"){
+                return true;
+            }
+            // 연결 요청 엔드 포인트에서 데이터 파싱
+            Long part3Id = Long.parseLong(parts[3]);
+            attributes.put(part3, part3Id);
             return true;
+
         } catch(NumberFormatException e) {
-            log.error("웹소켓 연결 실패: 멤버 아이디가 포함되어야 합니다.");
+            log.error("웹소켓 연결 실패");
             response.setStatusCode(HttpStatus.FORBIDDEN);
-            response.getBody().write("웹소켓 연결 실패, 멤버 아이디를 포함해주세요.".getBytes());
+            response.getBody().write("웹소켓 연결 실패 ".getBytes());
             return false;
         }
     }

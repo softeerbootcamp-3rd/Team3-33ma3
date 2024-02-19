@@ -19,6 +19,10 @@ public class Review {
     private Post post;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "writer_id")
+    private Member writer;
+
+    @ManyToOne
+    @JoinColumn(name = "center_id")
+    private Center center;
 }

@@ -85,7 +85,6 @@ public class ChatService {
                 allChatRoomListDto.add(getChatDto(chatRoom, center.getCenterName(), member));
             }
         }
-
         if(member.getMemberType() == CENTER_TYPE) {
             List<ChatRoom> chatRooms = chatRoomRepository.findByCenter_MemberId(member.getMemberId());
             for (ChatRoom chatRoom : chatRooms) {
@@ -115,13 +114,13 @@ public class ChatService {
     }
 
     private void updateAllChatList(Member receiver, ChatRoom chatRoom) {
-        if(receiver.getMemberId() == CENTER_TYPE){
+        if(receiver.getMemberId() == CENTER_TYPE){      //받는 사람이 센터인 경우
             Center center = centerRepository.findByMember_MemberId(receiver.getMemberId()).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
             ChatRoomListDto chatDto = getChatDto(chatRoom, center.getCenterName(), receiver);
             webSocketHandler.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //목록 실시간 전송
             return;
         }
-
+        //받는 사람이 일반 회원인 경우
         ChatRoomListDto chatDto = getChatDto(chatRoom, receiver.getLoginId(), receiver);
         webSocketHandler.sendAllChatData2Client(receiver.getMemberId(), chatDto);
     }
