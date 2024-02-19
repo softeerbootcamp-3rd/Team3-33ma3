@@ -77,23 +77,23 @@ public class ChatService {
     }
 
     public List<AllChatRoomDto> showAllChatRoom(Member member) {
-        List<AllChatRoomDto> allAllChatRoomDto = new ArrayList<>();
+        List<AllChatRoomDto> allChatRoomDto = new ArrayList<>();
 
         if(member.getMemberType() == CLIENT_TYPE){
             List<ChatRoom> chatRooms = chatRoomRepository.findByClient_MemberId(member.getMemberId());
             for (ChatRoom chatRoom : chatRooms) {
                 Center center = centerRepository.findByMember_MemberId(chatRoom.getCenter().getMemberId()).get();
-                allAllChatRoomDto.add(getChatDto(chatRoom, center.getCenterName(), member));
+                allChatRoomDto.add(getChatDto(chatRoom, center.getCenterName(), member));
             }
         }
         if(member.getMemberType() == CENTER_TYPE) {
             List<ChatRoom> chatRooms = chatRoomRepository.findByCenter_MemberId(member.getMemberId());
             for (ChatRoom chatRoom : chatRooms) {
-                allAllChatRoomDto.add(getChatDto(chatRoom, chatRoom.getClient().getLoginId(), member));
+                allChatRoomDto.add(getChatDto(chatRoom, chatRoom.getClient().getLoginId(), member));
             }
         }
 
-        return allAllChatRoomDto;
+        return allChatRoomDto;
     }
 
     @Transactional
