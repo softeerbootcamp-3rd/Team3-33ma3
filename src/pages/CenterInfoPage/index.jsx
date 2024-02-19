@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Page from "../../components/post/Page";
 import Carousel from "../../components/image/Carousel";
@@ -8,6 +8,7 @@ import OptionItem from "../../components/post/OptionItem";
 import StarRating from "../../components/post/StarRating";
 import StarImg from "../../assets/star.svg";
 import ReviewComment from "./components/ReviewComment";
+import CreateReviewModal from "./components/CreateReviewModal";
 
 const Content = styled.div`
   display: flex;
@@ -46,8 +47,13 @@ const TopContentContainer = styled.div`
 const imgs = [StarImg, StarImg];
 
 function CenterInfoPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <Page>
+      {isModalOpen && (
+        <CreateReviewModal handleClose={() => setIsModalOpen(false)} />
+      )}
       <Content>
         <TopContainer>
           <Carousel imgList={imgs} thumbnail size="large" />
@@ -61,7 +67,9 @@ function CenterInfoPage() {
                 <StarRating score={4} />
               </OptionItem>
               <ButtonContainer>
-                <SubmitButton size="small">리뷰 작성</SubmitButton>
+                <SubmitButton size="small" onClick={() => setIsModalOpen(true)}>
+                  리뷰 작성
+                </SubmitButton>
               </ButtonContainer>
             </OptionType>
           </TopContentContainer>

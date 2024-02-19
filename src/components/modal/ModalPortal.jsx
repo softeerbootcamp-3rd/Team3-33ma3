@@ -11,6 +11,7 @@ const Modal = styled.div`
   width: 100%;
   height: 100vh;
   background-color: rgba(134, 134, 134, 0.53);
+  z-index: 1;
 `;
 
 const ModalBody = styled.div`
@@ -53,7 +54,7 @@ const ModalContent = styled.div`
 
 function ModalPortal({ width, title, handleClose, children }) {
   return createPortal(
-    <Modal>
+    <Modal className="show">
       <ModalBody width={width}>
         <ModalHeader>
           <Title>{title}</Title>
