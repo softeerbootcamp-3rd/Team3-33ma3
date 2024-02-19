@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import softeer.be33ma3.domain.ChatMessage;
 
-import java.time.LocalDateTime;
-
 @Data
 @AllArgsConstructor
 @Schema(description = "채팅 메세지 응답")

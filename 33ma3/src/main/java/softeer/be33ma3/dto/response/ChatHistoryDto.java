@@ -5,9 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import softeer.be33ma3.domain.ChatMessage;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 @Data
 @Builder
 @Schema(description = "채팅 내역")
