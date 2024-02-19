@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
-import { BASE_URL, IP, TEST } from "../../../constants/url";
-import { useRouteLoaderData, useSearchParams } from "react-router-dom";
+import { BASE_URL, IP } from "../../../constants/url";
+import {
+  useRouteLoaderData,
+  useSearchParams,
+  useLoaderData,
+} from "react-router-dom";
 import styled from "styled-components";
 import { Message } from "./Message";
 import { MessageHeader } from "./MessageHeader";
@@ -25,8 +29,6 @@ const MessageContainer = styled.div`
 `;
 
 function MessageList() {
-  const { accessToken } = useRouteLoaderData("root");
-
   const [isChatMode, setIsChatMode] = useState(false);
   const data = {
     name: "민우",
@@ -34,24 +36,42 @@ function MessageList() {
     count: 2,
   };
 
-  const [message, setMessages] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [webSocket, setWebSocket] = useState(null);
 
   const [searchParams] = useSearchParams();
-  const memberId = 1;
-  const WebSocketServerUrl = `ws://${TEST}/connect/chatRoom/all/${memberId}`;
+  const authData = useLoaderData();
+  const accessToken = authData.accessToken;
 
+  const memberId = 1;
+  const WebSocketServerUrl = `ws://${IP}/connect/chatRoom/all/${memberId}`;
   useEffect(() => {
     const ws = new WebSocket(WebSocketServerUrl);
     setWebSocket(ws);
-
     ws.onopen = () => {
       console.log("웹소켓 연결 성공");
+      fetch(`${BASE_URL}chatRoom/all`, {
+        headers: {
+          Authorization: accessToken,
+          Accept: "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setMessages(data.data);
+        });
     };
 
     ws.onmessage = (event) => {
-      console.log("메시지 수신:", event.data);
-      setMessages((prevMessages) => [...prevMessages, event.data]);
+      console.log("메시지 수신:", JSON.parse(event.data));
+      setMessages((prev) => {
+        const newData = JSON.parse(event.data);
+        const newDataArray = prev.filter(
+          (item) => item.roomId !== newData.roomId
+        );
+        console.log(newData, newDataArray);
+        return [newData, ...newDataArray];
+      });
     };
 
     ws.onclose = () => {
@@ -65,16 +85,25 @@ function MessageList() {
     // 컴포넌트 언마운트 시 웹소켓 연결 종료
     return () => {
       if (ws.readyState === WebSocket.OPEN) {
+        const closeMessage = {
+          type: "chat",
+          roomId: postId,
+          memberId: memberId,
+        };
+        ws.send(JSON.stringify(closeMessage));
         ws.close();
       }
     };
   }, []);
 
+  console.log(messages);
   return (
     <MessageContainer chatmode={isChatMode.toString()}>
       <MessageHeader chatmode={isChatMode.toString()} />
       <MessageBody chatmode={isChatMode.toString()}>
-        <Message info={data} onClick={setIsChatMode} />
+        {messages.map((item, index) => {
+          return <Message key={index} info={item} onClick={setIsChatMode} />;
+        })}
       </MessageBody>
     </MessageContainer>
   );

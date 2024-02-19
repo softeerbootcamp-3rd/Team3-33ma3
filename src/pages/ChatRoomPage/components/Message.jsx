@@ -57,7 +57,7 @@ function Message(props) {
   const navigate = useNavigate();
   function handleOnClick() {
     props.onClick(true);
-    navigate("/chat-room?mode=chat");
+    navigate(`/chat-room?mode=chat&room-id=${props.info.roomId}`);
   }
 
   return (
@@ -66,12 +66,12 @@ function Message(props) {
         <KeyContent>
           <Logo src={CenterLogo} />
           <OpponentInfo>
-            <OpponentName>{props.info.name}</OpponentName>
-            <OpponentMessage>{props.info.content}</OpponentMessage>
+            <OpponentName>{props.info.memberName}</OpponentName>
+            <OpponentMessage>{props.info.lastMessage}</OpponentMessage>
           </OpponentInfo>
         </KeyContent>
-        {props.info.count !== 0 && (
-          <MessageCount>{props.info.count}</MessageCount>
+        {props.info.noReadCount !== 0 && (
+          <MessageCount>{props.info.noReadCount}</MessageCount>
         )}
       </MessageBox>
     </>
