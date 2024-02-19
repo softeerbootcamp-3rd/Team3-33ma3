@@ -16,7 +16,7 @@ const GlobalStyle = createGlobalStyle`
     }
 
     #root{
-        overflow: auto;
+        overflow-y: scroll;
     }
 
     *{

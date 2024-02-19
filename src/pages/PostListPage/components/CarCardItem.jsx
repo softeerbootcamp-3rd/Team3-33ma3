@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-import Carousel from "./image/Carousel";
-import ChipButton from "./button/ChipButton";
-import Comment from "../assets/comment.svg";
-import Timer from "./Timer";
-import DeadLineComplete from "../assets/deadline_completed.svg";
+import Carousel from "../../../components/image/Carousel";
+import ChipButton from "../../../components/button/ChipButton";
+import CommentImg from "../../../assets/comment.svg";
+import Timer from "../../../components/Timer";
+import DeadLineCompleteImg from "../../../assets/deadline_completed.svg";
 
 const CarCardContainer = styled.div`
   display: flex;
@@ -119,7 +119,7 @@ function CarCardItem({ cardInfo }) {
         </HeaderContext>
         <RemainTime>
           {cardInfo.dday === -1 ? (
-            <img src={DeadLineComplete} />
+            <img src={DeadLineCompleteImg} />
           ) : cardInfo.dday > 0 ? (
             <p>D-{cardInfo.dday}</p>
           ) : (
@@ -136,7 +136,7 @@ function CarCardItem({ cardInfo }) {
         </Services>
         <ButtonContainer>
           <CommentChip>
-            <img src={Comment} />
+            <img src={CommentImg} />
             <p>{cardInfo.offerCount}</p>
           </CommentChip>
         </ButtonContainer>
