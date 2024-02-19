@@ -80,6 +80,11 @@ function MessageList() {
     // 컴포넌트 언마운트 시 웹소켓 연결 종료
     return () => {
       if (ws.readyState === WebSocket.OPEN) {
+        const closeMessage = {
+          type: "chatRoom",
+          memberId: memberId,
+        };
+        ws.send(JSON.stringify(closeMessage));
         ws.close();
       }
     };
