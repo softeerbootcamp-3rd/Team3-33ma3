@@ -49,7 +49,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             }
             if(type.equals("chatRoom")){
                 Long memberId = (Long) attributes.get("memberId");
-                webSocketService.saveInChatRoom(memberId, session);
+                webSocketService.saveInAllChatRoom(memberId, session);
             }
         }
     }

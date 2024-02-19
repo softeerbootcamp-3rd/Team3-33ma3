@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.domain.*;
 import softeer.be33ma3.dto.response.ChatHistoryDto;
-import softeer.be33ma3.dto.response.ChatRoomListDto;
+import softeer.be33ma3.dto.response.AllChatRoomDto;
 import softeer.be33ma3.dto.response.ChatMessageResponseDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.*;
@@ -61,8 +61,7 @@ public class ChatService {
 
         if(webSocketRepository.findSessionByMemberId(receiver.getMemberId()) == null){      //채팅룸에 상대방이 존재하지 않을 경우
             if(webSocketRepository.findAllChatRoomSessionByMemberId(receiver.getMemberId()) == null){       //상대방이 채팅 목록 세션을 연결 안하고 있는 경우
-                //채팅방 & 채팅 목록에도 없는 경우는 알림 테이블에 저장
-                Alert alert = Alert.createAlert(chatRoom.getChatRoomId(), receiver);  //알림 테이블에 저장
+                Alert alert = Alert.createAlert(chatRoom.getChatRoomId(), receiver);        //채팅방 & 채팅 목록에도 없는 경우는 알림 테이블에 저장
                 alertRepository.save(alert);
                 return;
             }
@@ -75,24 +74,24 @@ public class ChatService {
         webSocketHandler.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);   //실시간 전송 - 채팅 내용
     }
 
-    public List<ChatRoomListDto> showAllChatRoom(Member member) {
-        List<ChatRoomListDto> allChatRoomListDto = new ArrayList<>();
+    public List<AllChatRoomDto> showAllChatRoom(Member member) {
+        List<AllChatRoomDto> allAllChatRoomDto = new ArrayList<>();
 
         if(member.getMemberType() == CLIENT_TYPE){
             List<ChatRoom> chatRooms = chatRoomRepository.findByClient_MemberId(member.getMemberId());
             for (ChatRoom chatRoom : chatRooms) {
                 Center center = centerRepository.findByMember_MemberId(chatRoom.getCenter().getMemberId()).get();
-                allChatRoomListDto.add(getChatDto(chatRoom, center.getCenterName(), member));
+                allAllChatRoomDto.add(getChatDto(chatRoom, center.getCenterName(), member));
             }
         }
         if(member.getMemberType() == CENTER_TYPE) {
             List<ChatRoom> chatRooms = chatRoomRepository.findByCenter_MemberId(member.getMemberId());
             for (ChatRoom chatRoom : chatRooms) {
-                allChatRoomListDto.add(getChatDto(chatRoom, chatRoom.getClient().getLoginId(), member));
+                allAllChatRoomDto.add(getChatDto(chatRoom, chatRoom.getClient().getLoginId(), member));
             }
         }
 
-        return allChatRoomListDto;
+        return allAllChatRoomDto;
     }
 
     @Transactional
@@ -116,20 +115,20 @@ public class ChatService {
     private void updateAllChatList(Member receiver, ChatRoom chatRoom) {
         if(receiver.getMemberId() == CENTER_TYPE){      //받는 사람이 센터인 경우
             Center center = centerRepository.findByMember_MemberId(receiver.getMemberId()).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
-            ChatRoomListDto chatDto = getChatDto(chatRoom, center.getCenterName(), receiver);
+            AllChatRoomDto chatDto = getChatDto(chatRoom, center.getCenterName(), receiver);
             webSocketHandler.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //목록 실시간 전송
             return;
         }
         //받는 사람이 일반 회원인 경우
-        ChatRoomListDto chatDto = getChatDto(chatRoom, receiver.getLoginId(), receiver);
+        AllChatRoomDto chatDto = getChatDto(chatRoom, receiver.getLoginId(), receiver);
         webSocketHandler.sendAllChatData2Client(receiver.getMemberId(), chatDto);
     }
 
-    private ChatRoomListDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
+    private AllChatRoomDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
         String lastChatMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());      //마지막 메세지
         int count = (int) chatMessageRepository.countReadDoneIsFalse(chatRoom.getChatRoomId(), member.getMemberId());     //안읽은 메세지 개수
 
-        return ChatRoomListDto.createChatRoomDto(chatRoom, lastChatMessage, memberName, count);
+        return AllChatRoomDto.create(chatRoom, lastChatMessage, memberName, count);
     }
 
     private void validateIsRoomMember(Member member, ChatRoom chatRoom) {

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.ChatMessageRequestDto;
 import softeer.be33ma3.dto.response.ChatHistoryDto;
-import softeer.be33ma3.dto.response.ChatRoomListDto;
+import softeer.be33ma3.dto.response.AllChatRoomDto;
 import softeer.be33ma3.jwt.CurrentUser;
 import softeer.be33ma3.response.DataResponse;
 import softeer.be33ma3.response.SingleResponse;
@@ -65,9 +65,9 @@ public class ChatController {
     @Operation(summary = "문의 내역", description = "문의 내역 보기 메서드 입니다.")
     @GetMapping("/chatRoom/all")
     public ResponseEntity<?> showAllChatRoom(@Schema(hidden = true) @CurrentUser Member member){
-        List<ChatRoomListDto> allChatRoomListDto = chatService.showAllChatRoom(member);
+        List<AllChatRoomDto> allAllChatRoomDtos = chatService.showAllChatRoom(member);
 
-        return ResponseEntity.ok().body(DataResponse.success("문의 내역 전송 성공", allChatRoomListDto));
+        return ResponseEntity.ok().body(DataResponse.success("문의 내역 전송 성공", allAllChatRoomDtos));
     }
 
     @ApiResponses({
