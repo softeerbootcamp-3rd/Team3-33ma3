@@ -38,7 +38,7 @@ public class ChatService {
         Member center = memberRepository.findById(centerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 센터"));
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
 
-        if(!post.getMember().equals(client)){
+        if(!post.getMember().getMemberId().equals(client.getMemberId())){
             throw new UnauthorizedException("게시글 작성자만 생성할 수 있습니다.");
         }
         if(chatRoomRepository.findRoomIdByCenterIdAndClientId(centerId, client.getMemberId()).isPresent()){     // 이미 방이 존재하는 경우
@@ -55,7 +55,8 @@ public class ChatService {
         Member receiver = memberRepository.findById(receiverId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
 
         if(sender.getMemberType() == CLIENT_TYPE){
-            if(!(chatRoom.getClient().equals(sender) && chatRoom.getCenter().equals(receiver))){
+            if(!(chatRoom.getClient().getMemberId().equals(sender.getMemberId()) &&
+                    chatRoom.getCenter().getMemberId().equals(receiver.getMemberId()))){
                 throw new UnauthorizedException("해당 방의 회원이 아닙니다.");
             }
         }
