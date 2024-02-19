@@ -1,6 +1,8 @@
 package softeer.be33ma3.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,6 +34,7 @@ public class ReviewController {
             @ApiResponse(responseCode = "401", description = "작성자만 가능합니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 게시글" + "<br>낙찰 처리된 센터가 없습니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
+    @Parameter(name = "post_id", description = "게시글 id", required = true, example = "1", in = ParameterIn.PATH)
     @Operation(summary = "센터 리뷰 작성", description = "센터 리뷰 작성 메서드 입니다.")
     @PostMapping("/{post_id}")
     public ResponseEntity<?> createReview(@PathVariable("post_id") Long postId,
