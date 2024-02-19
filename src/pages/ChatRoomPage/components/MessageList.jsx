@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { BASE_URL } from "../../../constants/url";
-import { useRouteLoaderData } from "react-router-dom";
+import { BASE_URL, IP, TEST } from "../../../constants/url";
+import { useRouteLoaderData, useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 import { Message } from "./Message";
 import { MessageHeader } from "./MessageHeader";
+import { getMemberId } from "../../../utils/auth";
 
 const MessageBody = styled.ul`
   width: ${(props) => (props.chatmode === "true" ? "400px;" : "1000px;")}
@@ -32,6 +33,43 @@ function MessageList() {
     content: "안녕하세요~.",
     count: 2,
   };
+
+  const [message, setMessages] = useState([]);
+  const [webSocket, setWebSocket] = useState(null);
+
+  const [searchParams] = useSearchParams();
+  const memberId = 1;
+  const WebSocketServerUrl = `ws://${TEST}/connect/chatRoom/all/${memberId}`;
+
+  useEffect(() => {
+    const ws = new WebSocket(WebSocketServerUrl);
+    setWebSocket(ws);
+
+    ws.onopen = () => {
+      console.log("웹소켓 연결 성공");
+    };
+
+    ws.onmessage = (event) => {
+      console.log("메시지 수신:", event.data);
+      setMessages((prevMessages) => [...prevMessages, event.data]);
+    };
+
+    ws.onclose = () => {
+      console.log("웹소켓 연결 종료");
+    };
+
+    ws.onerror = (error) => {
+      console.error("웹소켓 오류 발생:", error);
+    };
+
+    // 컴포넌트 언마운트 시 웹소켓 연결 종료
+    return () => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
+    };
+  }, []);
+
   return (
     <MessageContainer chatmode={isChatMode.toString()}>
       <MessageHeader chatmode={isChatMode.toString()} />
