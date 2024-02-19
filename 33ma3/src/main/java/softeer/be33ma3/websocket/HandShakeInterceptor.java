@@ -73,6 +73,3 @@ public class HandShakeInterceptor implements HandshakeInterceptor {
         log.info("handshake success!");
     }
 }
-
-
-
