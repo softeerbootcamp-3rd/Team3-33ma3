@@ -56,7 +56,7 @@ public class ChatService {
     public void sendMessage(Member sender, Long roomId, Long receiverId, String contents) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BusinessException(NOT_FOUND_CHAT_ROOM));
         Member receiver = memberRepository.findById(receiverId).orElseThrow(() -> new BusinessException(NOT_FOUND_MEMBER));
-        validateSenderAndReceiver(sender, chatRoom, receiver);      //보내는 사람, 받는 사람이 해당 방의 멤버가 맞는지 검증
+        isValidSenderAndReceiver(sender, chatRoom, receiver);      //보내는 사람, 받는 사람이 해당 방의 멤버가 맞는지 검증
 
         ChatMessage chatMessage = ChatMessage.createChatMessage(sender, chatRoom, contents);
         ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
@@ -99,7 +99,7 @@ public class ChatService {
     @Transactional
     public List<ChatHistoryDto> showOneChatHistory(Member member, Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BusinessException(NOT_FOUND_CHAT_ROOM));
-        validateIsRoomMember(member, chatRoom);
+        isValidRoomMember(member, chatRoom);
 
         List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoom_ChatRoomId(chatRoom.getChatRoomId());
 
@@ -133,7 +133,7 @@ public class ChatService {
         return AllChatRoomDto.create(chatRoom, lastChatMessage.getContents(), memberName, count, createTimeFormatting(lastChatMessage.getCreateTime()));
     }
 
-    private void validateIsRoomMember(Member member, ChatRoom chatRoom) {
+    private void isValidRoomMember(Member member, ChatRoom chatRoom) {
         if (member.getMemberType() == CLIENT_TYPE && !chatRoom.getClient().equals(member)) {
             throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
         }
@@ -143,7 +143,7 @@ public class ChatService {
         }
     }
 
-    private void validateSenderAndReceiver(Member sender, ChatRoom chatRoom, Member receiver) {
+    private void isValidSenderAndReceiver(Member sender, ChatRoom chatRoom, Member receiver) {
         Member client = chatRoom.getClient();
         Member center = chatRoom.getCenter();
 
