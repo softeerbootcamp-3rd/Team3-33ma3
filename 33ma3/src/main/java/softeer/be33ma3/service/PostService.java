@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import softeer.be33ma3.domain.*;
 import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.dto.response.*;
-import softeer.be33ma3.exception.UnauthorizedException;
+import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.*;
 
 import java.util.*;
@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.List;
 
+import static softeer.be33ma3.exception.ErrorCode.*;
 import static softeer.be33ma3.service.MemberService.CENTER_TYPE;
 
 @Service
@@ -38,7 +39,7 @@ public class PostService {
         List<String> tuneUps = stringCommaParsing(tuneUp);
         List<Long> postIds = null;
         if(member != null && member.getMemberType() == CENTER_TYPE) {
-            Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 센터"));
+            Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
             postIds = postPerCenterRepository.findPostIdsByCenterId(center.getCenterId());
         }
         List<Post> posts = postRepository.findAllByConditions(done, regions, repairs, tuneUps, postIds);
@@ -65,7 +66,7 @@ public class PostService {
     public Long createPost(Member currentMember, PostCreateDto postCreateDto, List<MultipartFile> multipartFiles) {
         //회원이랑 지역 찾기
         if(currentMember.getMemberType() == CENTER_TYPE){
-            throw new UnauthorizedException("센터는 글 작성이 불가능합니다.");
+            throw new BusinessException(POST_CREATION_DISABLED);
         }
         Region region = getRegion(postCreateDto.getLocation());
 
@@ -86,7 +87,6 @@ public class PostService {
         return savedPost.getPostId();
     }
 
-
     @Transactional
     public void editPost(Member member, Long postId, PostCreateDto postCreateDto) {
         Post post = validPostAndMember(member, postId);
@@ -94,6 +94,7 @@ public class PostService {
         Region region = getRegion(postCreateDto.getLocation());
         post.editPost(postCreateDto, region);
     }
+
     @Transactional
     public void deletePost(Member member, Long postId) {
         Post post = validPostAndMember(member, postId);
@@ -108,9 +109,9 @@ public class PostService {
     // 게시글 세부사항 반환 (로그인 하지 않아도 확인 가능)
     public Object showPost(Long postId, Member member) {
         // 1. 게시글 존재 유무 판단
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
         if(member == null && !post.isDone())
-            throw new UnauthorizedException("경매 중인 게시글을 보려면 로그인해주세요.");
+            throw new BusinessException(LOGIN_REQUIRED);
         // 2. 게시글 세부 사항 가져오기
         List<String> repairList = stringCommaParsing(post.getRepairService());
         List<String> tuneUpList = stringCommaParsing(post.getTuneUpService());
@@ -139,7 +140,7 @@ public class PostService {
             return null;
         // 센터 엔티티 찾기
         Center center = centerRepository.findByMember_MemberId(member.getMemberId())
-                .orElseThrow(()->new IllegalArgumentException("존재하지 않는 서비스 센터"));
+                .orElseThrow(()->new BusinessException(NOT_FOUND_CENTER));
         // 해당 게시글에 해당 센터가 작성한 견적 찾기
         Optional<Offer> offer = offerRepository.findByPost_PostIdAndCenter_CenterId(postId, center.getCenterId());
         return (offer.isEmpty() ? null : OfferDetailDto.fromEntity(offer.get()));
@@ -151,10 +152,10 @@ public class PostService {
         Matcher matcher = pattern.matcher(location);
 
         if (matcher.find()) {
-            return regionRepository.findByRegionName(matcher.group()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 구"));
+            return regionRepository.findByRegionName(matcher.group()).orElseThrow(() -> new BusinessException(NOT_FOUND_REGION));
         }
 
-        throw new IllegalArgumentException("주소에서 구를 찾을 수 없음");
+        throw new BusinessException(NO_DISTRICT_IN_ADDRESS);
     }
 
     private void centerAndPostMapping(PostCreateDto postCreateDto, Post savedPost) {
@@ -168,14 +169,14 @@ public class PostService {
     }
 
     private Post validPostAndMember(Member member, Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
 
         if (!post.getMember().equals(member)) {
-            throw new UnauthorizedException("작성자만 가능합니다.");
+            throw new BusinessException(AUTHOR_ONLY_ACCESS);
         }
 
         if (!offerRepository.findByPost_PostId(postId).isEmpty()) { //댓글이 있는 경우(경매 시작 후)
-            throw new IllegalArgumentException("경매 시작 전에만 가능합니다.");
+            throw new BusinessException(PRE_AUCTION_ONLY);
         }
 
         return post;

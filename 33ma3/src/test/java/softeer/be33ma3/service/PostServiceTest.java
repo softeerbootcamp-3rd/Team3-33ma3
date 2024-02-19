@@ -11,7 +11,6 @@ import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.domain.Region;
 import softeer.be33ma3.dto.request.PostCreateDto;
-import softeer.be33ma3.exception.UnauthorizedException;
 import softeer.be33ma3.repository.MemberRepository;
 import softeer.be33ma3.repository.PostRepository;
 import softeer.be33ma3.repository.RegionRepository;
@@ -86,8 +85,6 @@ class PostServiceTest {
     private Post savePost(Region region, Member member1) {
         PostCreateDto postCreateDto = new PostCreateDto("승용차", "제네시스", 3, "서울시 강남구", "기스, 깨짐", "오일 교체", new ArrayList<>(),"수정전 내용");
         Post post = Post.createPost(postCreateDto, region, member1);
-        Post savedPost = postRepository.save(post);
-
-        return savedPost;
+        return postRepository.save(post);
     }
 }

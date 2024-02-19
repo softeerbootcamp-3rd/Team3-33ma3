@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.dto.response.AvgPriceDto;
+import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.websocket.WebSocketHandler;
 import softeer.be33ma3.domain.Center;
 import softeer.be33ma3.domain.Member;
@@ -12,15 +13,17 @@ import softeer.be33ma3.domain.Offer;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.dto.request.OfferCreateDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
-import softeer.be33ma3.exception.UnauthorizedException;
 import softeer.be33ma3.repository.CenterRepository;
 import softeer.be33ma3.repository.OfferRepository;
 import softeer.be33ma3.repository.PostRepository;
 import softeer.be33ma3.response.DataResponse;
 
+import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static softeer.be33ma3.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -36,9 +39,9 @@ public class OfferService {
     // 견적 제시 댓글 하나 반환
     public OfferDetailDto showOffer(Long postId, Long offerId) {
         // 1. 해당 게시글 가져오기
-        postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
+        postRepository.findById(postId).orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
         // 2. 해당 댓글 가져오기
-        Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
+        Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
         return OfferDetailDto.fromEntity(offer);
     }
 
@@ -48,10 +51,9 @@ public class OfferService {
         // 1. 해당 게시글이 마감 전인지 확인
         Post post = checkNotDonePost(postId);
         // 2. 센터 정보 가져오기
-        Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 센터"));
+        Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
         // 3. 이미 견적을 작성한 센터인지 검증
-        offerRepository.findByPost_PostIdAndCenter_CenterId(postId, center.getCenterId())
-                .ifPresent(offer -> {throw new UnauthorizedException("이미 견적을 작성하였습니다.");});
+        offerRepository.findByPost_PostIdAndCenter_CenterId(postId, center.getCenterId()).ifPresent(offer -> {throw new BusinessException(ALREADY_SUBMITTED);});
         // 4. 댓글 생성하여 저장하기
         Offer offer = offerCreateDto.toEntity(post, center);
         Offer savedOffer = offerRepository.save(offer);
@@ -64,14 +66,14 @@ public class OfferService {
         // 1. 해당 게시글이 마감 전인지 확인
         checkNotDonePost(postId);
         // 2. 센터 정보 가져오기
-        Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() ->  new IllegalArgumentException("존재하지 않는 센터"));
+        Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() ->  new BusinessException(NOT_FOUND_CENTER));
         // 3. 기존 댓글 가져오기
-        Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
+        Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
         // 4. 수정 가능한지 검증
         if(center.getCenterId() != offer.getCenter().getCenterId())
-            throw new UnauthorizedException("작성자만 수정 가능합니다.");
+            throw new BusinessException(AUTHOR_ONLY_ACCESS);
         if(offerCreateDto.getPrice() > offer.getPrice())
-            throw new IllegalArgumentException("기존 금액보다 낮은 금액으로만 수정 가능합니다.");
+            throw new BusinessException(ONLY_LOWER_AMOUNT_ALLOWED);
         // 5. 댓글 수정하기
         offer.setPrice(offerCreateDto.getPrice());
         offer.setContents(offerCreateDto.getContents());
@@ -84,12 +86,12 @@ public class OfferService {
         // 1. 해당 게시글이 마감 전인지 확인
         checkNotDonePost(postId);
         // 2. 센터 정보 가져오기
-        Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 센터"));
+        Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
         // 3. 기존 댓글 가져오기
-        Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
+        Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
         // 4. 댓글 작성자인지 검증
         if(!offer.getCenter().equals(center))
-            throw new UnauthorizedException("작성자만 삭제 가능합니다.");
+            throw new BusinessException(AUTHOR_ONLY_ACCESS);
         // 5. 댓글 삭제
         offerRepository.delete(offer);
     }
@@ -101,14 +103,12 @@ public class OfferService {
         Post post = checkNotDonePost(postId);
         // 3. 게시글 작성자의 접근인지 검증
         if(member.getMemberId() != post.getMember().getMemberId())
-            throw new UnauthorizedException("작성자만 낙찰 가능합니다.");
+            throw new BusinessException(AUTHOR_ONLY_ACCESS);
         // 4. 낙찰을 희망하는 댓글 가져오기
-        Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 견적"));
+        Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
         // 5. 댓글 낙찰, 게시글 마감 처리
         offer.setSelected();
         post.setDone();
-        offerRepository.save(offer);
-        postRepository.save(post);
         // TODO: 6. 서비스 센터들에게 낙찰 또는 경매 마감 메세지 보내기
         Long selectedMemberId = offer.getCenter().getMember().getMemberId();
         sendMessageAfterSelection(postId, selectedMemberId);
@@ -117,9 +117,9 @@ public class OfferService {
 
     // 해당 게시글을 가져오고, 마감 전인지 판단
     private Post checkNotDonePost(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
         if(post.isDone())
-            throw new IllegalArgumentException("완료된 게시글");
+            throw new BusinessException(CLOSED_POST);
         return post;
     }
 
@@ -132,16 +132,16 @@ public class OfferService {
 
     // 견적 제시 댓글 목록의 평균 제시 가격 계산하여 반환하기
     public static double calculateAvgPrice(List<Offer> offerList) {
-        // 제시 가격의 합계, 개수 구하기
-        if(offerList.isEmpty())
+        if(offerList.isEmpty()) {
             return 0.0;
+        }
         int total = offerList.stream().mapToInt(Offer::getPrice).sum();
-        return Math.round((double)total/offerList.size() * 10) / 10.0;      // 소수점 첫째 자리까지 반올림
+        return Math.round( (double)total/offerList.size() * 10 ) / 10.0;      // 소수점 첫째 자리까지 반올림
     }
 
     public void sendAboutOfferUpdate(Long postId) {
         // 1. 해당 게시글 가져오기
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
         // 2. 글 작성자 아이디 가져오기
         Long writerId = post.getMember().getMemberId();
         // 3. 글 작성자에게 업데이트된 댓글 목록 실시간 전송
@@ -178,19 +178,16 @@ public class OfferService {
         // 3. 평균 견적 가격 계산하기
         AvgPriceDto avgPriceDto = new AvgPriceDto(calculateAvgPrice(offerList));
         // 4. 전송하기
-        memberList.forEach(memberId -> {
-            webSocketHandler.sendData2Client(memberId, avgPriceDto);
-            log.info("평균 견적 제시 가격 전송 완료");
-        });
+        memberList.forEach(memberId -> webSocketHandler.sendData2Client(memberId, avgPriceDto));
     }
-  
+
     // 낙찰 처리 후 서비스 센터들에게 낙찰 메세지, 경매 마감 메세지 전송
     private void sendMessageAfterSelection(Long postId, Long selectedMemberId) {
         // 낙찰 메세지
-        DataResponse<Boolean> selectAlert = DataResponse.success("제시한 견적이 낙찰되었습니다.", true);
+        DataResponse<Long> selectAlert = DataResponse.success("제시한 견적이 낙찰되었습니다.", postId);
         webSocketHandler.sendData2Client(selectedMemberId, selectAlert);
         // 경매 마감 메세지
-        DataResponse<Boolean> endAlert = DataResponse.success("견적 미선정으로 경매가 마감되었습니다. 다음 기회를 노려보세요!", false);
+        DataResponse<Long> endAlert = DataResponse.success("견적 미선정으로 경매가 마감되었습니다. 다음 기회를 노려보세요!", postId);
         List<Offer> offerList = offerRepository.findByPost_PostId(postId);
         List<Long> memberIdsInPost = findMemberIdsWithOfferList(offerList);
         memberIdsInPost.stream()

@@ -31,7 +31,7 @@ public class MemberController {
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "400", description = "이미 존재하는 아이디" + "<br>올바르지 않은 memberType", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+            @ApiResponse(responseCode = "400", description = "이미 존재하는 아이디", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "일반 사용자 회원가입", description = "사용자 회원가입 메서드 입니다.")
     @PostMapping("/client/signUp")
@@ -43,7 +43,7 @@ public class MemberController {
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "400", description = "이미 존재하는 아이디" + "<br>올바르지 않은 memberType", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+            @ApiResponse(responseCode = "400", description = "이미 존재하는 아이디", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "센터 회원가입", description = "센터 회원가입 메서드 입니다.")
     @PostMapping("/center/signUp")
@@ -67,7 +67,7 @@ public class MemberController {
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "토큰 재발급 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 회원", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 회원", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "엑세스 토큰 재발급", description = "엑세스 토큰 재발급 메서드 입니다.")
     @PostMapping("/reissueToken")   //refreshToken 으로 accessToken 재발급

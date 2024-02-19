@@ -5,9 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.domain.*;
+import softeer.be33ma3.dto.response.ChatHistoryDto;
 import softeer.be33ma3.dto.response.ChatRoomListDto;
 import softeer.be33ma3.dto.response.ChatMessageResponseDto;
-import softeer.be33ma3.exception.UnauthorizedException;
+import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.*;
 import softeer.be33ma3.websocket.WebSocketHandler;
 import softeer.be33ma3.websocket.WebSocketRepository;
@@ -15,6 +16,7 @@ import softeer.be33ma3.websocket.WebSocketRepository;
 import java.util.ArrayList;
 import java.util.List;
 
+import static softeer.be33ma3.exception.ErrorCode.*;
 import static softeer.be33ma3.service.MemberService.CENTER_TYPE;
 import static softeer.be33ma3.service.MemberService.CLIENT_TYPE;
 
@@ -34,11 +36,11 @@ public class ChatService {
 
     @Transactional
     public Long createRoom(Member client, Long centerId, Long postId) {
-        Member center = memberRepository.findById(centerId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 센터"));
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
+        Member center = memberRepository.findById(centerId).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
 
         if(!post.getMember().equals(client)){
-            throw new UnauthorizedException("게시글 작성자만 생성할 수 있습니다.");
+            throw new BusinessException(ONLY_POST_AUTHOR_ALLOWED);
         }
         if(chatRoomRepository.findRoomIdByCenterIdAndClientId(centerId, client.getMemberId()).isPresent()){     // 이미 방이 존재하는 경우
             return chatRoomRepository.findRoomIdByCenterIdAndClientId(centerId, client.getMemberId()).get();    // 기존 방 아이디 반환
@@ -50,12 +52,12 @@ public class ChatService {
 
     @Transactional
     public void sendMessage(Member sender, Long roomId, Long receiverId, String contents) {
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅 룸"));
-        Member receiver = memberRepository.findById(receiverId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BusinessException(NOT_FOUND_CHAT_ROOM));
+        Member receiver = memberRepository.findById(receiverId).orElseThrow(() -> new BusinessException(NOT_FOUND_MEMBER));
 
         if(sender.getMemberType() == CLIENT_TYPE){
             if(!(chatRoom.getClient().equals(sender) && chatRoom.getCenter().equals(receiver))){
-                throw new UnauthorizedException("해당 방의 회원이 아닙니다.");
+                throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
             }
         }
 
@@ -92,6 +94,34 @@ public class ChatService {
         }
 
         return allChatRoomListDto;
+    }
+
+    @Transactional
+    public List<ChatHistoryDto> showOneChatHistory(Member member, Long roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅 룸"));
+        validateMember(member, chatRoom);
+
+        List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoom_ChatRoomId(chatRoom.getChatRoomId());
+
+        List<ChatHistoryDto> chatHistoryDtos = new ArrayList<>();
+        for (ChatMessage chatMessage : chatMessages) {
+            if(!chatMessage.getSender().equals(member) && !chatMessage.isReadDone()){   //상대방이 보낸 메세지의 읽음 여부가 false인 경우
+                chatMessage.setReadDoneTrue();      //읽음 처리
+            }
+            chatHistoryDtos.add(ChatHistoryDto.getChatHistoryDto(chatMessage));
+        }
+
+        return chatHistoryDtos;
+    }
+
+    private void validateMember(Member member, ChatRoom chatRoom) {
+        if (member.getMemberType() == CLIENT_TYPE && !chatRoom.getClient().equals(member)) {
+            throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
+        }
+
+        if (member.getMemberType() == CENTER_TYPE && !chatRoom.getCenter().equals(member)) {
+            throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
+        }
     }
 
     private ChatRoomListDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
