@@ -21,10 +21,10 @@ const Container = styled.button`
     transform: scale(1.05);
   }
 
-  animation-name: ${(props) =>
-    !props.isEnd && props.isEdited === false && "pullUp"};
-  -webkit-animation-name: ${(props) =>
-    !props.isEnd && props.isEdited === false && "pullUp"};
+  &.pullUp {
+    animation-name: pullUp;
+    -webkit-animation-name: pullUp;
+  }
 
   animation-duration: 1.1s;
   -webkit-animation-duration: 1.1s;
@@ -174,7 +174,7 @@ const Bubble = styled.div`
   
   @keyframes hatch {
     0% {
-      transform: rotate(0deg) scaleY(0.6);
+      transform: rotate(0deg) scaleY(0.9);
     }
     20% {
       transform: rotate(-2deg) scaleY(1.05);
@@ -247,14 +247,18 @@ function AuctionPrice({
   price,
   centerName,
   isActive,
-  inStatus,
   isEnd,
   isEdited,
   isSelected,
   onClick,
 }) {
+  console.log("hi", !isEnd && !isEdited);
   return (
-    <Container $isActive={isActive} onClick={onClick} isEnd={isEnd}>
+    <Container
+      $isActive={isActive}
+      onClick={onClick}
+      className={!isEnd && !isEdited && "pullUp"}
+    >
       {isSelected && <Prize src={PrizeImg} />}
       <Bubble className={isEdited && "hatch"}>
         <Price>{price}만</Price>
