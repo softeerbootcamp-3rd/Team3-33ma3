@@ -13,6 +13,8 @@ import softeer.be33ma3.repository.*;
 import softeer.be33ma3.websocket.WebSocketHandler;
 import softeer.be33ma3.websocket.WebSocketRepository;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +72,7 @@ public class ChatService {
         }
         //채팅룸에 상대방이 존재하는 경우
         savedChatMessage.setReadDoneTrue();   //읽음 처리
-        ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.create(savedChatMessage);
+        ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.create(savedChatMessage, createTimeFormatting(savedChatMessage.getCreateTime()));
         webSocketHandler.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);   //실시간 전송 - 채팅 내용
     }
 
@@ -106,7 +108,7 @@ public class ChatService {
             if(!chatMessage.getSender().getMemberId().equals(member.getMemberId()) && !chatMessage.isReadDone()){   //상대방이 보낸 메세지의 읽음 여부가 false인 경우
                 chatMessage.setReadDoneTrue();      //읽음 처리
             }
-            chatHistoryDtos.add(ChatHistoryDto.getChatHistoryDto(chatMessage));
+            chatHistoryDtos.add(ChatHistoryDto.getChatHistoryDto(chatMessage, createTimeFormatting(chatMessage.getCreateTime())));
         }
 
         return chatHistoryDtos;
@@ -125,10 +127,10 @@ public class ChatService {
     }
 
     private AllChatRoomDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
-        String lastChatMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());      //마지막 메세지
+        ChatMessage lastChatMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());      //마지막 메세지
         int count = (int) chatMessageRepository.countReadDoneIsFalse(chatRoom.getChatRoomId(), member.getMemberId());     //안읽은 메세지 개수
 
-        return AllChatRoomDto.create(chatRoom, lastChatMessage, memberName, count);
+        return AllChatRoomDto.create(chatRoom, lastChatMessage.getContents(), memberName, count, createTimeFormatting(lastChatMessage.getCreateTime()));
     }
 
     private void validateIsRoomMember(Member member, ChatRoom chatRoom) {
@@ -141,7 +143,7 @@ public class ChatService {
         }
     }
 
-    private static void validateSenderAndReceiver(Member sender, ChatRoom chatRoom, Member receiver) {
+    private void validateSenderAndReceiver(Member sender, ChatRoom chatRoom, Member receiver) {
         Member client = chatRoom.getClient();
         Member center = chatRoom.getCenter();
 
@@ -155,5 +157,12 @@ public class ChatService {
                 throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
             }
         }
+    }
+
+    private String createTimeFormatting(LocalDateTime createTime) {
+        String periodOfDay = createTime.getHour() < 12 ? "오전 " : "오후 ";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        return periodOfDay + createTime.format(formatter);
     }
 }

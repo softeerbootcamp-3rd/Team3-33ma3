@@ -19,8 +19,10 @@ public class AllChatRoomDto {
     private String lastMessage;     // 마지막 메세지
     @Schema(description = "읽지 않은 메세지 개수", example = "5")
     private int noReadCount;        // 읽지 않은 메세지 개수
+    @Schema(description = "메세지 생성 시간", example = "오전 07:12")
+    private String createTime;
 
-    public static AllChatRoomDto create(ChatRoom chatRoom, String lastMessage, String memberName, int noReadCount) {
+    public static AllChatRoomDto create(ChatRoom chatRoom, String lastMessage, String memberName, int noReadCount, String createTime) {
         AllChatRoomDto allChatRoomDto = new AllChatRoomDto();
         allChatRoomDto.roomId = chatRoom.getChatRoomId();
         allChatRoomDto.centerId = chatRoom.getCenter().getMemberId();
@@ -28,6 +30,7 @@ public class AllChatRoomDto {
         allChatRoomDto.memberName = memberName;
         allChatRoomDto.lastMessage = lastMessage;
         allChatRoomDto.noReadCount = noReadCount;
+        allChatRoomDto.createTime = createTime;
 
         return allChatRoomDto;
     }
