@@ -73,7 +73,7 @@ public class ChatController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "채팅 내역 전송 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
             @ApiResponse(responseCode = "401", description = "해당 방의 회원이 아닙니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 채팅 룸", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 채팅 룸", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "채팅 내역 조회", description = "채팅 내역을 조회하는 메서드 입니다.")
     @GetMapping("/chat/history/{room_id}")
