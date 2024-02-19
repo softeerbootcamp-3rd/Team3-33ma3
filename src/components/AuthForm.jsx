@@ -95,8 +95,8 @@ function AuthForm() {
           setCheckAddress(true);
           setCoords((prev) => ({
             ...prev,
-            [latitude]: res.address.y,
-            [longitude]: res.address.x,
+            latitude: res.point.y,
+            longitude: res.point.x,
           }));
         }
         console.log(res); // 성공적으로 주소 정보를 받아왔을 때의 처리
