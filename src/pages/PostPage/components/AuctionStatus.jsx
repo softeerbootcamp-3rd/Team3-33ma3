@@ -47,13 +47,11 @@ function AuctionStatus({ postId, curOfferDetails }) {
       if (webSocket.current.readyState === WebSocket.OPEN) {
         const closeMessage = {
           type: "post",
-          postId: postId,
+          roomId: postId,
           memberId: memberId,
         };
         webSocket.current.send(JSON.stringify(closeMessage));
         webSocket.current.close();
-      } else {
-        alert("연결이 끊어졌습니다.");
       }
     };
   }, []);
@@ -69,7 +67,11 @@ function AuctionStatus({ postId, curOfferDetails }) {
       },
     })
       .then((res) => res.json())
-      .then((json) => console.log(json));
+      .then((json) => console.log(json))
+      .finally(() => {
+        console.log("끝");
+        window.location.reload();
+      });
   }
 
   return (

@@ -58,7 +58,7 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
     };
 
     webSocket.current.onclose = () => {
-      console.log("closed");
+      alert("연결이 끊겼습니다.");
     };
 
     webSocket.current.onmessage = (event) => {
@@ -96,9 +96,9 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
           updateOfferDetail={setOfferDetail}
         />
       )}
-      {isEnd && offerDetail && (
+      {endMessage && offerDetail && (
         <ResultModal
-          handleClose={() => navigate(`/`)}
+          handleClose={() => window.location.reload()}
           endMessage={endMessage}
         />
       )}
