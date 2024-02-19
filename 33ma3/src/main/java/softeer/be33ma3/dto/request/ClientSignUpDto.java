@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "일반 유저 회원가입 요청 DTO")
 public class ClientSignUpDto {
     @Schema(description = "로그인 아이디", example = "user1")
     @NotBlank(message = "아이디는 필수입니다.")
