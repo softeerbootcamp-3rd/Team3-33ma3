@@ -67,7 +67,7 @@ public class ChatService {
                 alertRepository.save(alert);
                 return;
             }
-            updateAllChatList(receiver, chatRoom);    //실시간 전송 - 채팅 목록
+            updateAllChatRoom(receiver, chatRoom);    //실시간 전송 - 채팅 목록
             return;
         }
         //채팅룸에 상대방이 존재하는 경우
@@ -114,7 +114,7 @@ public class ChatService {
         return chatHistoryDtos;
     }
 
-    private void updateAllChatList(Member receiver, ChatRoom chatRoom) {
+    private void updateAllChatRoom(Member receiver, ChatRoom chatRoom) {
         if(receiver.getMemberId() == CENTER_TYPE){      //받는 사람이 센터인 경우
             Center center = centerRepository.findByMember_MemberId(receiver.getMemberId()).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
             AllChatRoomDto chatDto = getChatDto(chatRoom, center.getCenterName(), receiver);
