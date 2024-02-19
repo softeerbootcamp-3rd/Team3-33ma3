@@ -1,3 +1,4 @@
+
 package softeer.be33ma3.websocket;
 
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +27,17 @@ public class HandShakeInterceptor implements HandshakeInterceptor {
         }
         // 게시글 조회 관련 실시간 통신 요청일 경우
         if(parts[2].equals("post")) {
-            return attributesToHandler(response, attributes, parts, "postId");
+            try {
+                return attributesToHandler(response, attributes, parts, "postId");
+            } catch(NumberFormatException e) {
+                log.error("웹소켓 연결 실패: 게시글 아이디, 멤버 아이디가 포함되어야 합니다.");
+                response.setStatusCode(HttpStatus.FORBIDDEN);
+                response.getBody().write("웹소켓 연결 실패: 게시글 아이디와 멤버 아이디를 포함해주세요.".getBytes());
+                return false;
+            }
         }
-
         if(parts[2].equals("chat")) {
-            return attributesToHandler(response, attributes, parts, "roomId");
+            return attributesToHandler(response, attributes, parts, "chat");
         }
 
         if(parts[2].equals("chatRoom")) {
@@ -40,27 +47,25 @@ public class HandShakeInterceptor implements HandshakeInterceptor {
         return false;
     }
 
-    private static boolean attributesToHandler(ServerHttpResponse response, Map<String, Object> attributes, String[] parts, String part3) throws IOException {
-        try{
-            Long memberId = Long.parseLong(parts[4]);
+        private boolean attributesToHandler(ServerHttpResponse response, Map<String, Object> attributes, String[] parts, String part3) throws IOException {
             // WebSocketHandler 에 전달될 속성 추가하기
-            attributes.put("type", parts[2]);
-            attributes.put("memberId", memberId);
+            try {
+                attributes.put("type", parts[2]);
+                if (!parts[2].equals("chatRoom")) {
+                    // 연결 요청 엔드 포인트에서 데이터 파싱
+                    attributes.put(part3, Long.parseLong(parts[3]));
+                    return true;
+                }
 
-            if(parts[2] == "chatRoom"){
+                Long memberId = Long.parseLong(parts[4]);
+                attributes.put("memberId", memberId);
                 return true;
+            }catch(NumberFormatException e) {
+                log.error("웹소켓 연결 실패: 멤버 아이디가 포함되어야 합니다.");
+                response.setStatusCode(HttpStatus.FORBIDDEN);
+                response.getBody().write("웹소켓 연결 실패: 멤버 아이디를 포함해주세요.".getBytes());
+                return false;
             }
-            // 연결 요청 엔드 포인트에서 데이터 파싱
-            Long part3Id = Long.parseLong(parts[3]);
-            attributes.put(part3, part3Id);
-            return true;
-
-        } catch(NumberFormatException e) {
-            log.error("웹소켓 연결 실패");
-            response.setStatusCode(HttpStatus.FORBIDDEN);
-            response.getBody().write("웹소켓 연결 실패 ".getBytes());
-            return false;
-        }
     }
 
     @Override
@@ -68,3 +73,6 @@ public class HandShakeInterceptor implements HandshakeInterceptor {
         log.info("handshake success!");
     }
 }
+
+
+
