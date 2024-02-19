@@ -22,18 +22,19 @@ public class WebSocketService {
         String payload = message.getPayload();
         // 게시글 관련 웹 소켓 연결이 종료된 유저가 있다고 메세지를 받았을 경우
         if(payload.contains("post") && payload.contains("memberId")) {
+            log.info("게시글에서 유저가 나갔습니다.");
             ExitRoomMember exitRoomMember = objectMapper.readValue(payload, ExitRoomMember.class);
             closePostConnection(exitRoomMember.getRoomId(), exitRoomMember.getMemberId());
         }
         if(payload.contains("chatRoom") && payload.contains("memberId")){
-            log.info("게시글에서 유저가 나갔습니다.");
+            log.info("채팅 목록에서 유저가 나갔습니다.");
             ExitMember exitMember = objectMapper.readValue(payload, ExitMember.class);
-            closePostConnection(exitMember.getRoomId(), exitMember.getMemberId());
+            closeAllChatRoomConnection(exitMember.getMemberId());
         }
         if(payload.contains("chat") && payload.contains("memberId")) {
             log.info("채팅방에서 유저가 나갔습니다.");
-            ExitMember exitMember = objectMapper.readValue(payload, ExitRoomMember.class);
-            closeAllChatRoomConnection(exitMember.getMemberId());
+            ExitRoomMember exitRoomMember = objectMapper.readValue(payload, ExitRoomMember.class);
+            closeChatConnection(exitRoomMember.getRoomId(), exitRoomMember.getMemberId());
         }
 
         log.info("메세지 수신 성공: {}", payload); // 수신한 메세지 log
