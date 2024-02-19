@@ -171,7 +171,7 @@ public class PostService {
     private Post validPostAndMember(Member member, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
 
-        if (!post.getMember().equals(member)) {
+        if (!post.getMember().getMemberId().equals(member.getMemberId())) {
             throw new BusinessException(AUTHOR_ONLY_ACCESS);
         }
 

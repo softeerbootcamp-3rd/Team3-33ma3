@@ -56,7 +56,8 @@ public class ChatService {
         Member receiver = memberRepository.findById(receiverId).orElseThrow(() -> new BusinessException(NOT_FOUND_MEMBER));
 
         if(sender.getMemberType() == CLIENT_TYPE){
-            if(!(chatRoom.getClient().equals(sender) && chatRoom.getCenter().equals(receiver))){
+            if(!(chatRoom.getClient().getMemberId().equals(sender.getMemberId())
+                    && chatRoom.getCenter().getMemberId().equals(receiver.getMemberId()))){
                 throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
             }
         }
@@ -105,7 +106,7 @@ public class ChatService {
 
         List<ChatHistoryDto> chatHistoryDtos = new ArrayList<>();
         for (ChatMessage chatMessage : chatMessages) {
-            if(!chatMessage.getSender().equals(member) && !chatMessage.isReadDone()){   //상대방이 보낸 메세지의 읽음 여부가 false인 경우
+            if(!chatMessage.getSender().getMemberId().equals(member.getMemberId()) && !chatMessage.isReadDone()){   //상대방이 보낸 메세지의 읽음 여부가 false인 경우
                 chatMessage.setReadDoneTrue();      //읽음 처리
             }
             chatHistoryDtos.add(ChatHistoryDto.getChatHistoryDto(chatMessage));
@@ -116,11 +117,11 @@ public class ChatService {
 
     private void validateMember(Member member, ChatRoom chatRoom) {
         if (member.getMemberType() == CLIENT_TYPE && !chatRoom.getClient().equals(member)) {
-            throw new UnauthorizedException("해당 방의 회원이 아닙니다.");
+            throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
         }
 
         if (member.getMemberType() == CENTER_TYPE && !chatRoom.getCenter().equals(member)) {
-            throw new UnauthorizedException("해당 방의 회원이 아닙니다.");
+            throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
         }
     }
 

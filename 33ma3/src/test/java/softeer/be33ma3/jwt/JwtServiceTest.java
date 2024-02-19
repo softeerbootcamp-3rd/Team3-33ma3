@@ -10,12 +10,13 @@ import org.springframework.test.context.ActiveProfiles;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.LoginDto;
 import softeer.be33ma3.dto.response.LoginSuccessDto;
-import softeer.be33ma3.exception.JwtTokenException;
+import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.MemberRepository;
 import softeer.be33ma3.service.MemberService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static softeer.be33ma3.exception.ErrorCode.REFRESH_TOKEN_NOT_VALID;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -60,7 +61,6 @@ class JwtServiceTest {
 
         //when //then
         assertThatThrownBy(() -> jwtService.reissue(refreshToken))
-                .isInstanceOf(JwtTokenException.class)
-                .hasMessage("올바르지 않은 리프레시 토큰");
+                .isInstanceOf(BusinessException.class);
     }
 }
