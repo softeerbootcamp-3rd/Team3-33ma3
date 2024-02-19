@@ -9,10 +9,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import softeer.be33ma3.exception.BusinessException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
+
+import static softeer.be33ma3.exception.ErrorCode.UNABLE_TO_CONVERT_FILE;
 
 @RequiredArgsConstructor
 @Component
@@ -37,7 +40,7 @@ public class S3Service {
             amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
                             .withCannedAcl(CannedAccessControlList.PublicReadWrite));
         } catch (IOException e) {
-            throw new IllegalArgumentException("파일을 변환할 수 없음");
+            throw new BusinessException(UNABLE_TO_CONVERT_FILE);
         }
 
         return fileName;

@@ -33,7 +33,7 @@ public class ChatController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "채팅방 생성 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
             @ApiResponse(responseCode = "401", description = "게시글 작성자만 생성할 수 있습니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>존재하지 않는 센터", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 게시글" + "<br>존재하지 않는 센터", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Parameter(name = "post_id", description = "게시글 id", required = true, example = "1", in = ParameterIn.PATH)
     @Parameter(name = "center_id", description = "문의할 센터 id", required = true, example = "2", in = ParameterIn.PATH)
@@ -48,7 +48,7 @@ public class ChatController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "메세지 전송 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
             @ApiResponse(responseCode = "401", description = "해당 방의 회원이 아닙니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 회원" + "<br>존재하지 않는 채팅 룸", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 회원" + "<br>존재하지 않는 채팅 룸", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Parameter(name = "room_id", description = "채팅방 id", required = true, example = "1", in = ParameterIn.PATH)
     @Parameter(name = "receiver_id", description = "메세지 받는 사람 id", required = true, example = "2", in = ParameterIn.PATH)

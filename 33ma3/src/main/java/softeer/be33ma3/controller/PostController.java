@@ -35,9 +35,8 @@ public class PostController {
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시글 목록 조회 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 센터", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                    content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 센터", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "게시글 목록 조회", description = "게시글 목록 조회 메서드 입니다.")
     @GetMapping
@@ -53,8 +52,7 @@ public class PostController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시글 작성 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
             @ApiResponse(responseCode = "401", description = "센터는 글 작성이 불가능합니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>존재하지 않는 회원" + "<br>존재하지 않는 구",
-                    content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 게시글" + "<br>존재하지 않는 회원" + "<br>존재하지 않는 구", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "게시글 작성", description = "게시글 작성 메서드 입니다.")
     @PostMapping(value = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
@@ -66,7 +64,7 @@ public class PostController {
 
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시글 조회 완료", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>존재하지 않는 서비스 센터", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 게시글" + "<br>존재하지 않는 센터", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
             @ApiResponse(responseCode = "401", description = "경매 중인 게시글을 보려면 로그인해주세요.", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "게시글 조회", description = "게시글 조회 메서드 입니다.")
@@ -81,7 +79,8 @@ public class PostController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시글 수정 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
             @ApiResponse(responseCode = "401", description = "작성자만 가능합니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>존재하지 않는 회원" + "<br>경매 시작 전에만 가능합니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 게시글" + "<br>존재하지 않는 센터", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "400", description = "경매 시작 전에만 가능합니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "게시글 수정", description = "게시글 수정 메서드 입니다.")
     @Parameter(name = "post_id", description = "수정할 게시글 id", required = true, example = "1", in = ParameterIn.PATH)
@@ -95,7 +94,8 @@ public class PostController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시글 삭제 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
             @ApiResponse(responseCode = "401", description = "작성자만 가능합니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "400", description = "존재하지 않는 게시글" + "<br>존재하지 않는 회원" + "<br>경매 시작 전에만 가능합니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 게시글" + "<br>존재하지 않는 센터", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "400", description = "경매 시작 전에만 가능합니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "게시글 삭제", description = "게시글 삭제 메서드 입니다.")
     @Parameter(name = "post_id", description = "삭제할 게시글 id", required = true, example = "1", in = ParameterIn.PATH)

@@ -11,7 +11,6 @@ import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.domain.Region;
 import softeer.be33ma3.dto.request.PostCreateDto;
-import softeer.be33ma3.exception.UnauthorizedException;
 import softeer.be33ma3.repository.MemberRepository;
 import softeer.be33ma3.repository.PostRepository;
 import softeer.be33ma3.repository.RegionRepository;
