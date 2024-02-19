@@ -65,9 +65,9 @@ public class ChatController {
     @Operation(summary = "문의 내역", description = "문의 내역 보기 메서드 입니다.")
     @GetMapping("/chatRoom/all")
     public ResponseEntity<?> showAllChatRoom(@Schema(hidden = true) @CurrentUser Member member){
-        List<AllChatRoomDto> allAllChatRoomDtos = chatService.showAllChatRoom(member);
+        List<AllChatRoomDto> allChatRoomDtos = chatService.showAllChatRoom(member);
 
-        return ResponseEntity.ok().body(DataResponse.success("문의 내역 전송 성공", allAllChatRoomDtos));
+        return ResponseEntity.ok().body(DataResponse.success("문의 내역 전송 성공", allChatRoomDtos));
     }
 
     @ApiResponses({
