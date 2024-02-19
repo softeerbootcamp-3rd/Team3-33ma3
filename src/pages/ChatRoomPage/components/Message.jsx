@@ -40,6 +40,7 @@ const MessageBox = styled.li`
   flex-direction: row;
   justify-content: space-between;
   padding: 15px;
+  align-items: center;
   border-bottom: 1px solid ${(props) => props.theme.colors.surface_weak};
   &:hover {
     background: ${(props) => props.theme.colors.surface_weak};
@@ -69,7 +70,9 @@ function Message(props) {
             <OpponentMessage>{props.info.content}</OpponentMessage>
           </OpponentInfo>
         </KeyContent>
-        <MessageCount>{props.info.count}</MessageCount>
+        {props.info.count !== 0 && (
+          <MessageCount>{props.info.count}</MessageCount>
+        )}
       </MessageBox>
     </>
   );
