@@ -2,7 +2,6 @@ package softeer.be33ma3.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.springframework.scheduling.annotation.Scheduled;
 import softeer.be33ma3.dto.request.PostCreateDto;
 
 import java.util.ArrayList;
@@ -12,7 +11,7 @@ import java.util.List;
 @Getter
 public class Post extends BaseTimeEntity{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long postId;
+    private Long postId;
 
     private String modelName;
 
@@ -40,7 +39,7 @@ public class Post extends BaseTimeEntity{
     private List<Image> images = new ArrayList<>();
 
     //셍성 메소드
-    public static Post createPost(PostCreateDto postCreateDto, Region region ,Member member){
+    public static Post createPost(PostCreateDto postCreateDto, Region region, Member member) {
         Post post = new Post();
 
         post.modelName = postCreateDto.getModelName();
@@ -67,5 +66,10 @@ public class Post extends BaseTimeEntity{
         this.repairService = postCreateDto.getRepairService();
         this.tuneUpService = postCreateDto.getTuneUpService();
         this.region = region;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
     }
 }

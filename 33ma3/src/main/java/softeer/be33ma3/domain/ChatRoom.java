@@ -8,7 +8,7 @@ import lombok.Getter;
 public class ChatRoom extends BaseTimeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long chatRoomId;
+    private Long chatRoomId;
 
     @ManyToOne
     @JoinColumn(name = "center_id")

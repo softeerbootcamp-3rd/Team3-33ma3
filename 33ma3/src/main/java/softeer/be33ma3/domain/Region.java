@@ -14,7 +14,7 @@ import lombok.*;
 public class Region {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long regionId;
+    private Long regionId;
 
     private String regionName;
 }

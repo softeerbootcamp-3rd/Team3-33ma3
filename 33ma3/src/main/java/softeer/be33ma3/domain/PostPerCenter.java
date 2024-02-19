@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class PostPerCenter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long postPerCenterId;
+    private Long postPerCenterId;
 
     @ManyToOne
     @JoinColumn(name = "center_id")
