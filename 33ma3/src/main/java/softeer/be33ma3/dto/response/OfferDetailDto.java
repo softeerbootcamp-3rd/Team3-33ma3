@@ -35,14 +35,15 @@ public class OfferDetailDto implements Comparable<OfferDetailDto> {
     private double score;
 
     // Offer Entity -> OfferDetailDto 변환
-    public static OfferDetailDto fromEntity(Offer offer) {
+    public static OfferDetailDto fromEntity(Offer offer, double score) {
         return OfferDetailDto.builder()
                 .offerId(offer.getOfferId())
                 .memberId(offer.getCenter().getMemberId())
                 .centerName(offer.getCenter().getLoginId())
                 .price(offer.getPrice())
                 .contents(offer.getContents())
-                .selected(offer.isSelected()).build();
+                .selected(offer.isSelected())
+                .score(score).build();
     }
 
     // List<Offer> -> List<OfferDetailDto> 변환

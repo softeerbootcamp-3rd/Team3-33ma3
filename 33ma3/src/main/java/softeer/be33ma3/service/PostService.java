@@ -30,6 +30,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final RegionRepository regionRepository;
     private final PostPerCenterRepository postPerCenterRepository;
+    private final ReviewRepository reviewRepository;
     private final ImageRepository imageRepository;
     private final ImageService imageService;
 
@@ -127,7 +128,12 @@ public class PostService {
         // 3. 경매가 완료되었거나 글 작성자의 접근일 경우
         if(post.isDone() || (member!=null && post.getMember().equals(member))) {
             List<Offer> offerList = offerRepository.findByPost_PostId(postId);
-            List<OfferDetailDto> offerDetailDtos = OfferDetailDto.fromEntityList(offerList);
+            List<OfferDetailDto> offerDetailDtos = new ArrayList<>(
+                    offerList.stream().map(offer -> {
+                        Double score = reviewRepository.findAvgScoreByCenterId(offer.getCenter().getMemberId()).orElse(0.0);
+                        return OfferDetailDto.fromEntity(offer, score);
+                    }).toList());
+            Collections.sort(offerDetailDtos);
             return new PostWithOffersDto(postDetailDto, offerDetailDtos);
         }
         // 4. 경매가 진행 중이고 작성자가 아닌 유저의 접근일 경우
@@ -148,7 +154,11 @@ public class PostService {
             return null;
         // 해당 게시글에 해당 센터가 작성한 견적 찾기
         Optional<Offer> offer = offerRepository.findByPost_PostIdAndCenter_MemberId(postId, member.getMemberId());
-        return (offer.isEmpty() ? null : OfferDetailDto.fromEntity(offer.get()));
+        if(offer.isEmpty()) {
+            return null;
+        }
+        Double score = reviewRepository.findAvgScoreByCenterId(offer.get().getCenter().getMemberId()).orElse(0.0);
+        return OfferDetailDto.fromEntity(offer.get(), score);
     }
 
     private Region getRegion(String location) {
