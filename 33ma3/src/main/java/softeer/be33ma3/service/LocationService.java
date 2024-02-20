@@ -6,6 +6,7 @@ import softeer.be33ma3.domain.Center;
 import softeer.be33ma3.dto.response.CenterListDto;
 import softeer.be33ma3.repository.CenterRepository;
 import softeer.be33ma3.domain.calcuator.DistanceCalculator;
+import softeer.be33ma3.repository.MemberRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 public class LocationService {
     private final CenterRepository centerRepository;
     private final DistanceCalculator distanceCalculator;
+    private final MemberRepository memberRepository;
 
     public List<CenterListDto> getAllCenters() {
         return centerRepository.findAll()
