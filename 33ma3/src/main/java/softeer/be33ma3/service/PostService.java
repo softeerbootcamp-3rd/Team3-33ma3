@@ -71,11 +71,10 @@ public class PostService {
 
     @Transactional
     public Long createPost(Member currentMember, PostCreateDto postCreateDto, List<MultipartFile> multipartFiles) {
-        //회원이랑 지역 찾기
-        if(currentMember.getMemberType() == CENTER_TYPE){
+        if(currentMember.getMemberType() == CENTER_TYPE){   //센터인 경우 글 작성 불가능
             throw new BusinessException(POST_CREATION_DISABLED);
         }
-        Region region = getRegion(postCreateDto.getLocation());
+        Region region = getRegion(postCreateDto.getLocation()); //지역 찾기
 
         //게시글 저장
         Post post = Post.createPost(postCreateDto, region, currentMember);
