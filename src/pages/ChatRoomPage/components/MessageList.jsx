@@ -29,16 +29,18 @@ const MessageContainer = styled.div`
 `;
 
 function MessageList() {
-  const [isChatMode, setIsChatMode] = useState(false);
+  // const [isChatMode, setIsChatMode] = useState(false);
 
   const [messages, setMessages] = useState([]);
   const [webSocket, setWebSocket] = useState(null);
 
   const [searchParams] = useSearchParams();
+  const mode = searchParams.get("mode");
+  const isChatMode = mode === "chat";
   const authData = useLoaderData();
   const accessToken = authData.accessToken;
+  const memberId = getMemberId();
 
-  const memberId = 1;
   const WebSocketServerUrl = `ws://${IP}/connect/chatRoom/all/${memberId}`;
   useEffect(() => {
     const ws = new WebSocket(WebSocketServerUrl);
@@ -96,7 +98,7 @@ function MessageList() {
       <MessageHeader chatmode={isChatMode.toString()} />
       <MessageBody chatmode={isChatMode.toString()}>
         {messages.map((item, index) => {
-          return <Message key={index} info={item} onClick={setIsChatMode} />;
+          return <Message key={index} info={item} />;
         })}
       </MessageBody>
     </MessageContainer>

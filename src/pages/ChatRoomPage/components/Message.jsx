@@ -57,12 +57,14 @@ function Message(props) {
   const navigate = useNavigate();
   function handleOnClick() {
     props.onClick(true);
-    navigate(`/chat-room?mode=chat&room-id=${props.info.roomId}`);
+    navigate(
+      `/chat-room?mode=chat&room-id=${props.info.roomId}&center-name=${props.info.memberName}`
+    );
   }
 
   return (
     <>
-      <MessageBox onClick={handleOnClick}>
+      <MessageBox>
         <KeyContent>
           <Logo src={CenterLogo} />
           <OpponentInfo>
