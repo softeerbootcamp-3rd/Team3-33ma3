@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import softeer.be33ma3.domain.Center;
+import softeer.be33ma3.domain.Image;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.CenterSignUpDto;
 import softeer.be33ma3.dto.request.LoginDto;
@@ -16,8 +18,7 @@ import softeer.be33ma3.jwt.JwtToken;
 import softeer.be33ma3.repository.CenterRepository;
 import softeer.be33ma3.repository.MemberRepository;
 
-import static softeer.be33ma3.exception.ErrorCode.DUPLICATE_ID;
-import static softeer.be33ma3.exception.ErrorCode.ID_PASSWORD_MISMATCH;
+import static softeer.be33ma3.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +30,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final CenterRepository centerRepository;
     private final JwtService jwtService;
+    private final ImageService imageService;
 
     @Transactional
     public void clientSignUp(ClientSignUpDto clientSignUpDto) {
@@ -51,6 +53,16 @@ public class MemberService {
 
         Center center = Center.createCenter(centerSignUpDto.getLatitude(), centerSignUpDto.getLongitude(), member);
         centerRepository.save(center);
+    }
+    @Transactional
+    public void addProfile(Long memberId, MultipartFile profile) {
+        // 해당하는 유저 가져오기
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(NOT_FOUND_MEMBER));
+        // 이미지 저장하기
+        if(profile != null) {
+            Image image = imageService.saveImage(profile);
+            member.setProfileId(image.getImageId());
+        }
     }
 
     @Transactional

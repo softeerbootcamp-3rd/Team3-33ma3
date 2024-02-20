@@ -83,10 +83,9 @@ public class PostService {
         }
 
         //이미지 저장
-        ImageListDto imageListDto = imageService.saveImage(multipartFiles);
+        List<Image> images = imageService.saveImages(multipartFiles);
 
         //이미지랑 게시물 매핑하기
-        List<Image> images = imageRepository.findAllById(imageListDto.getImageIds());
         images.forEach(image -> image.setPost(savedPost));
 
         return savedPost.getPostId();

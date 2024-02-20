@@ -53,7 +53,10 @@ public enum ErrorCode {
     NOT_FOUND_REVIEW(HttpStatus.NOT_FOUND, "존재하지 않는 리뷰"),
     NOT_DONE_POST(HttpStatus.BAD_REQUEST, "경매가 진행 중입니다."),
     ALREADY_WROTE_REVIEW(HttpStatus.BAD_REQUEST, "이미 리뷰를 작성하였습니다."),
-    NO_SELECTED_CENTER(HttpStatus.NOT_FOUND, "낙찰 처리된 센터가 없습니다.");
+    NO_SELECTED_CENTER(HttpStatus.NOT_FOUND, "낙찰 처리된 센터가 없습니다."),
+
+    //S3
+    INVALID_FILE(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일");
 
     private final HttpStatus status;
     private final String errorMessage;

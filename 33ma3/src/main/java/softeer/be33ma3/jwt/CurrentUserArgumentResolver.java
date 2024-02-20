@@ -10,8 +10,10 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import softeer.be33ma3.domain.Member;
+import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.MemberRepository;
 
+import static softeer.be33ma3.exception.ErrorCode.NOT_FOUND_MEMBER;
 import static softeer.be33ma3.jwt.JwtProperties.ACCESS_HEADER_STRING;
 
 @Slf4j
@@ -43,7 +45,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
         Claims claims = jwtProvider.getClaims(accessToken);
         Long memberId = Long.parseLong(claims.getSubject());
 
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원"));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(NOT_FOUND_MEMBER));
 
         return member;
     }

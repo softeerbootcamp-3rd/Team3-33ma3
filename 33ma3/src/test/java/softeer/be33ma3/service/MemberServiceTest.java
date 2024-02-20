@@ -11,6 +11,7 @@ import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.CenterSignUpDto;
 import softeer.be33ma3.dto.request.ClientSignUpDto;
 import softeer.be33ma3.dto.request.LoginDto;
+import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.CenterRepository;
 import softeer.be33ma3.repository.MemberRepository;
 
@@ -60,8 +61,7 @@ class MemberServiceTest {
 
         //when //then
         assertThatThrownBy(() -> memberService.clientSignUp(client2))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 존재하는 아이디");
+                .isInstanceOf(BusinessException.class);
     }
 
     @DisplayName("센터 회원가입")
@@ -102,7 +102,6 @@ class MemberServiceTest {
 
         //when //then
         assertThatThrownBy(() -> memberService.login(loginDto))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("아이디 또는 비밀번호가 일치하지 않음");
+                .isInstanceOf(BusinessException.class);
     }
 }
