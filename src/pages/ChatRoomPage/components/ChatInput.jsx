@@ -1,16 +1,56 @@
 import styled from "styled-components";
 import SubmitIcon from "/src/assets/chatSubmit.svg";
 import { useState } from "react";
+import { useLoaderData } from "react-router-dom";
+import { BASE_URL } from "../../../constants/url";
+import { getMemberId } from "../../../utils/auth";
 
-function ChatInput() {
+function getCurrentTimeFormatted() {
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+  const isAM = hours < 12;
+  const formattedHours = isAM ? hours : hours - 12;
+  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+  return `${isAM ? "오전" : "오후"} ${formattedHours}:${formattedMinutes}`;
+}
+
+function ChatInput(props) {
   const [inputValue, setInputValue] = useState("");
+
+  const authData = useLoaderData();
+  const accessToken = authData.accessToken;
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
   };
 
   const handleSubmit = () => {
-    setInputValue("");
+    const message = {
+      message: inputValue,
+    };
+    fetch(`${BASE_URL}chat/${props.roomId}/${props.receiverId}`, {
+      method: "POST",
+      headers: {
+        Authorization: accessToken,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(message),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setInputValue("");
+        const newChat = {
+          senderId: Number(getMemberId()),
+          contents: inputValue,
+          createTime: getCurrentTimeFormatted(),
+          readDone: false,
+        };
+        props.updateChat((prev) => [...prev, newChat]);
+      })
+      .catch((error) => console.log(error));
   };
 
   return (
@@ -32,22 +72,24 @@ const InputContainer = styled.div`
   height: 80px;
   align-items: center;
   justify-content: center;
-  border: 1px solid black;
-  border-radius: 14px;
-  background: white;
-  gap: 30px;
+  border-radius: 0px 0px 14px 14px;
+  background: #f8f8f8fa;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  gap: 25px;
 `;
 
 const InputText = styled.input`
   width: 700px;
   height: 40px;
   font-size: 20px;
+  border-radius: 10px;
+  border: none;
+  padding: 5px;
 `;
 
 const SubmitText = styled.button`
   width: 50px;
   height: 50px;
-  border: 1px solid black;
 `;
 
 export { ChatInput };

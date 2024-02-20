@@ -33,8 +33,11 @@ function ChatList(props) {
   const authData = useLoaderData();
   const accessToken = authData.accessToken;
   const [searchParams] = useSearchParams();
+  const urlClientId = searchParams.get("client-id");
+  const urlCenterId = searchParams.get("center-id");
   const urlRoomId = searchParams.get("room-id");
   const memberId = getMemberId();
+  const receiverId = memberId === urlClientId ? urlCenterId : urlClientId;
 
   const WebSocketServerUrl = `ws://${IP}/connect/chat/${urlRoomId}/${memberId}`;
 
@@ -53,7 +56,7 @@ function ChatList(props) {
     };
 
     ws.onclose = () => {
-      console.log("웹소켓 연결 종료");
+      console.log("ChatList 웹소켓 연결 종료");
     };
 
     ws.onerror = (error) => {
@@ -93,7 +96,11 @@ function ChatList(props) {
             return <ChatMessage key={index} info={item} />;
           })}
       </ChatBody>
-      <ChatInput />
+      <ChatInput
+        roomId={urlRoomId}
+        receiverId={receiverId}
+        updateChat={setChatHistory}
+      />
     </ChatContainer>
   );
 }
