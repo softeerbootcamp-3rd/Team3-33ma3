@@ -56,12 +56,13 @@ const ServiceList = styled.div`
   scrollbar-width: none;
 `;
 
-function ReviewComment() {
-  const services = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map(() => (
-    <ChipButton block type={"부품 교체"} />
-  ));
+function ReviewComment({ reviewInfo }) {
   const { accessToken } = useRouteLoaderData("root");
   const [isLoading, setIsLoading] = useState(false);
+
+  const services = [...reviewInfo.repairList, ...reviewInfo.tuneUpList].map(
+    () => <ChipButton block type={"부품 교체"} />
+  );
 
   function handleRemoveComment() {
     setIsLoading(true);
@@ -75,7 +76,7 @@ function ReviewComment() {
         if (res.ok) {
           return res.json();
         } else {
-          throw new Error("댓글 작성에 실패했습니다.");
+          throw new Error("댓글 삭제에 실패했습니다.");
         }
       })
       .then(() => window.location.reload())
@@ -86,7 +87,7 @@ function ReviewComment() {
   return (
     <CommentContainer>
       <HeaderContainer>
-        <Writer>익명</Writer>
+        <Writer>{reviewInfo.writerName}</Writer>
         <SubmitButton
           disabled={isLoading}
           size={"small"}
@@ -95,7 +96,7 @@ function ReviewComment() {
           삭제
         </SubmitButton>
       </HeaderContainer>
-      <Contents>좋았어요! 친절하고 굳굳</Contents>
+      <Contents>{reviewInfo.contents}</Contents>
       <BottomContainer>
         <StarRating score={3} />
         <ServiceList>{services}</ServiceList>

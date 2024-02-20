@@ -47,7 +47,11 @@ function PostListPage() {
   useEffect(() => {
     setIsLoading(true);
     fetch(`${BASE_URL}post`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+      })
       .then((json) => {
         setThumnailList(json.data);
         setIsLoading(false);
@@ -67,7 +71,11 @@ function PostListPage() {
         headers: headers,
       }
     )
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+      })
       .then((json) => {
         setThumnailList(json.data);
         setIsLoading(false);

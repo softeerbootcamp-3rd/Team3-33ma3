@@ -80,7 +80,7 @@ function SideBar({
 
   return (
     <SideBarContainer title={"검색 조건"}>
-      {memberType === MEMBER_TYPE && (
+      {Number(memberType) === MEMBER_TYPE && (
         <ToggleButton
           title={"내가 작성한 게시글"}
           name={"mine"}
@@ -92,7 +92,7 @@ function SideBar({
         name={"done"}
         setIsDone={setIsDone}
       />
-      {memberType === MEMBER_TYPE && (
+      {Number(memberType) === MEMBER_TYPE && (
         <DropDownButton title={"지역"} number={DISTRICTS.length}>
           {districts}
         </DropDownButton>
