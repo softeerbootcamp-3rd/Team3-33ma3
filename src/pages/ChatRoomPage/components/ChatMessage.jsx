@@ -48,7 +48,6 @@ const ChatWrapper = styled.div`
 `;
 
 function ChatMessage({ info }) {
-  console.log(info);
   const memberId = getMemberId();
   const isSender = info.senderId === Number(memberId);
 
@@ -57,7 +56,7 @@ function ChatMessage({ info }) {
       <ChatWrapper mode={isSender.toString()}>
         {isSender && (
           <StatusContainer>
-            {!info.readDone && (
+            {info.readDone && (
               <ReadContainer mode={isSender.toString()}>1</ReadContainer>
             )}
             <TimeContainer>{info.createTime}</TimeContainer>
