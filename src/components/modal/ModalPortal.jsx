@@ -11,7 +11,7 @@ const Modal = styled.div`
   width: 100%;
   height: 100vh;
   background-color: rgba(134, 134, 134, 0.53);
-  z-index: 1;
+  z-index: 5;
 `;
 
 const ModalBody = styled.div`
@@ -24,7 +24,7 @@ const ModalBody = styled.div`
   border-radius: ${(props) => props.theme.radiuses.radius_m};
   box-shadow: ${(props) => props.theme.boxShadow.floating};
   background-color: ${({ theme }) => theme.colors.surface_default};
-  z-index: 2;
+  z-index: 6;
   display: flex;
   flex-direction: column;
   gap: 20px;
