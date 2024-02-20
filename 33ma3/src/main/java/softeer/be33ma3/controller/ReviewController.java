@@ -62,12 +62,12 @@ public class ReviewController {
         return ResponseEntity.ok().body(SingleResponse.success("센터 리뷰 삭제 성공"));
     }
 
-    @ApiResponse(responseCode = "200", description = "센터 리뷰 조회 성공", content = @Content(schema = @Schema(implementation = DataResponse.class)))
+    @ApiResponse(responseCode = "200", description = "전체 리뷰 조회 성공", content = @Content(schema = @Schema(implementation = DataResponse.class)))
     @Operation(summary = "모든 센터 리뷰 조회", description = "센터 리뷰 삭제 메서드 입니다.")
     @GetMapping
     public ResponseEntity<?> showAllReview(){
         List<ShowReviewDto> showReviewDtos = reviewService.showAllReview();
 
-        return ResponseEntity.ok().body(DataResponse.success("센터 리뷰 조회 성공", showReviewDtos));
+        return ResponseEntity.ok().body(DataResponse.success("전체 리뷰 조회 성공", showReviewDtos));
     }
 }

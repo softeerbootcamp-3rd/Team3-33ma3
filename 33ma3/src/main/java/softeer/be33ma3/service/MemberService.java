@@ -16,6 +16,7 @@ import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.jwt.JwtService;
 import softeer.be33ma3.jwt.JwtToken;
 import softeer.be33ma3.repository.CenterRepository;
+import softeer.be33ma3.repository.ImageRepository;
 import softeer.be33ma3.repository.MemberRepository;
 
 import static softeer.be33ma3.exception.ErrorCode.*;
@@ -31,6 +32,8 @@ public class MemberService {
     private final CenterRepository centerRepository;
     private final JwtService jwtService;
     private final ImageService imageService;
+    private final S3Service s3Service;
+    private final ImageRepository imageRepository;
 
     @Transactional
     public void clientSignUp(ClientSignUpDto clientSignUpDto) {
@@ -58,11 +61,18 @@ public class MemberService {
     public void addProfile(Long memberId, MultipartFile profile) {
         // 해당하는 유저 가져오기
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(NOT_FOUND_MEMBER));
-        // 이미지 저장하기
-        if(profile != null) {
-            Image image = imageService.saveImage(profile);
-            member.setProfileId(image);
+
+        if(profile.isEmpty()) {
+            if(member.getMemberType() == CENTER_TYPE){
+                Image image = Image.createImage(s3Service.getFileUrl("profile.png"), "profile.png");
+                member.setProfile(imageRepository.save(image));
+            }
+            //TODO: 일반 회원 전용 프로필 이미지 생기면 저장하는 로직 추가하기
+            return;
         }
+        // 이미지 저장하기
+        Image image = imageService.saveImage(profile);
+        member.setProfile(image);
     }
 
     @Transactional

@@ -21,7 +21,8 @@ public class ReviewCustomRepositoryImpl implements ReviewCustomRepository{
                         review.center.memberId,
                         review.score.avg().doubleValue(),
                         review.count(),
-                        review.center.loginId))
+                        review.center.loginId,
+                        review.center.image.link))
                 .from(review)
                 .groupBy(review.center.memberId)
                 .orderBy(review.score.avg().desc())
