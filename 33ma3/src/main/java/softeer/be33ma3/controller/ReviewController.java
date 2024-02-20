@@ -14,10 +14,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.ReviewCreateDto;
+import softeer.be33ma3.dto.response.ShowReviewDto;
 import softeer.be33ma3.jwt.CurrentUser;
 import softeer.be33ma3.response.DataResponse;
 import softeer.be33ma3.response.SingleResponse;
 import softeer.be33ma3.service.ReviewService;
+
+import java.util.List;
+
 
 @Tag(name = "Review", description = "센터 리뷰 관련 api")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -56,5 +60,14 @@ public class ReviewController {
                                           @Schema(hidden = true) @CurrentUser Member member) {
         reviewService.deleteReview(reviewId, member);
         return ResponseEntity.ok().body(SingleResponse.success("센터 리뷰 삭제 성공"));
+    }
+
+    @ApiResponse(responseCode = "200", description = "센터 리뷰 조회 성공", content = @Content(schema = @Schema(implementation = DataResponse.class)))
+    @Operation(summary = "모든 센터 리뷰 조회", description = "센터 리뷰 삭제 메서드 입니다.")
+    @GetMapping
+    public ResponseEntity<?> showAllReview(){
+        List<ShowReviewDto> showReviewDtos = reviewService.showAllReview();
+
+        return ResponseEntity.ok().body(DataResponse.success("센터 리뷰 조회 성공", showReviewDtos));
     }
 }
