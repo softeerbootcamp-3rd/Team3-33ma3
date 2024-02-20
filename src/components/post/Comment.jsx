@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import SubmitButton from "../button/SubmitButton";
 import Logo from "../../assets/33MA3_logo.png";
-import { Navigate, useNavigate, useRouteLoaderData } from "react-router-dom";
+import { useNavigate, useRouteLoaderData } from "react-router-dom";
 import { BASE_URL } from "../../constants/url";
 import { useSearchParams } from "react-router-dom";
 import { getMemberId } from "../../utils/auth";
@@ -51,7 +51,6 @@ function Comment({
   disabled,
   handleSelectOffer,
   centerId,
-  postId,
 }) {
   // TODO: 문의 기능 구현
   const navigate = useNavigate();
