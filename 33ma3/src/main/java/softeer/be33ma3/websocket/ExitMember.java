@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 public class ExitMember {
     @JsonProperty("type")
     private String type;
-    @JsonProperty("roomId")
-    private Long roomId;
     @JsonProperty("memberId")
     private Long memberId;
 }

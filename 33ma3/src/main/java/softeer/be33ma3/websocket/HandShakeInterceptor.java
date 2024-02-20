@@ -27,14 +27,7 @@ public class HandShakeInterceptor implements HandshakeInterceptor {
         }
         // 게시글 조회 관련 실시간 통신 요청일 경우
         if(parts[2].equals("post")) {
-            try {
-                return attributesToHandler(response, attributes, parts, "postId");
-            } catch(NumberFormatException e) {
-                log.error("웹소켓 연결 실패: 게시글 아이디, 멤버 아이디가 포함되어야 합니다.");
-                response.setStatusCode(HttpStatus.FORBIDDEN);
-                response.getBody().write("웹소켓 연결 실패: 게시글 아이디와 멤버 아이디를 포함해주세요.".getBytes());
-                return false;
-            }
+            return attributesToHandler(response, attributes, parts, "postId");
         }
         if(parts[2].equals("chat")) {
             return attributesToHandler(response, attributes, parts, "chat");
@@ -54,7 +47,6 @@ public class HandShakeInterceptor implements HandshakeInterceptor {
                 if (!parts[2].equals("chatRoom")) {
                     // 연결 요청 엔드 포인트에서 데이터 파싱
                     attributes.put(part3, Long.parseLong(parts[3]));
-                    return true;
                 }
 
                 Long memberId = Long.parseLong(parts[4]);
