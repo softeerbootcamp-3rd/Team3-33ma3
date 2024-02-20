@@ -5,6 +5,7 @@ import { useLoaderData, useSearchParams } from "react-router-dom";
 import { ChatHeader } from "./ChatHeader";
 import { ChatMessage } from "./ChatMessage";
 import { getMemberId } from "../../../utils/auth";
+import { ChatInput } from "./ChatInput";
 
 const ChatContainer = styled.div`
   width: 970px;
@@ -15,9 +16,8 @@ const ChatBody = styled.ul`
   display: flex;
   align-items: center;
   flex-direction: column;
-  height: 700px;
+  height: 620px;
   background: #f8f8fa;
-  border-radius: 0px 0px 14px 14px;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   padding: 0px 30px;
   overflow-y: auto;
@@ -25,15 +25,6 @@ const ChatBody = styled.ul`
 `;
 
 const DateContainer = styled.div``;
-
-const InputContainer = styled.div``;
-
-const InputText = styled.input``;
-
-const SubmitText = styled.button`
-  width: 100px;
-  height: 50px;
-`;
 
 function ChatList(props) {
   const [chatHistory, setChatHistory] = useState([]);
@@ -102,6 +93,7 @@ function ChatList(props) {
             return <ChatMessage key={index} info={item} />;
           })}
       </ChatBody>
+      <ChatInput />
     </ChatContainer>
   );
 }
