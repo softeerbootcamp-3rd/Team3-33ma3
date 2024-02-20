@@ -29,6 +29,7 @@ public class Center {
         center.latitude = latitude;
         center.longitude = longitude;
         center.member = member;
+        System.out.println("보경 아임 히어");
         return center;
     }
 
