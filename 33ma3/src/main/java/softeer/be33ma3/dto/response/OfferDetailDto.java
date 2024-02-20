@@ -31,6 +31,9 @@ public class OfferDetailDto implements Comparable<OfferDetailDto> {
     @Schema(description = "낙찰 여부", example = "false")
     private boolean selected;
 
+    @Schema(description = "해당 센터의 별점", example = "4.5")
+    private double score;
+
     // Offer Entity -> OfferDetailDto 변환
     public static OfferDetailDto fromEntity(Offer offer) {
         return OfferDetailDto.builder()
