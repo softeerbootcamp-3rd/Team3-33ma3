@@ -43,11 +43,11 @@ public class PostService {
             Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
             postIds = postPerCenterRepository.findPostIdsByCenterId(center.getCenterId());
         }
-        Long memberId = null;
-        if(member != null && member.getMemberType() == CLIENT_TYPE && mine) {
-            memberId = member.getMemberId();
+        Long writerId = null;
+        if(Boolean.TRUE.equals(mine) && member != null && member.getMemberType() == CLIENT_TYPE) {
+            writerId = member.getMemberId();
         }
-        List<Post> posts = postRepository.findAllByConditions(memberId, done, regions, repairs, tuneUps, postIds);
+        List<Post> posts = postRepository.findAllByConditions(writerId, done, regions, repairs, tuneUps, postIds);
         return fromPostList(posts);
     }
 
