@@ -11,7 +11,7 @@ const ChatContainer = styled.div`
   padding: 20px;
 `;
 
-const ChatBody = styled.div`
+const ChatBody = styled.ul`
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -20,6 +20,8 @@ const ChatBody = styled.div`
   border-radius: 0px 0px 14px 14px;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   padding: 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
 `;
 
 const DateContainer = styled.div``;
