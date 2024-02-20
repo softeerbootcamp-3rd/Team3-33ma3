@@ -32,10 +32,10 @@ public class OfferDetailDto implements Comparable<OfferDetailDto> {
     private boolean selected;
 
     @Schema(description = "해당 센터의 별점", example = "4.5")
-    private double score;
+    private Double score;
 
     // Offer Entity -> OfferDetailDto 변환
-    public static OfferDetailDto fromEntity(Offer offer, double score) {
+    public static OfferDetailDto fromEntity(Offer offer, Double score) {
         return OfferDetailDto.builder()
                 .offerId(offer.getOfferId())
                 .memberId(offer.getCenter().getMemberId())
@@ -51,7 +51,10 @@ public class OfferDetailDto implements Comparable<OfferDetailDto> {
     public int compareTo(OfferDetailDto other) {
         if(price != other.price)
             return price - other.price;
-        // TODO: 센터 별점 높은 순 정렬
+        if(score > other.getScore())
+            return -1;
+        else if(score < other.getScore())
+            return 1;
         return 0;
     }
 }
