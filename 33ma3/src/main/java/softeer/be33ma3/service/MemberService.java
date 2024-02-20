@@ -49,7 +49,7 @@ public class MemberService {
         Member member = Member.createMember(CENTER_TYPE, centerSignUpDto.getLoginId(), centerSignUpDto.getPassword());
         member = memberRepository.save(member);
 
-        Center center = Center.createCenter(centerSignUpDto.getCenterName(), centerSignUpDto.getLatitude(), centerSignUpDto.getLongitude(), member);
+        Center center = Center.createCenter(centerSignUpDto.getLatitude(), centerSignUpDto.getLongitude(), member);
         centerRepository.save(center);
     }
 
