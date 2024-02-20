@@ -10,6 +10,7 @@ import softeer.be33ma3.dto.response.AllChatRoomDto;
 import softeer.be33ma3.dto.response.ChatMessageResponseDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.*;
+import softeer.be33ma3.repository.post.PostRepository;
 import softeer.be33ma3.websocket.WebSocketHandler;
 import softeer.be33ma3.websocket.WebSocketRepository;
 

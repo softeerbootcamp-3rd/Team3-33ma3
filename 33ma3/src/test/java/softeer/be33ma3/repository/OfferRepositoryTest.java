@@ -8,6 +8,7 @@ import softeer.be33ma3.domain.Center;
 import softeer.be33ma3.domain.Offer;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.dto.request.PostCreateDto;
+import softeer.be33ma3.repository.post.PostRepository;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -3,14 +3,13 @@ package softeer.be33ma3.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import softeer.be33ma3.domain.Center;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.domain.Review;
 import softeer.be33ma3.dto.request.ReviewCreateDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.OfferRepository;
-import softeer.be33ma3.repository.PostRepository;
+import softeer.be33ma3.repository.post.PostRepository;
 import softeer.be33ma3.repository.ReviewRepository;
 
 import static softeer.be33ma3.exception.ErrorCode.*;
