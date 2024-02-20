@@ -1,10 +1,15 @@
 import { useState, useEffect } from "react";
 
+const SECONDS_PER_MINUTE = 60;
+const SECONDS_PER_HOUR = SECONDS_PER_MINUTE * 60;
+const MILLISECONDS_PER_SECOND = 1000;
+
 function useTimer() {
   const [leftTime, setLeftTime] = useState(0);
-  const hours = Math.floor(leftTime / 60 / 60);
-  const minutes = Math.floor(leftTime / 60) % 60;
-  const seconds = leftTime % 60;
+  const hours = Math.floor(leftTime / SECONDS_PER_HOUR);
+  const minutes =
+    Math.floor(leftTime / SECONDS_PER_MINUTE) % SECONDS_PER_MINUTE;
+  const seconds = leftTime % SECONDS_PER_MINUTE;
 
   // 초기 남은 시간 계산
   useEffect(() => {
@@ -14,13 +19,13 @@ function useTimer() {
     midnightTime.setMinutes(0);
     midnightTime.setSeconds(0);
     midnightTime.setMilliseconds(0);
-    setLeftTime(Math.floor((midnightTime - curTime) / 1000));
+    setLeftTime(Math.floor((midnightTime - curTime) / MILLISECONDS_PER_SECOND));
   }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setLeftTime(leftTime - 1);
-    }, 1000);
+    }, MILLISECONDS_PER_SECOND);
 
     if (leftTime <= 0) {
       clearInterval(timer);
