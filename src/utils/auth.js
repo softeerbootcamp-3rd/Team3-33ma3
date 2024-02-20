@@ -13,6 +13,8 @@ function getAuthToken() {
 function removeAuthToken() {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
+  localStorage.removeItem("memberId");
+  localStorage.removeItem("memberType");
 }
 
 function getMemberId() {

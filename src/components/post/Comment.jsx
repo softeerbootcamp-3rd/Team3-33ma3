@@ -2,6 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import SubmitButton from "../button/SubmitButton";
 import Logo from "../../assets/33MA3_logo.png";
+import { Navigate, useNavigate } from "react-router-dom";
+import { BASE_URL } from "../../constants/url";
 
 const CommentContainer = styled.div`
   width: 100%;
@@ -41,8 +43,30 @@ const ButtonContainer = styled.div`
   gap: 10px;
 `;
 
-function Comment({ centerName, contents, disabled, handleSelectOffer }) {
+function Comment({
+  centerName,
+  contents,
+  disabled,
+  handleSelectOffer,
+  centerId,
+  postId,
+}) {
   // TODO: 문의 기능 구현
+  const navigate = useNavigate();
+
+  function handleCreateChatRoom() {
+    fetch(`${BASE_URL}chatRoom/${postId}/${centerId}`, {
+      headers: {
+        Authorization: accessToken,
+        Accept: "application/json",
+      },
+    })
+      .then((res) => {
+        console.log(res);
+        navigate("/chat-room");
+      })
+      .catch((error) => console.log(error));
+  }
 
   return (
     <CommentContainer>
@@ -53,7 +77,11 @@ function Comment({ centerName, contents, disabled, handleSelectOffer }) {
         </Writer>
         {!disabled && (
           <ButtonContainer>
-            <SubmitButton size={"small"} children={"문의"} />
+            <SubmitButton
+              size={"small"}
+              children={"문의"}
+              onClick={handleCreateChatRoom}
+            />
             <SubmitButton
               size={"small"}
               children={"낙찰"}
