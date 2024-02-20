@@ -62,7 +62,7 @@ public class WebSocketService {
             return;
         // 클라이언트에 해당하는 세션 가져오기
         WebSocketSession session = webSocketRepository.findSessionByMemberId(memberId);
-        if(session == null) {
+        if(session == null || !session.isOpen()) {
             log.info("웹 소켓 연결이 되어있지 않음");
             return;
         }
