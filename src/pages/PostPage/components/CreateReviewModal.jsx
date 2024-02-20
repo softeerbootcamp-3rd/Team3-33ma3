@@ -3,7 +3,7 @@ import styled from "styled-components";
 import ModalPortal from "../../../components/modal/ModalPortal";
 import TextArea from "../../../components/input/TextArea";
 import SubmitButton from "../../../components/button/SubmitButton";
-import StarInput from "./StarInput";
+import StarInput from "./star/StarInput";
 import { BASE_URL } from "../../../constants/url";
 import { useRouteLoaderData, useSearchParams } from "react-router-dom";
 
