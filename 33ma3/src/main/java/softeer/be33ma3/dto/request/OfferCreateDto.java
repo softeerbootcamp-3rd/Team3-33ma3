@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.*;
-import softeer.be33ma3.domain.Center;
+import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Offer;
 import softeer.be33ma3.domain.Post;
 
@@ -20,7 +20,7 @@ public class OfferCreateDto {
     @Schema(description = "내용", example = "견적 제시합니다.")
     private String contents;
 
-    public Offer toEntity(Post post, Center center) {
+    public Offer toEntity(Post post, Member center) {
         return Offer.builder()
                 .price(price)
                 .contents(contents)

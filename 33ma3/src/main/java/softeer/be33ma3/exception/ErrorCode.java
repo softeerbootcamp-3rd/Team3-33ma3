@@ -35,6 +35,7 @@ public enum ErrorCode {
     //견적
     NOT_FOUND_OFFER(HttpStatus.NOT_FOUND,"존재하지 않는 견적"),
     ALREADY_SUBMITTED(HttpStatus.UNAUTHORIZED, "이미 견적을 작성하였습니다."),
+    NOT_CENTER(HttpStatus.UNAUTHORIZED, "센터만 견적을 제시할 수 있습니다."),
     ONLY_LOWER_AMOUNT_ALLOWED(HttpStatus.BAD_REQUEST,"기존 금액보다 낮은 금액으로만 수정 가능합니다."),
     CLOSED_POST(HttpStatus.BAD_REQUEST,"마감된 게시글"),
 

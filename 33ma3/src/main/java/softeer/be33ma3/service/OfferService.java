@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static softeer.be33ma3.exception.ErrorCode.*;
+import static softeer.be33ma3.service.MemberService.CENTER_TYPE;
 
 @Service
 @RequiredArgsConstructor
@@ -50,12 +51,13 @@ public class OfferService {
     public Long createOffer(Long postId, OfferCreateDto offerCreateDto, Member member) {
         // 1. 해당 게시글이 마감 전인지 확인
         Post post = checkNotDonePost(postId);
-        // 2. 센터 정보 가져오기
-        Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
-        // 3. 이미 견적을 작성한 센터인지 검증
-        offerRepository.findByPost_PostIdAndCenter_CenterId(postId, center.getCenterId()).ifPresent(offer -> {throw new BusinessException(ALREADY_SUBMITTED);});
-        // 4. 댓글 생성하여 저장하기
-        Offer offer = offerCreateDto.toEntity(post, center);
+        if(member.getMemberType() != CENTER_TYPE) {
+            throw new BusinessException(NOT_CENTER);
+        }
+        // 2. 이미 견적을 작성한 센터인지 검증
+        offerRepository.findByPost_PostIdAndCenter_MemberId(postId, member.getMemberId()).ifPresent(offer -> {throw new BusinessException(ALREADY_SUBMITTED);});
+        // 3. 댓글 생성하여 저장하기
+        Offer offer = offerCreateDto.toEntity(post, member);
         Offer savedOffer = offerRepository.save(offer);
         return savedOffer.getOfferId();
     }
@@ -65,12 +67,10 @@ public class OfferService {
     public void updateOffer(Long postId, Long offerId, OfferCreateDto offerCreateDto, Member member) {
         // 1. 해당 게시글이 마감 전인지 확인
         checkNotDonePost(postId);
-        // 2. 센터 정보 가져오기
-        Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() ->  new BusinessException(NOT_FOUND_CENTER));
-        // 3. 기존 댓글 가져오기
+        // 2. 기존 댓글 가져오기
         Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
-        // 4. 수정 가능한지 검증
-        if(center.getCenterId() != offer.getCenter().getCenterId())
+        // 3. 수정 가능한지 검증
+        if(!offer.getCenter().equals(member))
             throw new BusinessException(AUTHOR_ONLY_ACCESS);
         if(offerCreateDto.getPrice() > offer.getPrice())
             throw new BusinessException(ONLY_LOWER_AMOUNT_ALLOWED);
@@ -85,12 +85,10 @@ public class OfferService {
     public void deleteOffer(Long postId, Long offerId, Member member) {
         // 1. 해당 게시글이 마감 전인지 확인
         checkNotDonePost(postId);
-        // 2. 센터 정보 가져오기
-        Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
-        // 3. 기존 댓글 가져오기
+        // 2. 기존 댓글 가져오기
         Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
-        // 4. 댓글 작성자인지 검증
-        if(!offer.getCenter().equals(center))
+        // 3. 삭제 가능한지 검증
+        if(!offer.getCenter().equals(member))
             throw new BusinessException(AUTHOR_ONLY_ACCESS);
         // 5. 댓글 삭제
         offerRepository.delete(offer);
@@ -109,8 +107,8 @@ public class OfferService {
         // 5. 댓글 낙찰, 게시글 마감 처리
         offer.setSelected();
         post.setDone();
-        // TODO: 6. 서비스 센터들에게 낙찰 또는 경매 마감 메세지 보내기
-        Long selectedMemberId = offer.getCenter().getMember().getMemberId();
+        // 6. 서비스 센터들에게 낙찰 또는 경매 마감 메세지 보내기
+        Long selectedMemberId = offer.getCenter().getMemberId();
         sendMessageAfterSelection(postId, selectedMemberId);
         webSocketHandler.deletePostRoom(postId);
     }
@@ -126,7 +124,7 @@ public class OfferService {
     // 해당 견적을 작성한 서비스 센터들의 member id 목록 반환
     private List<Long> findMemberIdsWithOfferList(List<Offer> offerList) {
         return offerList.stream()
-                .map(offer -> offer.getCenter().getMember().getMemberId())
+                .map(offer -> offer.getCenter().getMemberId())
                 .toList();
     }
 

@@ -32,7 +32,6 @@ public class Center {
         return center;
     }
 
-
     //반경안에 있는 센터인지 확인하는 메소드
     public boolean isWithinRadius(DistanceCalculator distanceCalculator, double memberLatitude, double memberLongitude, double radius) {
         double distance = distanceCalculator.calculate(memberLatitude, memberLongitude, latitude, longitude);
