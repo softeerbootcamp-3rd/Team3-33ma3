@@ -18,7 +18,6 @@ function OfferList({ prevOfferList, offerList, disabled, handleSelectOffer }) {
     setFocusOffer(index);
   }
 
-  console.log(offerList);
   // 기존에도 존재했던 offerId라면 hetch 애니메이션 실행
   const offers = offerList.map((offer, index) => (
     <AuctionPrice
