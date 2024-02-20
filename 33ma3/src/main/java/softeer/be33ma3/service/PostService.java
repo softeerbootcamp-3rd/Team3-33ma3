@@ -19,6 +19,7 @@ import java.util.List;
 
 import static softeer.be33ma3.exception.ErrorCode.*;
 import static softeer.be33ma3.service.MemberService.CENTER_TYPE;
+import static softeer.be33ma3.service.MemberService.CLIENT_TYPE;
 
 @Service
 @RequiredArgsConstructor
@@ -140,13 +141,10 @@ public class PostService {
     // 멤버 정보를 이용하여 견적을 작성한 이력이 있는 서비스 센터일 경우 작성한 견적 반환
     // 해당사항 없을 경우 null 반환
     private OfferDetailDto getCenterOffer(Long postId, Member member) {
-        if(member == null || member.getMemberType() == MemberService.CLIENT_TYPE)
+        if(member == null || member.getMemberType() == CLIENT_TYPE)
             return null;
-        // 센터 엔티티 찾기
-        Center center = centerRepository.findByMember_MemberId(member.getMemberId())
-                .orElseThrow(()->new BusinessException(NOT_FOUND_CENTER));
         // 해당 게시글에 해당 센터가 작성한 견적 찾기
-        Optional<Offer> offer = offerRepository.findByPost_PostIdAndCenter_CenterId(postId, center.getCenterId());
+        Optional<Offer> offer = offerRepository.findByPost_PostIdAndCenter_MemberId(postId, member.getMemberId());
         return (offer.isEmpty() ? null : OfferDetailDto.fromEntity(offer.get()));
     }
 
