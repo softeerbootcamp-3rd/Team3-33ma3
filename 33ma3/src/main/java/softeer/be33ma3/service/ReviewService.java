@@ -7,10 +7,14 @@ import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.domain.Review;
 import softeer.be33ma3.dto.request.ReviewCreateDto;
+import softeer.be33ma3.dto.response.ShowReviewDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.OfferRepository;
 import softeer.be33ma3.repository.post.PostRepository;
-import softeer.be33ma3.repository.ReviewRepository;
+import softeer.be33ma3.repository.review.ReviewCustomRepository;
+import softeer.be33ma3.repository.review.ReviewRepository;
+
+import java.util.List;
 
 import static softeer.be33ma3.exception.ErrorCode.*;
 
@@ -22,6 +26,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final PostRepository postRepository;
     private final OfferRepository offerRepository;
+    private final ReviewCustomRepository reviewCustomRepository;
 
     // 리뷰 생성하기
     @Transactional
@@ -56,5 +61,9 @@ public class ReviewService {
             throw new BusinessException(AUTHOR_ONLY_ACCESS);
         }
         reviewRepository.delete(review);
+    }
+
+    public List<ShowReviewDto> showAllReview() {
+        return reviewCustomRepository.findReviewGroupByCenter();
     }
 }
