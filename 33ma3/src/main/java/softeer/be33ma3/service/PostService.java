@@ -34,7 +34,7 @@ public class PostService {
     private final ImageService imageService;
 
     // 게시글 목록 조회
-    public List<PostThumbnailDto> showPosts(Boolean done, String region, String repair, String tuneUp, Member member) {
+    public List<PostThumbnailDto> showPosts(Boolean mine, Boolean done, String region, String repair, String tuneUp, Member member) {
         List<String> regions = stringCommaParsing(region);
         List<String> repairs = stringCommaParsing(repair);
         List<String> tuneUps = stringCommaParsing(tuneUp);
@@ -43,7 +43,11 @@ public class PostService {
             Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
             postIds = postPerCenterRepository.findPostIdsByCenterId(center.getCenterId());
         }
-        List<Post> posts = postRepository.findAllByConditions(done, regions, repairs, tuneUps, postIds);
+        Long memberId = null;
+        if(member != null && member.getMemberType() == CLIENT_TYPE && mine) {
+            memberId = member.getMemberId();
+        }
+        List<Post> posts = postRepository.findAllByConditions(memberId, done, regions, repairs, tuneUps, postIds);
         return fromPostList(posts);
     }
 

@@ -17,16 +17,20 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Post> findAllByConditions(Boolean done, List<String> regions, List<String> repairs, List<String> tuneUps, List<Long> postIds) {
-        BooleanExpression predicate = makeCondition(done, regions, repairs, tuneUps, postIds);
+    public List<Post> findAllByConditions(Long memberId, Boolean done, List<String> regions, List<String> repairs, List<String> tuneUps, List<Long> postIds) {
+        BooleanExpression predicate = makeCondition(memberId, done, regions, repairs, tuneUps, postIds);
         return jpaQueryFactory.selectFrom(post)
                 .where(predicate)
                 .orderBy(post.createTime.desc(), post.postId.desc())
                 .fetch();
     }
 
-    private BooleanExpression makeCondition(Boolean done, List<String> regions, List<String> repairs, List<String> tuneUps, List<Long> postIds) {
+    private BooleanExpression makeCondition(Long memberId, Boolean done, List<String> regions, List<String> repairs, List<String> tuneUps, List<Long> postIds) {
         BooleanExpression predicate = Expressions.TRUE;
+
+        if(memberId != null) {
+
+        }
         if(done != null) {
             predicate = post.done.eq(done);
         }
