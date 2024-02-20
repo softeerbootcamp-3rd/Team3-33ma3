@@ -15,13 +15,13 @@ public class PostPerCenter {
 
     @ManyToOne
     @JoinColumn(name = "center_id")
-    private Center center;
+    private Member center;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
 
-    public PostPerCenter(Center center, Post post) {
+    public PostPerCenter(Member center, Post post) {
         this.center = center;
         this.post = post;
     }

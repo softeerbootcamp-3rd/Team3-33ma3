@@ -16,8 +16,6 @@ public class Center {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long centerId;
 
-    private String centerName;
-
     private double latitude;
 
     private double longitude;
@@ -26,14 +24,11 @@ public class Center {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public static Center createCenter(String centerName, double latitude, double longitude, Member member){
+    public static Center createCenter(double latitude, double longitude, Member member){
         Center center = new Center();
-
-        center.centerName = centerName;
         center.latitude = latitude;
         center.longitude = longitude;
         center.member = member;
-
         return center;
     }
 
