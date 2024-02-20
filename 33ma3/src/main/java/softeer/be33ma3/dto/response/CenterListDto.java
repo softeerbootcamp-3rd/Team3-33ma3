@@ -12,9 +12,6 @@ public class CenterListDto {
     @Schema(description = "센터 아이디", example = "1")
     private long centerId;
 
-    @Schema(description = "센터 이름", example = "현대자동차 강남점")
-    private String centerName;
-
     @Schema(description = "위도", example = "37.12345")
     private double latitude;
 
@@ -22,6 +19,6 @@ public class CenterListDto {
     private double longitude;
 
     public static CenterListDto from(Center center) {
-        return new CenterListDto(center.getCenterId(), center.getCenterName(), center.getLatitude(), center.getLongitude());
+        return new CenterListDto(center.getCenterId(), center.getLatitude(), center.getLongitude());
     }
 }
