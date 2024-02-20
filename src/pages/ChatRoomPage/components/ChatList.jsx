@@ -1,57 +1,26 @@
 import styled from "styled-components";
-import CenterLogo from "/src/assets/33MA3_logo.png";
-import { useEffect } from "react";
-import { BASE_URL } from "../../../constants/url";
-import { useLoaderData } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { BASE_URL, IP } from "../../../constants/url";
+import { useLoaderData, useSearchParams } from "react-router-dom";
+import { ChatHeader } from "./ChatHeader";
+import { ChatMessage } from "./ChatMessage";
+import { getMemberId } from "../../../utils/auth";
+
 const ChatContainer = styled.div`
   width: 970px;
   padding: 20px;
 `;
 
-const ChatHeader = styled.div`
+const ChatBody = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 120px;
-  background: #f8f8fa;
-  border-radius: 14px 14px 0px 0px;
-  border-bottom: 2px solid ${(props) => props.theme.colors.surface_weak};
-  gap: 550px;
-`;
-
-const Logo = styled.img`
-  width: 70px;
-  height: 80px;
-`;
-
-const CenterInfo = styled.div`
-  display: flex;
   flex-direction: column;
-  gap: 10px;
-`;
-
-const CenterName = styled.div``;
-
-const CenterStatus = styled.div``;
-
-const SuccessfulBidButton = styled.button`
-  color: white;
-  width: 70px;
-  height: 40px;
-  background: ${(props) => props.theme.colors.surface_brand};
-  border-radius: 14px;
-`;
-
-const ChatBody = styled.div`
   height: 700px;
   background: #f8f8fa;
   border-radius: 0px 0px 14px 14px;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  padding: 20px;
 `;
-
-const ChatBox = styled.div``;
-
-const ChatMessage = styled.div``;
 
 const DateContainer = styled.div``;
 
@@ -64,42 +33,56 @@ const SubmitText = styled.button`
   height: 50px;
 `;
 
-const CenterContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 20px;
-`;
-
 function ChatList(props) {
-  console.log(props.roomId);
+  const [chatHistory, setChatHistory] = useState([]);
+  const [webSocket, setWebSocket] = useState(null);
 
   const authData = useLoaderData();
   const accessToken = authData.accessToken;
+  const [searchParams] = useSearchParams();
+  const urlRoomId = searchParams.get("room-id");
+  const memberId = getMemberId();
 
+  const WebSocketServerUrl = `ws://${IP}/connect/chat/${urlRoomId}/${memberId}`;
   useEffect(() => {
-    fetch(`${BASE_URL}chat/history/${props.roomId}`, {
+    const ws = new WebSocket(WebSocketServerUrl);
+    setWebSocket(ws);
+    ws.onopen = () => {
+      console.log("웹소켓 연결 성공");
+    };
+
+    ws.onmessage = (event) => {
+      console.log("메시지 수신:", JSON.parse(event.data));
+    };
+
+    ws.onclose = () => {
+      console.log("웹소켓 연결 종료");
+    };
+
+    ws.onerror = (error) => {
+      console.error("웹소켓 오류 발생:", error);
+    };
+    fetch(`${BASE_URL}chat/history/${urlRoomId}`, {
       headers: {
         Authorization: accessToken,
         Accept: "application/json",
       },
     })
       .then((res) => res.json())
-      .then((data) => console.log(data));
+      .then((data) => {
+        setChatHistory(data.data);
+      });
   }, []);
-
+  console.log(chatHistory);
   return (
     <ChatContainer>
-      <ChatHeader>
-        <CenterContainer>
-          <Logo src={CenterLogo} />
-          <CenterInfo>
-            <CenterName>민우 센타</CenterName>
-            <CenterStatus>부재중</CenterStatus>
-          </CenterInfo>
-        </CenterContainer>
-        <SuccessfulBidButton>낙찰</SuccessfulBidButton>
-      </ChatHeader>
-      <ChatBody></ChatBody>
+      <ChatHeader centerName={props.centerName} />
+      <ChatBody>
+        {chatHistory &&
+          chatHistory.map((item, index) => {
+            return <ChatMessage key={index} info={item} />;
+          })}
+      </ChatBody>
     </ChatContainer>
   );
 }
