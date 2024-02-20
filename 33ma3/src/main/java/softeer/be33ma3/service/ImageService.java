@@ -5,10 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import softeer.be33ma3.domain.Image;
-import softeer.be33ma3.dto.response.ImageListDto;
 import softeer.be33ma3.repository.ImageRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,16 +16,15 @@ public class ImageService {
     private final S3Service s3Service;
     private final ImageRepository imageRepository;
     @Transactional
-    public ImageListDto saveImage(List<MultipartFile> multipartFiles){
-        List<Image> images = new ArrayList<>();
+    public List<Image> saveImages(List<MultipartFile> multipartFiles){
+        return multipartFiles.stream()
+                .map(this::saveImage)
+                .toList();
+    }
 
-        for (MultipartFile file : multipartFiles) {
-            String fileName = s3Service.uploadFile(file);
-            images.add(Image.createImage(s3Service.getFileUrl(fileName), fileName));
-        }
-
-        List<Image> savedImages = imageRepository.saveAll(images);
-        return ImageListDto.create(savedImages);
+    public Image saveImage(MultipartFile file) {
+        String fileName = s3Service.uploadFile(file);
+        return imageRepository.save(Image.createImage(s3Service.getFileUrl(fileName), fileName));
     }
 
     @Transactional

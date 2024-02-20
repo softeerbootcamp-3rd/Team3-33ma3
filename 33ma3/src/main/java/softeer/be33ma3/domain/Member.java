@@ -21,6 +21,8 @@ public class Member {
 
     private String password;
 
+    private Long profileId;
+
     private String refreshToken;
 
     public Member(int memberType, String loginId, String password) {
@@ -35,5 +37,9 @@ public class Member {
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public void setProfileId(Long profileId) {
+        this.profileId = profileId;
     }
 }

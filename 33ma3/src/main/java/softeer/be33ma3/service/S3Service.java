@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
+import static softeer.be33ma3.exception.ErrorCode.INVALID_FILE;
 import static softeer.be33ma3.exception.ErrorCode.UNABLE_TO_CONVERT_FILE;
 
 @RequiredArgsConstructor
@@ -66,7 +67,7 @@ public class S3Service {
         try{
             return originalFileName.substring(originalFileName.lastIndexOf("."));
         }catch(StringIndexOutOfBoundsException e) {
-            throw new IllegalArgumentException(String.format("잘못된 형식의 파일 (%s)", originalFileName));
+            throw new BusinessException(INVALID_FILE);
         }
     }
 }

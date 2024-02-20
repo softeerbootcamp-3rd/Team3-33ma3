@@ -1,6 +1,8 @@
 package softeer.be33ma3.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import softeer.be33ma3.dto.request.CenterSignUpDto;
 import softeer.be33ma3.dto.request.LoginDto;
 import softeer.be33ma3.dto.request.ClientSignUpDto;
@@ -51,6 +54,18 @@ public class MemberController {
         memberService.centerSignUp(centerSignUpDto);
 
         return ResponseEntity.ok(SingleResponse.success("회원가입 성공"));
+    }
+
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "프로필 사진 저장 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 회원", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+    })
+    @Operation(summary = "프로필 사진 저장", description = "회원가입 시 프로필 사진 저장 메서드 입니다.")
+    @Parameter(name = "member_id", description = "member id", required = true, example = "1", in = ParameterIn.PATH)
+    @PostMapping("/profile/{member_id}")
+    public ResponseEntity<?> addProfile(@PathVariable("member_id") Long memberId, @RequestPart(name = "profile") MultipartFile profile) {
+        memberService.addProfile(memberId, profile);
+        return ResponseEntity.ok().body(SingleResponse.success("프로필 사진 저장 성공"));
     }
 
     @ApiResponses({
