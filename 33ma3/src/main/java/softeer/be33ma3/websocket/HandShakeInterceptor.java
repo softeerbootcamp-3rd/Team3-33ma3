@@ -30,7 +30,7 @@ public class HandShakeInterceptor implements HandshakeInterceptor {
             return attributesToHandler(response, attributes, parts, "postId");
         }
         if(parts[2].equals("chat")) {
-            return attributesToHandler(response, attributes, parts, "chat");
+            return attributesToHandler(response, attributes, parts, "roomId");
         }
 
         if(parts[2].equals("chatRoom")) {
