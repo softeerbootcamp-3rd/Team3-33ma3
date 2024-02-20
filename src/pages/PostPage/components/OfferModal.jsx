@@ -66,11 +66,12 @@ function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
       body: JSON.stringify(newOffer),
     })
       .then((res) => {
-        if (res.ok) {
-          return res.json();
-        } else {
-          throw new Error("not ok");
-        }
+        // if (res.ok) {
+        //   return res.json();
+        // } else {
+        //   throw new Error("not ok");
+        // }
+        return res.json();
       })
       .then((json) => {
         console.log(json);

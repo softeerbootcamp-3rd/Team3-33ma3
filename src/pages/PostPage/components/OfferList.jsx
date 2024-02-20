@@ -26,7 +26,7 @@ function OfferList({ prevOfferList, offerList, disabled, handleSelectOffer }) {
       key={offer.offerId + "/" + offer.price + "/" + offer.contents}
       onClick={() => clickOffer(index)}
       isActive={focusOffer === index}
-      isEdited={!disabled && prevOfferList.has(offer.offerId)}
+      isEdited={!disabled && prevOfferList && prevOfferList.has(offer.offerId)}
       isEnd={disabled}
       isSelected={offer.selected}
     />

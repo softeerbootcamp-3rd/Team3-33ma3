@@ -50,8 +50,6 @@ function PostListPage() {
       .then((res) => res.json())
       .then((json) => {
         setThumnailList(json.data);
-      })
-      .finally(() => {
         setIsLoading(false);
       });
   }, []);
@@ -72,8 +70,6 @@ function PostListPage() {
       .then((res) => res.json())
       .then((json) => {
         setThumnailList(json.data);
-      })
-      .finally(() => {
         setIsLoading(false);
       });
   }, [regionList, repairList, tuneUpList, isDone, isMine]);
