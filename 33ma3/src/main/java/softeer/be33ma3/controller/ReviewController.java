@@ -63,7 +63,7 @@ public class ReviewController {
     }
 
     @ApiResponse(responseCode = "200", description = "전체 리뷰 조회 성공", content = @Content(schema = @Schema(implementation = DataResponse.class)))
-    @Operation(summary = "모든 센터 리뷰 조회", description = "센터 리뷰 삭제 메서드 입니다.")
+    @Operation(summary = "모든 센터 리뷰 조회", description = "모든 센터 리뷰 조회 메서드 입니다.")
     @GetMapping
     public ResponseEntity<?> showAllReview(){
         List<ShowReviewDto> showReviewDtos = reviewService.showAllReview();
