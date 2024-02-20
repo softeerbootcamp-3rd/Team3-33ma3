@@ -92,7 +92,7 @@ function ChatList(props) {
       }
     };
   }, []);
-  console.log(chatHistory);
+
   return (
     <ChatContainer>
       <ChatHeader centerName={props.centerName} />

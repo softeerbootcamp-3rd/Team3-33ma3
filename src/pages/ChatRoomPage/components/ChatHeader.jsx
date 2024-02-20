@@ -37,9 +37,13 @@ const SuccessfulBidButton = styled.button`
   border-radius: 14px;
 `;
 
-const CenterName = styled.div``;
+const CenterName = styled.div`
+  font-size: 30px;
+`;
 
-const CenterStatus = styled.div``;
+const CenterStatus = styled.div`
+  font-size: 16px;
+`;
 
 function ChatHeader(props) {
   return (
