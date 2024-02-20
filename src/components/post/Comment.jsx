@@ -5,6 +5,7 @@ import Logo from "../../assets/33MA3_logo.png";
 import { Navigate, useNavigate, useRouteLoaderData } from "react-router-dom";
 import { BASE_URL } from "../../constants/url";
 import { useSearchParams } from "react-router-dom";
+import { getMemberId } from "../../utils/auth";
 
 const CommentContainer = styled.div`
   width: 100%;
@@ -70,9 +71,10 @@ function Comment({
         return res.json();
       })
       .then((data) => {
+        const clientId = getMemberId();
         const roomId = data.data;
         navigate(
-          `/chat-room?mode=chat&room-id=${roomId}&center-name=${centerName}`
+          `/chat-room?mode=chat&client-id=${clientId}&center-id=${centerId}&room-id=${roomId}&center-name=${centerName}`
         );
       })
       .catch((error) => console.log(error));
