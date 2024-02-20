@@ -29,10 +29,8 @@ public class Center {
         center.latitude = latitude;
         center.longitude = longitude;
         center.member = member;
-        System.out.println("보경 아임 히어");
         return center;
     }
-
 
     //반경안에 있는 센터인지 확인하는 메소드
     public boolean isWithinRadius(DistanceCalculator distanceCalculator, double memberLatitude, double memberLongitude, double radius) {
