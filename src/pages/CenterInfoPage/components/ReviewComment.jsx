@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import StarRating from "../../../components/post/StarRating";
 import ChipButton from "../../../components/button/ChipButton";
+import SubmitButton from "../../../components/button/SubmitButton";
+import { BASE_URL } from "../../../constants/url";
+import { useRouteLoaderData } from "react-router-dom";
 
 const CommentContainer = styled.div`
   width: 100%;
@@ -14,6 +17,13 @@ const CommentContainer = styled.div`
   box-shadow: ${(props) => props.theme.boxShadow.up};
   color: ${(props) => props.theme.colors.text_strong};
   box-sizing: border-box;
+`;
+
+const HeaderContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
 `;
 
 const Writer = styled.p`
@@ -50,10 +60,41 @@ function ReviewComment() {
   const services = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map(() => (
     <ChipButton block type={"부품 교체"} />
   ));
+  const { accessToken } = useRouteLoaderData("root");
+  const [isLoading, setIsLoading] = useState(false);
+
+  function handleRemoveComment() {
+    setIsLoading(true);
+    fetch(`${BASE_URL}review/${reviewId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: accessToken,
+      },
+    })
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw new Error("댓글 작성에 실패했습니다.");
+        }
+      })
+      .then(() => window.location.reload())
+      .catch((error) => alert(error.message))
+      .finally(() => setIsLoading(false));
+  }
 
   return (
     <CommentContainer>
-      <Writer>익명</Writer>
+      <HeaderContainer>
+        <Writer>익명</Writer>
+        <SubmitButton
+          disabled={isLoading}
+          size={"small"}
+          onClick={handleRemoveComment}
+        >
+          삭제
+        </SubmitButton>
+      </HeaderContainer>
       <Contents>좋았어요! 친절하고 굳굳</Contents>
       <BottomContainer>
         <StarRating score={3} />

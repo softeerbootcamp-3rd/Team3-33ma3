@@ -38,9 +38,6 @@ function CenterInfoPage() {
           <TopContentContainer>
             <OptionType title={"센터 정보"}>
               <OptionItem title={"센터 이름"}>민우 센터</OptionItem>
-              <OptionItem title={"위치"}>
-                경기도 평택시 안중읍 송담1로 65
-              </OptionItem>
               <OptionItem title={"별점"}>
                 <StarRating score={4} />
               </OptionItem>
