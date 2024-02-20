@@ -22,6 +22,7 @@ public class ImageService {
                 .toList();
     }
 
+    @Transactional
     public Image saveImage(MultipartFile file) {
         String fileName = s3Service.uploadFile(file);
         return imageRepository.save(Image.createImage(s3Service.getFileUrl(fileName), fileName));
