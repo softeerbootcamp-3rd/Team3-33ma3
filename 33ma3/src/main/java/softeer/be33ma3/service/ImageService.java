@@ -18,16 +18,18 @@ public class ImageService {
     private final S3Service s3Service;
     private final ImageRepository imageRepository;
     @Transactional
-    public ImageListDto saveImage(List<MultipartFile> multipartFiles){
-        List<Image> images = new ArrayList<>();
-
-        for (MultipartFile file : multipartFiles) {
-            String fileName = s3Service.uploadFile(file);
-            images.add(Image.createImage(s3Service.getFileUrl(fileName), fileName));
-        }
-
-        List<Image> savedImages = imageRepository.saveAll(images);
+    public ImageListDto saveImages(List<MultipartFile> multipartFiles){
+        List<Image> savedImages = multipartFiles.stream()
+                .map(this::saveImage)
+                .toList();
         return ImageListDto.create(savedImages);
+    }
+
+    public Image saveImage(MultipartFile file) {
+        if(file == null)
+            return null;
+        String fileName = s3Service.uploadFile(file);
+        return imageRepository.save(Image.createImage(s3Service.getFileUrl(fileName), fileName));
     }
 
     @Transactional
