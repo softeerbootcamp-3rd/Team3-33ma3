@@ -19,7 +19,7 @@ const ChatBody = styled.ul`
   background: #f8f8fa;
   border-radius: 0px 0px 14px 14px;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-  padding: 20px;
+  padding: 0px 30px;
   overflow-y: auto;
   overflow-x: hidden;
 `;
