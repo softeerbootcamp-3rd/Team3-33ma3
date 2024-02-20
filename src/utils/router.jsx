@@ -8,7 +8,6 @@ import CenterListPage from "../pages/CenterListPage";
 import CenterInfoPage from "../pages/CenterInfoPage";
 import {
   Navigate,
-  Outlet,
   createBrowserRouter,
   useRouteLoaderData,
 } from "react-router-dom";
@@ -84,7 +83,8 @@ function RequireAuth({ children }) {
   const { accessToken, memberType } = useRouteLoaderData("root");
 
   if (!accessToken || Number(memberType) === CENTER_TYPE) {
-    return <Navigate to={"/auth"} />;
+    alert("로그인이 필요한 페이지입니다.");
+    return <Navigate to={"/auth?mode=login"} />;
   }
   return children;
 }
