@@ -4,7 +4,7 @@ import Page from "../../components/post/Page";
 import SideBar from "./components/SideBar";
 import CarCardItem from "./components/CarCardItem";
 import { BASE_URL } from "../../constants/url";
-import { Link } from "react-router-dom";
+import { Link, useRouteLoaderData } from "react-router-dom";
 
 const Content = styled.div`
   display: flex;
@@ -40,6 +40,9 @@ function PostListPage() {
   const [repairList, setRepairList] = useState();
   const [tuneUpList, setTuneUpList] = useState();
   const [isDone, setIsDone] = useState();
+  const [isMine, setIsMine] = useState();
+  const { accessToken } = useRouteLoaderData("root");
+  const headers = accessToken ? { Authorization: accessToken } : {};
 
   useEffect(() => {
     setIsLoading(true);
@@ -56,11 +59,15 @@ function PostListPage() {
   useEffect(() => {
     setIsLoading(true);
     fetch(
-      `${BASE_URL}post?done=${isDone ? isDone : ""}&region=${
-        regionList ? regionList.join(",") : ""
-      }&repair=${repairList ? repairList.join(",") : ""}&tuneUp=${
-        tuneUpList ? tuneUpList.join(",") : ""
-      }`
+      `${BASE_URL}post?mine=${isMine ? isMine : ""}&done=${
+        isDone ? isDone : ""
+      }&region=${regionList ? regionList.join(",") : ""}&repair=${
+        repairList ? repairList.join(",") : ""
+      }&tuneUp=${tuneUpList ? tuneUpList.join(",") : ""}`,
+      {
+        method: "GET",
+        headers: headers,
+      }
     )
       .then((res) => res.json())
       .then((json) => {
@@ -69,7 +76,7 @@ function PostListPage() {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [regionList, repairList, tuneUpList, isDone]);
+  }, [regionList, repairList, tuneUpList, isDone, isMine]);
 
   const carList =
     !isLoading &&
@@ -87,6 +94,7 @@ function PostListPage() {
           setRepairList={setRepairList}
           setTuneUpList={setTuneUpList}
           setIsDone={setIsDone}
+          setIsMine={setIsMine}
         />
         <CardListContainer>
           {isLoading ? (

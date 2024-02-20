@@ -7,9 +7,11 @@ import DropDownItemButton from "../../../components/button/DropDownItemButton";
 import ChipButton from "../../../components/button/ChipButton";
 import {
   DISTRICTS,
+  MEMBER_TYPE,
   REPAIR_SERVICE_OPTIONS,
   TUNEUP_SERVICE_OPTIONS,
 } from "../../../constants/options";
+import { useRouteLoaderData } from "react-router-dom";
 
 const ServiceList = styled.div`
   display: flex;
@@ -18,10 +20,17 @@ const ServiceList = styled.div`
   gap: 5px;
 `;
 
-function SideBar({ setIsDone, setRegionList, setRepairList, setTuneUpList }) {
+function SideBar({
+  setIsMine,
+  setIsDone,
+  setRegionList,
+  setRepairList,
+  setTuneUpList,
+}) {
   const regionList = useRef([]);
   const repairList = useRef([]);
   const tuneUpList = useRef([]);
+  const { memberType } = useRouteLoaderData("root");
 
   const districts = DISTRICTS.map((item, index) => (
     <DropDownItemButton
@@ -71,14 +80,23 @@ function SideBar({ setIsDone, setRegionList, setRepairList, setTuneUpList }) {
 
   return (
     <SideBarContainer title={"검색 조건"}>
+      {memberType === MEMBER_TYPE && (
+        <ToggleButton
+          title={"내가 작성한 게시글"}
+          name={"mine"}
+          setIsDone={setIsMine}
+        />
+      )}
       <ToggleButton
         title={"경매 완료 여부"}
         name={"done"}
         setIsDone={setIsDone}
       />
-      <DropDownButton title={"지역"} number={DISTRICTS.length}>
-        {districts}
-      </DropDownButton>
+      {memberType === MEMBER_TYPE && (
+        <DropDownButton title={"지역"} number={DISTRICTS.length}>
+          {districts}
+        </DropDownButton>
+      )}
       <DropDownButton
         title={"정비 서비스"}
         number={REPAIR_SERVICE_OPTIONS.length}
