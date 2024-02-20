@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BASE_URL, IP } from "../../../constants/url";
 import { useLoaderData, useSearchParams } from "react-router-dom";
 import { ChatHeader } from "./ChatHeader";
@@ -26,6 +26,12 @@ const ChatBody = styled.ul`
 
 const DateContainer = styled.div``;
 
+function scrollToBottom(scroll) {
+  if (scroll) {
+    scroll.scrollTop = scroll.scrollHeight;
+  }
+}
+
 function ChatList(props) {
   const [chatHistory, setChatHistory] = useState([]);
   const [webSocket, setWebSocket] = useState(null);
@@ -38,6 +44,8 @@ function ChatList(props) {
   const urlRoomId = searchParams.get("room-id");
   const memberId = getMemberId();
   const receiverId = memberId === urlClientId ? urlCenterId : urlClientId;
+
+  const scrollRef = useRef();
 
   const WebSocketServerUrl = `ws://${IP}/connect/chat/${urlRoomId}/${memberId}`;
 
@@ -87,10 +95,14 @@ function ChatList(props) {
     };
   }, []);
 
+  useEffect(() => {
+    scrollToBottom(scrollRef.current);
+  }, [chatHistory]);
+
   return (
     <ChatContainer>
       <ChatHeader centerName={props.centerName} />
-      <ChatBody>
+      <ChatBody ref={scrollRef}>
         {chatHistory &&
           chatHistory.map((item, index) => {
             return <ChatMessage key={index} info={item} />;
