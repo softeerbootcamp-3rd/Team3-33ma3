@@ -59,9 +59,10 @@ public class MemberService {
         // 해당하는 유저 가져오기
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(NOT_FOUND_MEMBER));
         // 이미지 저장하기
-        Image image = imageService.saveImage(profile);
-        if(image != null)
+        if(profile != null) {
+            Image image = imageService.saveImage(profile);
             member.setProfileId(image.getImageId());
+        }
     }
 
     @Transactional

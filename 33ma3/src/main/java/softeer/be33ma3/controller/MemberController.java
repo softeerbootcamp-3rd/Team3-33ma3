@@ -63,7 +63,7 @@ public class MemberController {
     @Operation(summary = "프로필 사진 저장", description = "회원가입 시 프로필 사진 저장 메서드 입니다.")
     @Parameter(name = "member_id", description = "member id", required = true, example = "1", in = ParameterIn.PATH)
     @PostMapping("/profile/{member_id}")
-    public ResponseEntity<?> addProfile(@PathVariable("member_id") Long memberId, @RequestPart MultipartFile profile) {
+    public ResponseEntity<?> addProfile(@PathVariable("member_id") Long memberId, @RequestPart(name = "profile") MultipartFile profile) {
         memberService.addProfile(memberId, profile);
         return ResponseEntity.ok().body(SingleResponse.success("프로필 사진 저장 성공"));
     }
