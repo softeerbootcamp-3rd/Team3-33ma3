@@ -3,8 +3,8 @@ import styled from "styled-components";
 import Carousel from "../../../components/image/Carousel";
 import ChipButton from "../../../components/button/ChipButton";
 import CommentImg from "../../../assets/comment.svg";
-import Timer from "../../../components/Timer";
 import DeadLineCompleteImg from "../../../assets/deadline_completed.svg";
+import useTimer from "../../../hooks/useTimer";
 
 const CarCardContainer = styled.div`
   display: flex;
@@ -123,7 +123,7 @@ function CarCardItem({ cardInfo }) {
           ) : cardInfo.dday > 0 ? (
             <p>D-{cardInfo.dday}</p>
           ) : (
-            <Timer remainTime={cardInfo.remainTime} />
+            <p>{useTimer()}</p>
           )}
         </RemainTime>
       </CardHeader>
