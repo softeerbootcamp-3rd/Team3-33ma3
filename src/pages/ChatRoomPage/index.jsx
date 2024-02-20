@@ -13,10 +13,13 @@ function ChatRoomPage() {
   const [searchParams] = useSearchParams();
   const urlMode = searchParams.get("mode");
   const urlRoomId = searchParams.get("room-id");
+  const urlCenterName = searchParams.get("center-name");
   return (
     <ChatMessageContainer mode={urlMode}>
       <MessageList />
-      {urlMode === "chat" && <ChatList roomId={urlRoomId} />}
+      {urlMode === "chat" && (
+        <ChatList roomId={urlRoomId} centerName={urlCenterName} />
+      )}
     </ChatMessageContainer>
   );
 }

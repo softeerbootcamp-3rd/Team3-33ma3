@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import Comment from "../../../components/post/Comment";
 import AuctionPrice from "../../../components/post/AuctionPrice";
@@ -24,11 +24,10 @@ function OfferList({ prevOfferList, offerList, disabled, handleSelectOffer }) {
     <AuctionPrice
       price={offer.price}
       centerName={offer.centerName}
-      key={offer.offerId + "/" + offer.price + "/" + offer.contents}
+      key={offer.offerId + "/" + offer.price}
       onClick={() => clickOffer(index)}
       isActive={focusOffer === index}
-      isEdited={!disabled && prevOfferList.has(offer.offerId)}
-      isEnd={disabled}
+      isEdited={!disabled && prevOfferList.current.has(offer.offerId)}
       isSelected={offer.selected}
     />
   ));
@@ -44,7 +43,7 @@ function OfferList({ prevOfferList, offerList, disabled, handleSelectOffer }) {
           handleSelectOffer={() =>
             handleSelectOffer(offerList[focusOffer].offerId)
           }
-          centerId={offerList.memberId}
+          centerId={offerList[0].memberId}
           postId={offerList.postId}
         />
       )}

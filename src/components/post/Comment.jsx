@@ -2,8 +2,9 @@ import React from "react";
 import styled from "styled-components";
 import SubmitButton from "../button/SubmitButton";
 import Logo from "../../assets/33MA3_logo.png";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useRouteLoaderData } from "react-router-dom";
 import { BASE_URL } from "../../constants/url";
+import { useSearchParams } from "react-router-dom";
 
 const CommentContainer = styled.div`
   width: 100%;
@@ -53,9 +54,12 @@ function Comment({
 }) {
   // TODO: 문의 기능 구현
   const navigate = useNavigate();
-
+  const { accessToken } = useRouteLoaderData("root");
+  const [searchParams] = useSearchParams();
+  const urlPostId = searchParams.get("post_id");
   function handleCreateChatRoom() {
-    fetch(`${BASE_URL}chatRoom/${postId}/${centerId}`, {
+    fetch(`${BASE_URL}chatRoom/${urlPostId}/${centerId}`, {
+      method: "POST",
       headers: {
         Authorization: accessToken,
         Accept: "application/json",
@@ -63,7 +67,11 @@ function Comment({
     })
       .then((res) => {
         console.log(res);
-        navigate("/chat-room");
+        return res.json();
+      })
+      .then((data) => {
+        const roomId = data.data;
+        navigate(`/chat-room?mode=chat&room-id=${roomId}`);
       })
       .catch((error) => console.log(error));
   }
