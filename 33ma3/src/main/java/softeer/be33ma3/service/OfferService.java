@@ -8,13 +8,11 @@ import softeer.be33ma3.dto.response.AvgPriceDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.ReviewRepository;
 import softeer.be33ma3.websocket.WebSocketHandler;
-import softeer.be33ma3.domain.Center;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Offer;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.dto.request.OfferCreateDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
-import softeer.be33ma3.repository.CenterRepository;
 import softeer.be33ma3.repository.OfferRepository;
 import softeer.be33ma3.repository.PostRepository;
 import softeer.be33ma3.response.DataResponse;
@@ -128,15 +126,6 @@ public class OfferService {
                 .toList();
     }
 
-    // 견적 제시 댓글 목록의 평균 제시 가격 계산하여 반환하기
-    public static double calculateAvgPrice(List<Offer> offerList) {
-        if(offerList.isEmpty()) {
-            return 0.0;
-        }
-        int total = offerList.stream().mapToInt(Offer::getPrice).sum();
-        return Math.round( (double)total/offerList.size() * 10 ) / 10.0;      // 소수점 첫째 자리까지 반올림
-    }
-
     public void sendAboutOfferUpdate(Long postId) {
         // 1. 해당 게시글 가져오기
         Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
@@ -167,9 +156,7 @@ public class OfferService {
 
     // 해당 게시글 화면을 보고 있는 모든 유저들에게 평균 견적 제시 가격 실시간 전송
     public void sendAvgPrice2Others(Long postId, Long writerId) {
-        // 1. 해당 게시글에 달린 모든 견적 가져오기
-        List<Offer> offerList = offerRepository.findByPost_PostId(postId);
-        // 2. 해당 게시글을 보고 있는 모든 유저들 가져오기 (글 작성자도 포함되어있을 경우 제외시키기)
+        // 1. 해당 게시글을 보고 있는 모든 유저들 가져오기 (글 작성자도 포함되어있을 경우 제외시키기)
         Set<Long> memberList = webSocketHandler.findAllMemberInPost(postId);
         if(memberList == null) {
             log.info("해당 게시글을 보고 있는 유저가 없습니다.");
@@ -178,9 +165,10 @@ public class OfferService {
         memberList = memberList.stream()
                 .filter(memberId -> !memberId.equals(writerId))
                 .collect(Collectors.toSet());
-        // 3. 평균 견적 가격 계산하기
-        AvgPriceDto avgPriceDto = new AvgPriceDto(calculateAvgPrice(offerList));
-        // 4. 전송하기
+        // 2. 평균 견적 가격 계산하기
+        Double avgPrice = offerRepository.findAvgPriceByPostId(postId).orElse(0.0);
+        AvgPriceDto avgPriceDto = new AvgPriceDto(Math.round( avgPrice * 10 ) / 10.0);
+        // 3. 전송하기
         memberList.forEach(memberId -> webSocketHandler.sendData2Client(memberId, avgPriceDto));
     }
 

@@ -137,10 +137,8 @@ public class PostService {
             return new PostWithOffersDto(postDetailDto, offerDetailDtos);
         }
         // 4. 경매가 진행 중이고 작성자가 아닌 유저의 접근일 경우
-        // 해당 게시글의 견적 모두 가져오기
-        List<Offer> offerList = offerRepository.findByPost_PostId(postId);
-        double avgPrice = OfferService.calculateAvgPrice(offerList);
-        PostWithAvgPriceDto postWithAvgPriceDto = new PostWithAvgPriceDto(postDetailDto, avgPrice);
+        Double avgPrice = offerRepository.findAvgPriceByPostId(postId).orElse(0.0);
+        PostWithAvgPriceDto postWithAvgPriceDto = new PostWithAvgPriceDto(postDetailDto, Math.round( avgPrice * 10 ) / 10.0);
         // 견적을 작성한 이력이 있는 서비스 센터의 접근일 경우 작성한 견적 가져오기
         OfferDetailDto offerDetailDto = getCenterOffer(postId, member);
         postWithAvgPriceDto.setOfferDetailDto(offerDetailDto);
