@@ -4,6 +4,7 @@ import Carousel from "../../../components/image/Carousel";
 import OptionType from "../../../components/post/OptionType";
 import OptionItem from "../../../components/post/OptionItem";
 import ChipButton from "../../../components/button/ChipButton";
+import useTimer from "../../../hooks/useTimer";
 
 const ServiceList = styled.div`
   width: 100%;
@@ -20,6 +21,16 @@ const OptionItems = styled.div`
 `;
 
 function CarInfo({ postData }) {
+  function getDDay(dDay) {
+    if (dDay === -1) {
+      return "마감 완료";
+    }
+    if (dDay === 0) {
+      return useTimer();
+    }
+    return dDay;
+  }
+
   return (
     <>
       <Carousel imgList={postData.imageList} size={"large"} thumbnail={true} />
@@ -32,7 +43,7 @@ function CarInfo({ postData }) {
             <p>{postData.modelName}</p>
           </OptionItem>
           <OptionItem title={"마감 기한"}>
-            <p>{postData.dday === -1 ? "마감 완료" : postData.dday}</p>
+            <p>{getDDay(postData.dday)}</p>
           </OptionItem>
           <OptionItem title={"지역"}>
             <p>{postData.regionName}</p>
