@@ -66,7 +66,7 @@ const CommentChip = styled.div`
   color: ${(props) => props.theme.colors.text_white_default};
   font-size: ${(props) => props.theme.fontSize.regular};
   font-weight: 500;
-  padding: 2px 14px;
+  padding: 5px 10px;
   border-radius: ${(props) => props.theme.radiuses.radius_m};
   background: ${(props) => props.theme.colors.surface_brand};
   box-shadow: 0px 0px 0px 1.5px ${(props) => props.theme.colors.surface_brand};

@@ -71,15 +71,6 @@ function PostPage() {
       .catch((error) => alert("로그인이 필요한 페이지입니다."));
   }, []);
 
-  // 로그인 안된 경우 마감되지 않은 게시물은 접근 제한
-  function validateAuthorization(dDay) {
-    if (!accessToken) {
-      console.log(dDay === -1);
-      return dDay === -1;
-    }
-    return true;
-  }
-
   return (
     <Page>
       {isLoading ? (

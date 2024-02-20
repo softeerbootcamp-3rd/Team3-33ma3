@@ -27,19 +27,21 @@ const TextContainer = styled.div`
   align-items: center;
 `;
 
-function ResultModal({ selected, handleClose }) {
+function ResultModal({ handleClose, endMessage }) {
+  console.log(endMessage);
+
+  const failMessage = endMessage.message
+    .split(".")
+    .map((item, index) => <p key={index}>{item}</p>);
+
   return (
     <ModalPortal width={"500px"} title={"경매 결과"} handleClose={handleClose}>
       <Content>
-        <Img src={selected ? SuccessImg : failImg} />
-
-        {selected ? (
-          <p>축하드립니다! 경매에 낙찰되셨습니다!</p>
+        <Img src={endMessage.data ? SuccessImg : failImg} />
+        {endMessage.data ? (
+          <p>{endMessage.message}</p>
         ) : (
-          <TextContainer>
-            <p>아쉽습니다. 낙찰에 실패하셨습니다.</p>{" "}
-            <p>다음 기회를 노려보세요.</p>
-          </TextContainer>
+          <TextContainer>{failMessage}</TextContainer>
         )}
       </Content>
     </ModalPortal>

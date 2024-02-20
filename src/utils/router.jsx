@@ -16,6 +16,7 @@ import AuthenticationPage, {
   action,
 } from "../pages/AuthenticationPage/AuthenticationPage";
 import { CENTER_TYPE } from "../constants/options";
+import { ChatList } from "../pages/ChatRoomPage/components/ChatList";
 
 const router = createBrowserRouter([
   {
@@ -45,27 +46,16 @@ const router = createBrowserRouter([
       },
       {
         path: "post/create",
-        element: (
-          <RequireAuth>
-            <PostCreatePage />
-          </RequireAuth>
-        ),
+        element: <PostCreatePage />,
       },
       {
         path: "inquiry-history",
-        element: (
-          <RequireAuth>
-            <InquiryHistoryPage />
-          </RequireAuth>
-        ),
+        element: <InquiryHistoryPage />,
       },
       {
         path: "chat-room",
-        element: (
-          <RequireAuth>
-            <ChatRoomPage />
-          </RequireAuth>
-        ),
+        element: <ChatRoomPage />,
+        loader: tokenLoader,
       },
       {
         path: "center-review/list",
