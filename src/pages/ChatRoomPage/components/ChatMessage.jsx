@@ -4,7 +4,6 @@ import { getMemberId } from "../../../utils/auth";
 const ChatBox = styled.div`
   display: flex;
   width: 100%;
-  border: 1px solid black;
   align-items: center;
   padding: 20px;
   justify-content: ${(props) => (props.mode === "true" ? "end;" : "start;")};
@@ -14,7 +13,6 @@ const Message = styled.div`
   max-width: 300px;
   width: auto;
   height: auto;
-  border: 1px solid black;
   font-size: 18px;
   padding: 20px;
   border-radius: 14px;
@@ -27,7 +25,6 @@ const Message = styled.div`
 `;
 
 const StatusContainer = styled.div`
-  border: 1px solid black;
   font-size: 10px;
 `;
 
@@ -46,7 +43,6 @@ const ChatWrapper = styled.div`
   display: flex;
   width: 440px;
   justify-content: ${(props) => (props.mode === "true" ? "end;" : "start;")};
-  border: 1px solid red;
   align-items: end;
   gap: 10px;
 `;
@@ -54,7 +50,7 @@ const ChatWrapper = styled.div`
 function ChatMessage({ info }) {
   console.log(info);
   const memberId = getMemberId();
-  const isSender = info.senderId === memberId;
+  const isSender = info.senderId === Number(memberId);
 
   return (
     <ChatBox mode={isSender.toString()}>
