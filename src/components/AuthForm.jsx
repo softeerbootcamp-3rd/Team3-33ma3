@@ -155,14 +155,6 @@ function AuthForm() {
         {(isLogin || userType) && (
           <AuthContainer>
             <AuthInputContainer>
-              {userType === "center" && (
-                <input
-                  type="file"
-                  name="imgaes"
-                  multiple
-                  style={{ width: "100%", "padding-top": "10px" }}
-                />
-              )}
               <InputText
                 id="loginId"
                 type="text"
