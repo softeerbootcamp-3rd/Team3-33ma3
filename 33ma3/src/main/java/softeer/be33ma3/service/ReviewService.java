@@ -7,13 +7,17 @@ import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.domain.Review;
 import softeer.be33ma3.dto.request.ReviewCreateDto;
+import softeer.be33ma3.dto.response.OneReviewDto;
+import softeer.be33ma3.dto.response.ShowCenterReviewsDto;
 import softeer.be33ma3.dto.response.ShowReviewDto;
 import softeer.be33ma3.exception.BusinessException;
+import softeer.be33ma3.repository.MemberRepository;
 import softeer.be33ma3.repository.OfferRepository;
 import softeer.be33ma3.repository.post.PostRepository;
 import softeer.be33ma3.repository.review.ReviewCustomRepository;
 import softeer.be33ma3.repository.review.ReviewRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static softeer.be33ma3.exception.ErrorCode.*;
@@ -27,6 +31,7 @@ public class ReviewService {
     private final PostRepository postRepository;
     private final OfferRepository offerRepository;
     private final ReviewCustomRepository reviewCustomRepository;
+    private final MemberRepository memberRepository;
 
     // 리뷰 생성하기
     @Transactional
@@ -65,5 +70,20 @@ public class ReviewService {
 
     public List<ShowReviewDto> showAllReview() {
         return reviewCustomRepository.findReviewGroupByCenter();
+    }
+
+    public ShowCenterReviewsDto showOneCenterReviews(Long centerId) {
+        List<OneReviewDto> oneReviewDtos = new ArrayList<>();
+        double totalScore = 0.0;
+        Member center = memberRepository.findById(centerId).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
+        List<Review> reviews = reviewRepository.findByCenter_MemberId(center.getMemberId());
+
+        for (Review review : reviews) {
+            totalScore += review.getScore();
+            oneReviewDtos.add(OneReviewDto.create(review));
+        }
+
+        double scoreAvg = Math.round(totalScore/reviews.size() * 10 ) / 10.0;
+        return ShowCenterReviewsDto.create(center, scoreAvg, oneReviewDtos);
     }
 }
