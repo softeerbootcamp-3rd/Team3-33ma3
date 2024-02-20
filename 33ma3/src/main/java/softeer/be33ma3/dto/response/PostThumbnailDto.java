@@ -30,9 +30,6 @@ public class PostThumbnailDto {
     @Schema(description = "남은 기한", example = "3")
     private int dDay;
 
-    @Schema(description = "당일 남은 시간 (초)", example = "12345")
-    private int remainTime;
-
     @Schema(description = "이미지 url 리스트", example = "[aaa.png, bbb.png]")
     private List<String> imageList;
 
@@ -50,11 +47,8 @@ public class PostThumbnailDto {
         List<String> imageList = post.getImages().stream().map(Image::getLink).toList();
         Duration duration = PostDetailDto.calculateDuration(post);
         int dDay = -1;
-        int remainTime = 0;
         if(!post.isDone() && !duration.isNegative())        // 아직 마감 시간 전
             dDay = (int)duration.toDays();
-        if(dDay == 0)
-            remainTime = PostDetailDto.calculateRemainTime(duration);
 
         return PostThumbnailDto.builder()
                 .postId(post.getPostId())
@@ -62,7 +56,6 @@ public class PostThumbnailDto {
                 .modelName(post.getModelName())
                 .createTime(createTimeFormatting(post.getCreateTime()))
                 .dDay(dDay)
-                .remainTime(remainTime)
                 .repairList(repairList)
                 .tuneUpList(tuneUpList)
                 .imageList(imageList)
