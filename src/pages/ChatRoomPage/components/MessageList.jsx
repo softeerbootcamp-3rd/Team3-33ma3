@@ -92,7 +92,6 @@ function MessageList() {
     };
   }, []);
 
-  console.log(messages);
   return (
     <MessageContainer chatmode={isChatMode.toString()}>
       <MessageHeader chatmode={isChatMode.toString()} />
