@@ -71,7 +71,9 @@ function Comment({
       })
       .then((data) => {
         const roomId = data.data;
-        navigate(`/chat-room?mode=chat&room-id=${roomId}`);
+        navigate(
+          `/chat-room?mode=chat&room-id=${roomId}&center-name=${centerName}`
+        );
       })
       .catch((error) => console.log(error));
   }
