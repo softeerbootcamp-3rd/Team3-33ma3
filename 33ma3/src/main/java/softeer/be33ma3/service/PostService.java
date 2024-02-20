@@ -78,7 +78,7 @@ public class PostService {
         //정비소랑 게시물 매핑하기
         centerAndPostMapping(postCreateDto, savedPost);
 
-        if(multipartFiles == null){     //이미지가 없는 경우
+        if(multipartFiles.isEmpty()){     //이미지가 없는 경우
             return savedPost.getPostId();
         }
 

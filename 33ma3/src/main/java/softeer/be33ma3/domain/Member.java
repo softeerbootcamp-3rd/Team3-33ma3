@@ -38,7 +38,7 @@ public class Member {
         this.refreshToken = refreshToken;
     }
 
-    public void setProfileId(Image image) {
+    public void setProfile(Image image) {
         this.image = image;
     }
 }

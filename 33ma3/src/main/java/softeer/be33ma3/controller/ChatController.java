@@ -54,7 +54,7 @@ public class ChatController {
     @Parameter(name = "receiver_id", description = "메세지 받는 사람 id", required = true, example = "2", in = ParameterIn.PATH)
     @Operation(summary = "채팅 메세지 보내기", description = "채팅 메세지 보내기 메서드 입니다.")
     @PostMapping("/chat/{room_id}/{receiver_id}")
-    public ResponseEntity<?> chat(@Schema(hidden = true) @CurrentUser Member sender, @PathVariable("room_id") Long roomId,
+    public ResponseEntity<?> sendMessage(@Schema(hidden = true) @CurrentUser Member sender, @PathVariable("room_id") Long roomId,
                                   @PathVariable("receiver_id") Long receiverId, @RequestBody @Valid ChatMessageRequestDto chatMessageRequestDto){
         chatService.sendMessage(sender, roomId, receiverId, chatMessageRequestDto.getMessage());
 
