@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Form,
   Link,
@@ -95,8 +95,8 @@ function AuthForm() {
           setCheckAddress(true);
           setCoords((prev) => ({
             ...prev,
-            [latitude]: res.address.y,
-            [longitude]: res.address.x,
+            latitude: res.point.y,
+            longitude: res.point.x,
           }));
         }
         console.log(res); // 성공적으로 주소 정보를 받아왔을 때의 처리
@@ -155,6 +155,14 @@ function AuthForm() {
         {(isLogin || userType) && (
           <AuthContainer>
             <AuthInputContainer>
+              {userType === "center" && (
+                <input
+                  type="file"
+                  name="imgaes"
+                  multiple
+                  style={{ width: "100%", "padding-top": "10px" }}
+                />
+              )}
               <InputText
                 id="loginId"
                 type="text"
