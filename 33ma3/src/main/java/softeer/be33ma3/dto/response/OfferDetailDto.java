@@ -46,28 +46,6 @@ public class OfferDetailDto implements Comparable<OfferDetailDto> {
                 .score(score).build();
     }
 
-    // List<Offer> -> List<OfferDetailDto> 변환
-    public static List<OfferDetailDto> fromEntityList(List<Offer> offerList) {
-        // offer -> offerDetailDto로 변환
-        List<OfferDetailDto> offerDetailList = new ArrayList<>(
-                offerList.stream()
-                .map(OfferDetailDto::fromEntity)
-                .toList());
-        // 댓글 목록 정렬
-        Collections.sort(offerDetailList);
-
-        // 낙찰된 견적이 있다면 첫 번째 순서로 보내기
-        offerDetailList.stream()
-                .filter(OfferDetailDto::isSelected)
-                .findFirst()
-                .ifPresent(target -> {
-                    offerDetailList.remove(target);
-                    offerDetailList.add(0, target);
-                });
-
-        return offerDetailList;
-    }
-
     // 제시 가격 저렴한 순 -> 별점 높은 순 정렬
     @Override
     public int compareTo(OfferDetailDto other) {
