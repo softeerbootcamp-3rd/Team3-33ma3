@@ -28,10 +28,10 @@ public class Review {
 
     @ManyToOne
     @JoinColumn(name = "center_id")
-    private Center center;
+    private Member center;
 
     @Builder
-    private Review(String contents, double score, Post post, Member writer, Center center) {
+    private Review(String contents, double score, Post post, Member writer, Member center) {
         this.contents = contents;
         this.score = score;
         this.post = post;

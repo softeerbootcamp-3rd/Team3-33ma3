@@ -35,8 +35,8 @@ public class OfferDetailDto implements Comparable<OfferDetailDto> {
     public static OfferDetailDto fromEntity(Offer offer) {
         return OfferDetailDto.builder()
                 .offerId(offer.getOfferId())
-                .memberId(offer.getCenter().getMember().getMemberId())
-                .centerName(offer.getCenter().getCenterName())
+                .memberId(offer.getCenter().getMemberId())
+                .centerName(offer.getCenter().getLoginId())
                 .price(offer.getPrice())
                 .contents(offer.getContents())
                 .selected(offer.isSelected()).build();

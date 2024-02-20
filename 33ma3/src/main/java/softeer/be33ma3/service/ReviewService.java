@@ -41,7 +41,7 @@ public class ReviewService {
             throw new BusinessException(ALREADY_WROTE_REVIEW);
         }
         // 4. 센터 가져오기
-        Center center = offerRepository.findSelectedCenterByPostId(postId).orElseThrow(() -> new BusinessException(NO_SELECTED_CENTER));
+        Member center = offerRepository.findSelectedCenterByPostId(postId).orElseThrow(() -> new BusinessException(NO_SELECTED_CENTER));
         Review review = reviewCreateDto.toEntity(post, member, center);
         Review savedReview = reviewRepository.save(review);
         return savedReview.getReviewId();

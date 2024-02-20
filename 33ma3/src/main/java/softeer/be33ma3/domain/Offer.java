@@ -26,10 +26,10 @@ public class Offer {
 
     @ManyToOne
     @JoinColumn(name = "center_id")
-    private Center center;
+    private Member center;
 
     @Builder
-    private Offer(int price, String contents, Post post, Center center) {
+    private Offer(int price, String contents, Post post, Member center) {
         this.price = price;
         this.contents = contents;
         this.post = post;

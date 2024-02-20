@@ -25,7 +25,7 @@ public class ReviewCreateDto {
     @NotBlank
     private String contents;
 
-    public Review toEntity(Post post, Member writer, Center center) {
+    public Review toEntity(Post post, Member writer, Member center) {
         return Review.builder()
                 .contents(contents)
                 .score(score)
