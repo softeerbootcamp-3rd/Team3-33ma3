@@ -2,6 +2,7 @@ import React from "react";
 import { createPortal } from "react-dom";
 import styled from "styled-components";
 import CloseImg from "../../assets/close.svg";
+import { MIN_WIDTH } from "../../constants/layouts";
 
 const Modal = styled.div`
   position: absolute;
@@ -9,9 +10,37 @@ const Modal = styled.div`
   top: 0;
   left: 0;
   width: 100%;
+  min-width: ${MIN_WIDTH};
   height: 100vh;
   background-color: rgba(134, 134, 134, 0.53);
   z-index: 5;
+
+  animation-name: show;
+  -webkit-animation-name: show;
+
+  animation-duration: 0.2s;
+  -webkit-animation-duration: 0.2s;
+
+  animation-timing-function: ease-out;
+  -webkit-animation-timing-function: ease-out;
+
+  @keyframes show {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @-webkit-keyframes show {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
 `;
 
 const ModalBody = styled.div`
