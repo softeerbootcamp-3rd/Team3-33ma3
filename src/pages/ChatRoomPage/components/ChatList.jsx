@@ -46,6 +46,7 @@ function ChatList(props) {
   const memberId = getMemberId();
 
   const WebSocketServerUrl = `ws://${IP}/connect/chat/${urlRoomId}/${memberId}`;
+
   useEffect(() => {
     const ws = new WebSocket(WebSocketServerUrl);
     setWebSocket(ws);
@@ -54,7 +55,10 @@ function ChatList(props) {
     };
 
     ws.onmessage = (event) => {
-      console.log("메시지 수신:", JSON.parse(event.data));
+      const data = JSON.parse(event.data);
+      console.log("메시지 수신:", data);
+
+      setChatHistory((prev) => [...prev, data]);
     };
 
     ws.onclose = () => {
@@ -64,6 +68,7 @@ function ChatList(props) {
     ws.onerror = (error) => {
       console.error("웹소켓 오류 발생:", error);
     };
+
     fetch(`${BASE_URL}chat/history/${urlRoomId}`, {
       headers: {
         Authorization: accessToken,
@@ -74,6 +79,18 @@ function ChatList(props) {
       .then((data) => {
         setChatHistory(data.data);
       });
+    // 컴포넌트 언마운트 시 웹소켓 연결 종료
+    return () => {
+      if (ws.readyState === WebSocket.OPEN) {
+        const closeMessage = {
+          type: "chatRoom",
+          roomId: urlRoomId,
+          memberId: memberId,
+        };
+        ws.send(JSON.stringify(closeMessage));
+        ws.close();
+      }
+    };
   }, []);
   console.log(chatHistory);
   return (
