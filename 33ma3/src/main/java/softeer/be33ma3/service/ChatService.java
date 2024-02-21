@@ -60,13 +60,16 @@ public class ChatService {
         ChatMessage chatMessage = ChatMessage.createChatMessage(sender, chatRoom, contents);
         ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
 
-        AllChatRoomDto chatDto = getChatDto(chatRoom, sender.getLoginId(), receiver);     //업데이트 할 목록 생성
+        AllChatRoomDto chatDto = getChatDto(chatRoom, receiver.getLoginId(), sender);     //업데이트 할 목록 생성
+        webSocketHandler.sendAllChatData2Client(sender.getMemberId(), chatDto);     //보낸사람 목록도 실시간 업데이트
+
         if(webSocketRepository.findSessionByMemberId(receiver.getMemberId()) == null){      //채팅룸에 상대방이 존재하지 않을 경우
             if(webSocketRepository.findAllChatRoomSessionByMemberId(receiver.getMemberId()) == null){       //상대방이 채팅 목록 세션을 연결 안하고 있는 경우
                 Alert alert = Alert.createAlert(chatRoom.getChatRoomId(), receiver);        //채팅방 & 채팅 목록에도 없는 경우는 알림 테이블에 저장
                 alertRepository.save(alert);
                 return;
             }
+            chatDto = getChatDto(chatRoom, sender.getLoginId(), receiver);     //업데이트 할 목록 생성
             webSocketHandler.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //실시간 전송 - 채팅 목록
             return;
         }
@@ -74,7 +77,6 @@ public class ChatService {
         savedChatMessage.setReadDoneTrue();   //읽음 처리
         ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.create(savedChatMessage, createTimeParsing(savedChatMessage.getCreateTime()));
         webSocketHandler.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);   //실시간 전송 - 채팅 내용
-        webSocketHandler.sendAllChatData2Client(sender.getMemberId(), chatDto);     //보낸사람 목록도 실시간 업데이트
     }
 
     public List<AllChatRoomDto> showAllChatRoom(Member member) {
