@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import { BASE_URL } from "../../../constants/url";
 import { getMemberId } from "../../../utils/auth";
+import { getCurrentTimeFormatted } from "../../../utils/dateTimeHelper";
 
 const InputContainer = styled.div`
   display: flex;
@@ -29,16 +30,6 @@ const SubmitText = styled.button`
   width: 50px;
   height: 50px;
 `;
-
-function getCurrentTimeFormatted() {
-  const now = new Date();
-  const hours = now.getHours();
-  const minutes = now.getMinutes();
-  const isAM = hours < 12;
-  const formattedHours = isAM ? hours : hours - 12;
-  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-  return `${isAM ? "오전" : "오후"} ${formattedHours}:${formattedMinutes}`;
-}
 
 function ChatInput(props) {
   const [inputValue, setInputValue] = useState("");
