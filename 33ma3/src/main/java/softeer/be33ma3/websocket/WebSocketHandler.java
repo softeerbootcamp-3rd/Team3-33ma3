@@ -84,7 +84,4 @@ public class WebSocketHandler extends TextWebSocketHandler {
     public Set<Long> findAllMemberInPost(Long postId) {
         return webSocketService.findAllMemberInPost(postId);
     }
-    public boolean isInPostRoom(Long postId, Long memberId) {
-        return webSocketService.isInPostRoom(postId, memberId);
-    }
 }

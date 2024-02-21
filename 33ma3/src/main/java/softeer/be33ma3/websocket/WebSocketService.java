@@ -103,11 +103,4 @@ public class WebSocketService {
     public Set<Long> findAllMemberInPost(Long postId) {
         return webSocketRepository.findAllMemberInPost(postId);
     }
-
-    public boolean isInPostRoom(Long postId, Long memberId) {
-        Set<Long> memberIds = webSocketRepository.findAllMemberInPost(postId);
-        if(memberIds == null)
-            return false;
-        return memberIds.contains(memberId);
-    }
 }
