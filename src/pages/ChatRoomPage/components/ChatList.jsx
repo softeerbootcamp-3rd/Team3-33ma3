@@ -6,21 +6,25 @@ import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 
 const ChatContainer = styled.div`
-  width: 970px;
-  padding: 20px;
-  font-weight: 500;
+  width: 100%;
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ChatBodyContainer = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  background: #f8f8fa;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  padding: 0px 30px;
 `;
 
 const ChatBody = styled.ul`
   display: flex;
   align-items: center;
   flex-direction: column;
-  height: 620px;
-  background: #f8f8fa;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-  padding: 0px 30px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  height: 0;
 `;
 
 function scrollToBottom(scroll) {
@@ -62,7 +66,7 @@ function ChatList(props) {
     return () => {
       if (ws.readyState === WebSocket.OPEN) {
         const closeMessage = {
-          type: "chatRoom",
+          type: "chat",
           roomId: props.roomId,
           memberId: props.memberId,
         };
@@ -92,12 +96,14 @@ function ChatList(props) {
   return (
     <ChatContainer>
       <ChatHeader centerName={props.centerName} />
-      <ChatBody ref={scrollRef}>
-        {chatHistory &&
-          chatHistory.map((item, index) => {
-            return <ChatMessage key={index} info={item} />;
-          })}
-      </ChatBody>
+      <ChatBodyContainer ref={scrollRef}>
+        <ChatBody>
+          {chatHistory &&
+            chatHistory.map((item, index) => {
+              return <ChatMessage key={index} info={item} />;
+            })}
+        </ChatBody>
+      </ChatBodyContainer>
       <ChatInput
         roomId={props.roomId}
         receiverId={props.receiverId}
