@@ -1,10 +1,8 @@
 import styled from "styled-components";
 import { useEffect, useRef, useState } from "react";
 import { BASE_URL, IP } from "../../../constants/url";
-import { useLoaderData, useSearchParams } from "react-router-dom";
 import { ChatHeader } from "./ChatHeader";
 import { ChatMessage } from "./ChatMessage";
-import { getMemberId } from "../../../utils/auth";
 import { ChatInput } from "./ChatInput";
 
 const ChatContainer = styled.div`
@@ -24,8 +22,6 @@ const ChatBody = styled.ul`
   overflow-x: hidden;
 `;
 
-const DateContainer = styled.div``;
-
 function scrollToBottom(scroll) {
   if (scroll) {
     scroll.scrollTop = scroll.scrollHeight;
@@ -36,18 +32,9 @@ function ChatList(props) {
   const [chatHistory, setChatHistory] = useState([]);
   const [webSocket, setWebSocket] = useState(null);
 
-  const authData = useLoaderData();
-  const accessToken = authData.accessToken;
-  const [searchParams] = useSearchParams();
-  const urlClientId = searchParams.get("client-id");
-  const urlCenterId = searchParams.get("center-id");
-  const urlRoomId = searchParams.get("room-id");
-  const memberId = getMemberId();
-  const receiverId = memberId === urlClientId ? urlCenterId : urlClientId;
-
   const scrollRef = useRef();
 
-  const WebSocketServerUrl = `ws://${IP}/connect/chat/${urlRoomId}/${memberId}`;
+  const WebSocketServerUrl = `ws://${IP}/connect/chat/${props.roomId}/${props.memberId}`;
 
   useEffect(() => {
     const ws = new WebSocket(WebSocketServerUrl);
@@ -71,9 +58,9 @@ function ChatList(props) {
       console.error("웹소켓 오류 발생:", error);
     };
 
-    fetch(`${BASE_URL}chat/history/${urlRoomId}`, {
+    fetch(`${BASE_URL}chat/history/${props.roomId}`, {
       headers: {
-        Authorization: accessToken,
+        Authorization: props.accessToken,
         Accept: "application/json",
       },
     })
@@ -86,8 +73,8 @@ function ChatList(props) {
       if (ws.readyState === WebSocket.OPEN) {
         const closeMessage = {
           type: "chatRoom",
-          roomId: urlRoomId,
-          memberId: memberId,
+          roomId: props.roomId,
+          memberId: props.memberId,
         };
         ws.send(JSON.stringify(closeMessage));
         ws.close();
@@ -109,8 +96,8 @@ function ChatList(props) {
           })}
       </ChatBody>
       <ChatInput
-        roomId={urlRoomId}
-        receiverId={receiverId}
+        roomId={props.roomId}
+        receiverId={props.receiverId}
         updateChat={setChatHistory}
       />
     </ChatContainer>
