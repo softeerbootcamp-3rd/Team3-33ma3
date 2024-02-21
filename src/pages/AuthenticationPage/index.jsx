@@ -1,0 +1,3 @@
+function AuthenticationPage() {}
+
+export { AuthenticationPage };

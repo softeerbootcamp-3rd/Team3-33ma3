@@ -43,7 +43,7 @@ function OfferList({ prevOfferList, offerList, disabled, handleSelectOffer }) {
           handleSelectOffer={() =>
             handleSelectOffer(offerList[focusOffer].offerId)
           }
-          centerId={offerList[0].memberId}
+          centerId={offerList[focusOffer].memberId}
         />
       )}
     </>

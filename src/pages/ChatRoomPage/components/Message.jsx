@@ -74,7 +74,7 @@ function Message(props) {
   const navigate = useNavigate();
   function handleOnClick() {
     navigate(
-      `/chat-room?mode=chat&client-id=${props.clientId}&center-id=${props.centerId}&room-id=${props.info.roomId}&center-name=${props.info.memberName}`
+      `?mode=chat&client-id=${props.info.clientId}&center-id=${props.info.centerId}&room-id=${props.info.roomId}&center-name=${props.info.memberName}`
     );
   }
 
