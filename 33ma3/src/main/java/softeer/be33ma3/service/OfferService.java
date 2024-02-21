@@ -124,13 +124,6 @@ public class OfferService {
         return post;
     }
 
-    // 해당 견적을 작성한 서비스 센터들의 member id 목록 반환
-    private List<Long> findMemberIdsWithOfferList(List<Offer> offerList) {
-        return offerList.stream()
-                .map(offer -> offer.getCenter().getMemberId())
-                .toList();
-    }
-
     public void sendAboutOfferUpdate(Long postId) {
         // 1. 해당 게시글 가져오기
         Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
