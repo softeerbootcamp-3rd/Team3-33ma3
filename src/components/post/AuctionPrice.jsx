@@ -21,66 +21,76 @@ const Container = styled.button`
     transform: scale(1.05);
   }
 
-  &.pullUp {
-    animation-name: pullUp;
-    -webkit-animation-name: pullUp;
+  &.slideExpandUp {
+    animation-name: slideExpandUp;
+    -webkit-animation-name: slideExpandUp;
+
+    animation-duration: 1s;
+    -webkit-animation-duration: 1s;
+
+    animation-timing-function: ease-out;
+    -webkit-animation-timing-function: ease -out;
+
+    visibility: visible !important;
   }
 
-  animation-duration: 1.1s;
-  -webkit-animation-duration: 1.1s;
-
-  animation-timing-function: ease-out;
-  -webkit-animation-timing-function: ease-out;
-
-  transform-origin: 50% 100%;
-  -ms-transform-origin: 50% 100%;
-  -webkit-transform-origin: 50% 100%;
-
-  @keyframes pullUp {
+  @keyframes slideExpandUp {
     0% {
-      transform: scaleY(0.1);
+      transform: translateY(100%) scaleX(0.5);
+    }
+    30% {
+      transform: translateY(-8%) scaleX(0.5);
     }
     40% {
-      transform: scaleY(1.02);
+      transform: translateY(2%) scaleX(0.5);
+    }
+    50% {
+      transform: translateY(0%) scaleX(1.1);
     }
     60% {
-      transform: scaleY(0.98);
+      transform: translateY(0%) scaleX(0.9);
+    }
+    70% {
+      transform: translateY(0%) scaleX(1.05);
     }
     80% {
-      transform: scaleY(1.01);
+      transform: translateY(0%) scaleX(0.95);
+    }
+    90% {
+      transform: translateY(0%) scaleX(1.02);
     }
     100% {
-      transform: scaleY(0.98);
-    }
-    80% {
-      transform: scaleY(1.01);
-    }
-    100% {
-      transform: scaleY(1);
+      transform: translateY(0%) scaleX(1);
     }
   }
 
-  @-webkit-keyframes pullUp {
+  @-webkit-keyframes slideExpandUp {
     0% {
-      -webkit-transform: scaleY(0.1);
+      -webkit-transform: translateY(100%) scaleX(0.5);
+    }
+    30% {
+      -webkit-transform: translateY(-8%) scaleX(0.5);
     }
     40% {
-      -webkit-transform: scaleY(1.02);
+      -webkit-transform: translateY(2%) scaleX(0.5);
+    }
+    50% {
+      -webkit-transform: translateY(0%) scaleX(1.1);
     }
     60% {
-      -webkit-transform: scaleY(0.98);
+      -webkit-transform: translateY(0%) scaleX(0.9);
+    }
+    70% {
+      -webkit-transform: translateY(0%) scaleX(1.05);
     }
     80% {
-      -webkit-transform: scaleY(1.01);
+      -webkit-transform: translateY(0%) scaleX(0.95);
+    }
+    90% {
+      -webkit-transform: translateY(0%) scaleX(1.02);
     }
     100% {
-      -webkit-transform: scaleY(0.98);
-    }
-    80% {
-      -webkit-transform: scaleY(1.01);
-    }
-    100% {
-      -webkit-transform: scaleY(1);
+      -webkit-transform: translateY(0%) scaleX(1);
     }
   }
 `;
@@ -90,134 +100,45 @@ const Bubble = styled.div`
   height: 147px;
   position: relative;
 
-  &.floating {
-    animation-name: floating;
-    -webkit-animation-name: floating;
+  &.pulse {
+    animation-name: pulse;
+    -webkit-animation-name: pulse;
 
-    animation-duration: 1.5s;
-    -webkit-animation-duration: 1.5s;
+    animation-duration: 1s;
+    -webkit-animation-duration: 1s;
 
-    animation-iteration-count: infinite;
-    -webkit-animation-iteration-count: infinite;
-  }
-
-  @keyframes floating {
-    0% {
-      transform: translateY(0%);
-    }
-    50% {
-      transform: translateY(8%);
-    }
-    100% {
-      transform: translateY(0%);
-    }
-  }
-
-  @-webkit-keyframes floating {
-    0% {
-      -webkit-transform: translateY(0%);
-    }
-    50% {
-      -webkit-transform: translateY(8%);
-    }
-    100% {
-      -webkit-transform: translateY(0%);
-    }
+    animation-iteration-count: 3;
+    -webkit-animation-iteration-count: 3;
   }
 
   @keyframes pulse {
     0% {
-      transform: scale(0.9);
+      transform: scale(1);
       opacity: 0.7;
     }
     50% {
-      transform: scale(1);
+      transform: scale(1.1);
       opacity: 1;
     }
     100% {
-      transform: scale(0.9);
+      transform: scale(1);
       opacity: 0.7;
     }
   }
 
   @-webkit-keyframes pulse {
     0% {
-      -webkit-transform: scale(0.95);
-      opacity: 0.7;
-    }
-    50% {
       -webkit-transform: scale(1);
-      opacity: 1;s
-    }
-    100% {
-      -webkit-transform: scale(0.95);
       opacity: 0.7;
     }
-  }
-
-  &.hatch{
-    animation-name: hatch;
-    -webkit-animation-name: hatch;	
-  
-    animation-duration: 2s;	
-    -webkit-animation-duration: 2s;
-  
-    animation-timing-function: ease-in-out;	
-    -webkit-animation-timing-function: ease-in-out;
-  
-    transform-origin: 50% 100%;
-    -ms-transform-origin: 50% 100%;
-    -webkit-transform-origin: 50% 100%; 
-  
-    visibility: visible !important;		
-  }
-  
-  @keyframes hatch {
-    0% {
-      transform: rotate(0deg) scaleY(0.9);
-    }
-    20% {
-      transform: rotate(-2deg) scaleY(1.05);
-    }
-    35% {
-      transform: rotate(2deg) scaleY(1);
-    }
     50% {
-      transform: rotate(-2deg);
-    }	
-    65% {
-      transform: rotate(1deg);
-    }	
-    80% {
-      transform: rotate(-1deg);
-    }		
+      -webkit-transform: scale(1.1);
+      opacity: 1;
+    }
     100% {
-      transform: rotate(0deg);
-    }									
-  }
-  
-  @-webkit-keyframes hatch {
-    0% {
-      -webkit-transform: rotate(0deg) scaleY(0.6);
+      -webkit-transform: scale(1);
+      opacity: 0.7;
     }
-    20% {
-      -webkit-transform: rotate(-2deg) scaleY(1.05);
-    }
-    35% {
-      -webkit-transform: rotate(2deg) scaleY(1);
-    }
-    50% {
-      -webkit-transform: rotate(-2deg);
-    }	
-    65% {
-      -webkit-transform: rotate(1deg);
-    }	
-    80% {
-      -webkit-transform: rotate(-1deg);
-    }		
-    100% {
-      -webkit-transform: rotate(0deg);
-    }		
   }
 `;
 
@@ -256,10 +177,10 @@ function AuctionPrice({
     <Container
       $isActive={isActive}
       onClick={onClick}
-      className={!isEnd && !isEdited && "pullUp"}
+      className={!isEnd && !isEdited && "slideExpandUp"}
     >
       {isSelected && <Prize src={PrizeImg} />}
-      <Bubble className={isEdited && "hatch"}>
+      <Bubble className={isEdited && "pulse"}>
         <Price>{price}만</Price>
         <img src={SpeechBubble} style={bubbleImageSize} />
       </Bubble>
