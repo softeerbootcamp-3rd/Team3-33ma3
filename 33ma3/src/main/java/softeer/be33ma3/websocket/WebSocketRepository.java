@@ -12,10 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @Repository
 @Slf4j
 public class WebSocketRepository {
-    private final Map<Long, Set<Long>> postRoom = new ConcurrentHashMap<>();    // postId : set of memberId
-    private final Map<Long, Set<Long>> chatRoom = new ConcurrentHashMap<>();    // roomId : set of memberId
-    private final Map<Long, WebSocketSession> sessions = new ConcurrentHashMap<>();     // memberId : WebSocketSession
-    private final Map<Long, WebSocketSession> allChatRoomSessions = new ConcurrentHashMap<>();      //memberId: WebSocketSession
+    private static final Map<Long, Set<Long>> postRoom = new ConcurrentHashMap<>();    // postId : set of memberId
+    private static final Map<Long, Set<Long>> chatRoom = new ConcurrentHashMap<>();    // roomId : set of memberId
+    private static final Map<Long, WebSocketSession> sessions = new ConcurrentHashMap<>();     // memberId : WebSocketSession
+    private static final Map<Long, WebSocketSession> allChatRoomSessions = new ConcurrentHashMap<>();      //memberId: WebSocketSession
 
     public Set<Long> findAllMemberInPost(Long postId) {
         return postRoom.get(postId);
