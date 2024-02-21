@@ -14,14 +14,13 @@ import softeer.be33ma3.repository.post.PostRepository;
 import softeer.be33ma3.websocket.WebSocketHandler;
 import softeer.be33ma3.websocket.WebSocketRepository;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 import static softeer.be33ma3.exception.ErrorCode.*;
 import static softeer.be33ma3.service.MemberService.CENTER_TYPE;
 import static softeer.be33ma3.service.MemberService.CLIENT_TYPE;
+import static softeer.be33ma3.utils.StringParser.createTimeParsing;
 
 @Service
 @RequiredArgsConstructor
@@ -61,19 +60,22 @@ public class ChatService {
         ChatMessage chatMessage = ChatMessage.createChatMessage(sender, chatRoom, contents);
         ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
 
+        AllChatRoomDto chatDto = getChatDto(chatRoom, receiver.getLoginId(), sender);     //업데이트 할 목록 생성
+        webSocketHandler.sendAllChatData2Client(sender.getMemberId(), chatDto);     //보낸사람 목록도 실시간 업데이트
+
         if(webSocketRepository.findSessionByMemberId(receiver.getMemberId()) == null){      //채팅룸에 상대방이 존재하지 않을 경우
             if(webSocketRepository.findAllChatRoomSessionByMemberId(receiver.getMemberId()) == null){       //상대방이 채팅 목록 세션을 연결 안하고 있는 경우
                 Alert alert = Alert.createAlert(chatRoom.getChatRoomId(), receiver);        //채팅방 & 채팅 목록에도 없는 경우는 알림 테이블에 저장
                 alertRepository.save(alert);
                 return;
             }
-            AllChatRoomDto chatDto = getChatDto(chatRoom, sender.getLoginId(), receiver);     //업데이트 할 목록 생성
+            chatDto = getChatDto(chatRoom, sender.getLoginId(), receiver);     //업데이트 할 목록 생성
             webSocketHandler.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //실시간 전송 - 채팅 목록
             return;
         }
         //채팅룸에 상대방이 존재하는 경우
         savedChatMessage.setReadDoneTrue();   //읽음 처리
-        ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.create(savedChatMessage, createTimeFormatting(savedChatMessage.getCreateTime()));
+        ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.create(savedChatMessage, createTimeParsing(savedChatMessage.getCreateTime()));
         webSocketHandler.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);   //실시간 전송 - 채팅 내용
     }
 
@@ -108,17 +110,19 @@ public class ChatService {
             if(!chatMessage.getSender().getMemberId().equals(member.getMemberId()) && !chatMessage.isReadDone()){   //상대방이 보낸 메세지의 읽음 여부가 false인 경우
                 chatMessage.setReadDoneTrue();      //읽음 처리
             }
-            chatHistoryDtos.add(ChatHistoryDto.getChatHistoryDto(chatMessage, createTimeFormatting(chatMessage.getCreateTime())));
+            chatHistoryDtos.add(ChatHistoryDto.getChatHistoryDto(chatMessage, createTimeParsing(chatMessage.getCreateTime())));
         }
 
         return chatHistoryDtos;
     }
 
     private AllChatRoomDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
-        ChatMessage lastChatMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());      //마지막 메세지
+        ChatMessage lastChatMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());//마지막 메세지
+        if(lastChatMessage == null){    //방이 만들어지고 메세지를 보내지 않은 경우
+            return AllChatRoomDto.create(chatRoom, "", memberName, 0, "");
+        }
         int count = (int) chatMessageRepository.countReadDoneIsFalse(chatRoom.getChatRoomId(), member.getMemberId());     //안읽은 메세지 개수
-
-        return AllChatRoomDto.create(chatRoom, lastChatMessage.getContents(), memberName, count, createTimeFormatting(lastChatMessage.getCreateTime()));
+        return AllChatRoomDto.create(chatRoom, lastChatMessage.getContents(), memberName, count, createTimeParsing(lastChatMessage.getCreateTime()));
     }
 
     private void isValidRoomMember(Member member, ChatRoom chatRoom) {
@@ -145,12 +149,5 @@ public class ChatService {
                 throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
             }
         }
-    }
-
-    private String createTimeFormatting(LocalDateTime createTime) {
-        String periodOfDay = createTime.getHour() < 12 ? "오전 " : "오후 ";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-
-        return periodOfDay + createTime.format(formatter);
     }
 }
