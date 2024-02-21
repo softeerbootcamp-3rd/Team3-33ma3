@@ -49,6 +49,19 @@ function AuctionStatus({ postId, curOfferDetails }) {
 
     connectWebSocket();
 
+    // 브라우저 새로고침, 탭 닫을 시 정상 종료
+    window.addEventListener("beforeunload", () => {
+      if (webSocket.current.readyState === WebSocket.OPEN) {
+        const closeMessage = {
+          type: "post",
+          roomId: postId,
+          memberId: memberId,
+        };
+        webSocket.current.send(JSON.stringify(closeMessage));
+        webSocket.current.close();
+      }
+    });
+
     // clean up 함수
     // unmount 될 때 webSocket 연결 해제
     return () => {
