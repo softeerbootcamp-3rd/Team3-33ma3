@@ -29,23 +29,8 @@ const TopContentContainer = styled.div`
   width: 100%;
 `;
 
-const dummy = {
-  centerName: "현대자동차 강남점",
-  link: "https://threethree.s3.ap-northeast-2.amazonaws.com/f5c4dbdd-4691-4813-bbfb-5d02e0364832.jpeg",
-  scoreAvg: 4.5,
-  reviews: [
-    {
-      writerName: "client",
-      contents: "센터 리뷰글입니다.",
-      score: 4.5,
-      repairList: ["덴트"],
-      tuneUpList: [],
-    },
-  ],
-};
-
 function CenterInfoPage() {
-  const [isLoading, setLoading] = useState();
+  const [isLoading, setLoading] = useState(true);
   const [centerInfo, setCenterInfo] = useState();
   const [query, setQuery] = useSearchParams();
   const centerId = query.get("center_id");
@@ -58,7 +43,8 @@ function CenterInfoPage() {
         }
       })
       .then((json) => {
-        setCenterInfo(json);
+        console.log(json.data);
+        setCenterInfo(json.data);
         setLoading(false);
       });
   }, []);
@@ -69,21 +55,25 @@ function CenterInfoPage() {
         {!isLoading && (
           <>
             <TopContainer>
-              <Carousel imgList={[dummy.link]} thumbnail size="large" />
+              <Carousel
+                imgList={[centerInfo.centerImage]}
+                thumbnail
+                size="large"
+              />
               <TopContentContainer>
                 <OptionType title={"센터 정보"}>
                   <OptionItem title={"센터 이름"}>
-                    {dummy.centerName}
+                    {centerInfo.centerName}
                   </OptionItem>
                   <OptionItem title={"별점"}>
-                    <StarRating score={dummy.scoreAvg} />
+                    <StarRating score={centerInfo.scoreAvg} />
                   </OptionItem>
                 </OptionType>
               </TopContentContainer>
             </TopContainer>
             <OptionType title={"후기 목록"}>
-              {dummy.reviews.map((review) => (
-                <ReviewComment reviewInfo={review} />
+              {centerInfo.reviews.map((review, index) => (
+                <ReviewComment reviewInfo={review} key={index} />
               ))}
             </OptionType>
           </>

@@ -24,6 +24,7 @@ const HeaderContainer = styled.div`
   flex-direction: row;
   width: 100%;
   justify-content: space-between;
+  align-items: center;
 `;
 
 const Writer = styled.p`
@@ -56,9 +57,30 @@ const ServiceList = styled.div`
   scrollbar-width: none;
 `;
 
+const UserContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+`;
+
+const ImgContainer = styled.div`
+  width: 50px;
+  height: 50px;
+  border-radius: ${({ theme }) => theme.radiuses.radius_s};
+  overflow: hidden;
+`;
+
+const Img = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
 function ReviewComment({ reviewInfo }) {
   const { accessToken } = useRouteLoaderData("root");
   const [isLoading, setIsLoading] = useState(false);
+  const { memberId } = useRouteLoaderData("root");
 
   const services = [...reviewInfo.repairList, ...reviewInfo.tuneUpList].map(
     () => <ChipButton block type={"부품 교체"} />
@@ -87,14 +109,21 @@ function ReviewComment({ reviewInfo }) {
   return (
     <CommentContainer>
       <HeaderContainer>
-        <Writer>{reviewInfo.writerName}</Writer>
-        <SubmitButton
-          disabled={isLoading}
-          size={"small"}
-          onClick={handleRemoveComment}
-        >
-          삭제
-        </SubmitButton>
+        <UserContainer>
+          <ImgContainer>
+            <Img src={reviewInfo.writerImage} />
+          </ImgContainer>
+          <Writer>{reviewInfo.writerName}</Writer>
+        </UserContainer>
+        {reviewInfo.writerName === memberId && (
+          <SubmitButton
+            disabled={isLoading}
+            size={"small"}
+            onClick={handleRemoveComment}
+          >
+            삭제
+          </SubmitButton>
+        )}
       </HeaderContainer>
       <Contents>{reviewInfo.contents}</Contents>
       <BottomContainer>
