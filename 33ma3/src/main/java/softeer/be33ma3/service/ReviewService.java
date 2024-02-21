@@ -9,7 +9,7 @@ import softeer.be33ma3.domain.Review;
 import softeer.be33ma3.dto.request.ReviewCreateDto;
 import softeer.be33ma3.dto.response.OneReviewDto;
 import softeer.be33ma3.dto.response.ShowCenterReviewsDto;
-import softeer.be33ma3.dto.response.ShowReviewDto;
+import softeer.be33ma3.dto.response.ShowAllReviewDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.MemberRepository;
 import softeer.be33ma3.repository.OfferRepository;
@@ -68,7 +68,7 @@ public class ReviewService {
         reviewRepository.delete(review);
     }
 
-    public List<ShowReviewDto> showAllReview() {    //전체 리뷰 조회
+    public List<ShowAllReviewDto> showAllReview() {    //전체 리뷰 조회
         return reviewCustomRepository.findReviewGroupByCenter();
     }
 
@@ -76,7 +76,7 @@ public class ReviewService {
         List<OneReviewDto> oneReviewDtos = new ArrayList<>();
         double totalScore = 0.0;
         Member center = memberRepository.findById(centerId).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
-        List<Review> reviews = reviewRepository.findByCenter_MemberId(center.getMemberId());
+        List<Review> reviews = reviewRepository.findReviewsByCenterIdOrderByScore(center.getMemberId());
 
         for (Review review : reviews) {
             totalScore += review.getScore();

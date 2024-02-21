@@ -10,14 +10,14 @@ import java.util.List;
 @NoArgsConstructor
 public class ShowCenterReviewsDto {
     private String centerName;
-    private String link;
+    private String centerImage;
     private double scoreAvg;
     private List<OneReviewDto> reviews;
 
     public static ShowCenterReviewsDto create(Member center,  double scoreAvg, List<OneReviewDto> reviews) {
         ShowCenterReviewsDto showCenterReviewsDto = new ShowCenterReviewsDto();
         showCenterReviewsDto.centerName = center.getLoginId();
-        showCenterReviewsDto.link = center.getImage().getLink();
+        showCenterReviewsDto.centerImage = center.getImage().getLink();
         showCenterReviewsDto.scoreAvg = scoreAvg;
         showCenterReviewsDto.reviews = reviews;
 
