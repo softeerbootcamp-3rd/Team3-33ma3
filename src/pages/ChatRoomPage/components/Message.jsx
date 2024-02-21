@@ -19,7 +19,7 @@ const OpponentInfo = styled.div`
 const OpponentName = styled.p`
   color: ${(props) => props.theme.colors.surface_black};
   font-size: ${(props) => props.theme.fontSize.medium};
-  font-weight: 350;
+  font-weight: 700;
 `;
 
 const OpponentMessage = styled.p`
@@ -47,6 +47,7 @@ const MessageBox = styled.li`
   &:hover {
     background: ${(props) => props.theme.colors.surface_weak};
   }
+  font-weight: 500;
 `;
 
 const KeyContent = styled.div`

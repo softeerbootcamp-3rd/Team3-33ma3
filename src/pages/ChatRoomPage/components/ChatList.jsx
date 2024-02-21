@@ -8,6 +8,7 @@ import { ChatInput } from "./ChatInput";
 const ChatContainer = styled.div`
   width: 970px;
   padding: 20px;
+  font-weight: 500;
 `;
 
 const ChatBody = styled.ul`
