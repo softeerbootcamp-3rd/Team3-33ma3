@@ -58,17 +58,6 @@ function ChatList(props) {
     ws.onerror = (error) => {
       console.error("웹소켓 오류 발생:", error);
     };
-
-    fetch(`${BASE_URL}chat/history/${props.roomId}`, {
-      headers: {
-        Authorization: props.accessToken,
-        Accept: "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setChatHistory(data.data);
-      });
     // 컴포넌트 언마운트 시 웹소켓 연결 종료
     return () => {
       if (ws.readyState === WebSocket.OPEN) {
@@ -81,11 +70,24 @@ function ChatList(props) {
         ws.close();
       }
     };
-  }, []);
+  }, [props.roomId]);
 
   useEffect(() => {
     scrollToBottom(scrollRef.current);
   }, [chatHistory]);
+
+  useEffect(() => {
+    fetch(`${BASE_URL}chat/history/${props.roomId}`, {
+      headers: {
+        Authorization: props.accessToken,
+        Accept: "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setChatHistory(data.data);
+      });
+  }, [props.roomId]);
 
   return (
     <ChatContainer>
