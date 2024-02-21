@@ -1,10 +1,11 @@
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BASE_URL, IP } from "../../../constants/url";
 import { useLoaderData, useSearchParams } from "react-router-dom";
 import { ChatHeader } from "./ChatHeader";
 import { ChatMessage } from "./ChatMessage";
 import { getMemberId } from "../../../utils/auth";
+import { ChatInput } from "./ChatInput";
 
 const ChatContainer = styled.div`
   width: 970px;
@@ -15,9 +16,8 @@ const ChatBody = styled.ul`
   display: flex;
   align-items: center;
   flex-direction: column;
-  height: 700px;
+  height: 620px;
   background: #f8f8fa;
-  border-radius: 0px 0px 14px 14px;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   padding: 0px 30px;
   overflow-y: auto;
@@ -26,14 +26,11 @@ const ChatBody = styled.ul`
 
 const DateContainer = styled.div``;
 
-const InputContainer = styled.div``;
-
-const InputText = styled.input``;
-
-const SubmitText = styled.button`
-  width: 100px;
-  height: 50px;
-`;
+function scrollToBottom(scroll) {
+  if (scroll) {
+    scroll.scrollTop = scroll.scrollHeight;
+  }
+}
 
 function ChatList(props) {
   const [chatHistory, setChatHistory] = useState([]);
@@ -42,8 +39,13 @@ function ChatList(props) {
   const authData = useLoaderData();
   const accessToken = authData.accessToken;
   const [searchParams] = useSearchParams();
+  const urlClientId = searchParams.get("client-id");
+  const urlCenterId = searchParams.get("center-id");
   const urlRoomId = searchParams.get("room-id");
   const memberId = getMemberId();
+  const receiverId = memberId === urlClientId ? urlCenterId : urlClientId;
+
+  const scrollRef = useRef();
 
   const WebSocketServerUrl = `ws://${IP}/connect/chat/${urlRoomId}/${memberId}`;
 
@@ -62,7 +64,7 @@ function ChatList(props) {
     };
 
     ws.onclose = () => {
-      console.log("웹소켓 연결 종료");
+      console.log("ChatList 웹소켓 연결 종료");
     };
 
     ws.onerror = (error) => {
@@ -93,15 +95,24 @@ function ChatList(props) {
     };
   }, []);
 
+  useEffect(() => {
+    scrollToBottom(scrollRef.current);
+  }, [chatHistory]);
+
   return (
     <ChatContainer>
       <ChatHeader centerName={props.centerName} />
-      <ChatBody>
+      <ChatBody ref={scrollRef}>
         {chatHistory &&
           chatHistory.map((item, index) => {
             return <ChatMessage key={index} info={item} />;
           })}
       </ChatBody>
+      <ChatInput
+        roomId={urlRoomId}
+        receiverId={receiverId}
+        updateChat={setChatHistory}
+      />
     </ChatContainer>
   );
 }

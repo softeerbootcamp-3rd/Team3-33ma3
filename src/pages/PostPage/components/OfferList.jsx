@@ -44,7 +44,6 @@ function OfferList({ prevOfferList, offerList, disabled, handleSelectOffer }) {
             handleSelectOffer(offerList[focusOffer].offerId)
           }
           centerId={offerList[0].memberId}
-          postId={offerList.postId}
         />
       )}
     </>

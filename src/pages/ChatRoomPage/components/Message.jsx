@@ -56,15 +56,14 @@ const KeyContent = styled.div`
 function Message(props) {
   const navigate = useNavigate();
   function handleOnClick() {
-    props.onClick(true);
     navigate(
-      `/chat-room?mode=chat&room-id=${props.info.roomId}&center-name=${props.info.memberName}`
+      `/chat-room?mode=chat&client-id=${props.clientId}&center-id=${props.centerId}&room-id=${props.info.roomId}&center-name=${props.info.memberName}`
     );
   }
 
   return (
     <>
-      <MessageBox>
+      <MessageBox onClick={handleOnClick}>
         <KeyContent>
           <Logo src={CenterLogo} />
           <OpponentInfo>

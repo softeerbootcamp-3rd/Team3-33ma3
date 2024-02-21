@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 import { BASE_URL, IP } from "../../../constants/url";
-import {
-  useRouteLoaderData,
-  useSearchParams,
-  useLoaderData,
-} from "react-router-dom";
+import { useSearchParams, useLoaderData } from "react-router-dom";
 import styled from "styled-components";
 import { Message } from "./Message";
 import { MessageHeader } from "./MessageHeader";
@@ -92,7 +88,6 @@ function MessageList() {
     };
   }, []);
 
-  console.log(messages);
   return (
     <MessageContainer chatmode={isChatMode.toString()}>
       <MessageHeader chatmode={isChatMode.toString()} />
