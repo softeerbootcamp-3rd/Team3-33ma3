@@ -64,20 +64,19 @@ const BottomContainer = styled.div`
   font-weight: 500;
 `;
 
-function CenterCardItem() {
+function CenterCardItem({ centerInfo }) {
   return (
     <CenterCardContainer>
       <ImgContainer>
-        <Img src={DummyImg} />
+        <Img src={centerInfo.link} />
       </ImgContainer>
       <ContentContainer>
         <TextContainer>
-          <h1>민우 센터</h1>
-          <p>경기도 평택시 안중읍 송담 1로 65</p>
+          <h1>{centerInfo.centerId}</h1>
         </TextContainer>
         <BottomContainer>
-          <StarRating score={4} />
-          <p>리뷰 43개</p>
+          <StarRating score={centerInfo.scoreAvg} />
+          <p>리뷰 {centerInfo.reviewCount}개</p>
         </BottomContainer>
       </ContentContainer>
     </CenterCardContainer>

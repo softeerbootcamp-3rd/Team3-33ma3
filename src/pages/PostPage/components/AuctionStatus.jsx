@@ -11,6 +11,7 @@ function AuctionStatus({ postId, curOfferDetails }) {
   const prevOfferList = useRef([
     new Set(curOfferDetails.map((offer) => offer.offerId)),
   ]);
+  console.log(prevOfferList.current);
 
   useEffect(() => {
     // /connect/{postId}/{memberId}
