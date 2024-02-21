@@ -61,7 +61,7 @@ public class MemberService {
         // 이미지 저장하기
         if(profile != null) {
             Image image = imageService.saveImage(profile);
-            member.setProfileId(image.getImageId());
+            member.setProfileId(image);
         }
     }
 
