@@ -10,6 +10,7 @@ import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.dto.response.*;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.*;
+import softeer.be33ma3.repository.post.PostRepository;
 
 import java.util.*;
 import java.util.regex.Matcher;

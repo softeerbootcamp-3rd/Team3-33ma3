@@ -13,7 +13,7 @@ import softeer.be33ma3.domain.Region;
 import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.MemberRepository;
-import softeer.be33ma3.repository.PostRepository;
+import softeer.be33ma3.repository.post.PostRepository;
 import softeer.be33ma3.repository.RegionRepository;
 
 import java.util.ArrayList;
