@@ -8,27 +8,30 @@ import { getCurrentTimeFormatted } from "../../../utils/dateTimeHelper";
 
 const InputContainer = styled.div`
   display: flex;
-  height: 80px;
+  height: 60px;
+  width: 100%;
+  padding: 10px;
   align-items: center;
   justify-content: center;
   border-radius: 0px 0px 14px 14px;
   background: #f8f8f8fa;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-  gap: 25px;
+  box-sizing: border-box;
+  gap: 15px;
 `;
 
 const InputText = styled.input`
-  width: 700px;
-  height: 40px;
-  font-size: 20px;
+  width: 100%;
+  height: 35px;
+  font-size: ${({ theme }) => theme.fontSize.regular};
+  font-weight: 500;
   border-radius: 10px;
   border: none;
   padding: 5px;
 `;
 
 const SubmitText = styled.button`
-  width: 50px;
-  height: 50px;
+  padding: 10px;
 `;
 
 function ChatInput(props) {
@@ -77,7 +80,11 @@ function ChatInput(props) {
         placeholder="메시지를 입력하세요"
       />
       <SubmitText onClick={handleSubmit}>
-        <img src={SubmitIcon} alt="Submit" />
+        <img
+          src={SubmitIcon}
+          alt="Submit"
+          style={{ width: "26px", height: "24px" }}
+        />
       </SubmitText>
     </InputContainer>
   );

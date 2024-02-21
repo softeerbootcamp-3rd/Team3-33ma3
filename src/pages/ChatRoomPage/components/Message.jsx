@@ -41,13 +41,15 @@ const MessageBox = styled.li`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
   padding: 15px;
   align-items: center;
-  border-bottom: 1px solid ${(props) => props.theme.colors.surface_weak};
   &:hover {
     background: ${(props) => props.theme.colors.surface_weak};
   }
   font-weight: 500;
+  font-size: ${({ theme }) => theme.fontSize.regular};
 `;
 
 const KeyContent = styled.div`
@@ -59,7 +61,6 @@ const KeyContent = styled.div`
 
 const TimeContainer = styled.div`
   color: ${(props) => props.theme.colors.border_strong};
-  font-size: 16px;
 `;
 
 const NameTimeWrapper = styled.div`

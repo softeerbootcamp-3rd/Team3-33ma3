@@ -17,6 +17,12 @@ const GlobalStyle = createGlobalStyle`
 
     #root{
         overflow-y: scroll;
+        display: flex;
+        flex-direction:column;
+    }
+
+    main{
+        flex:1;
     }
 
     *{
