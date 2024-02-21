@@ -44,8 +44,8 @@ public class WebSocketRepository {
     }
 
     public void saveSessionWithMemberId(Long memberId, WebSocketSession webSocketSession) {
-        WebSocketSession existing = sessions.putIfAbsent(memberId, webSocketSession);
-        if(existing == null) {
+        if(sessions.get(memberId) == null || !sessions.get(memberId).isOpen()) {
+            sessions.put(memberId, webSocketSession);
             log.info("{}번 유저 웹소켓 세션 저장 성공", memberId);
             log.info("웹소켓 세션 저장소 크기: {}" , sessions.size());
         }
@@ -55,8 +55,8 @@ public class WebSocketRepository {
     }
 
     public void saveAllChatRoomSessionWithMemberId(Long memberId, WebSocketSession session) {
-        WebSocketSession existing = allChatRoomSessions.putIfAbsent(memberId, session);
-        if(existing == null) {
+        if(allChatRoomSessions.get(memberId) == null || !allChatRoomSessions.get(memberId).isOpen()) {
+            allChatRoomSessions.put(memberId, session);
             log.info("{}번 유저 웹소켓 세션 저장 성공 - 목록", memberId);
         }
         else {
