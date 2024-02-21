@@ -61,7 +61,7 @@ public class ChatService {
         ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
 
         AllChatRoomDto chatDto = getChatDto(chatRoom, receiver.getLoginId(), sender);     //업데이트 할 목록 생성
-        webSocketHandler.sendAllChatData2Client(sender.getMemberId(), chatDto);     //보낸사람 목록도 실시간 업데이트
+//        webSocketHandler.sendAllChatData2Client(sender.getMemberId(), chatDto);     //보낸사람 목록도 실시간 업데이트 //TODO: 얘도 연결 되어 있는지 체크
 
         if(webSocketRepository.findSessionByMemberId(receiver.getMemberId()) == null){      //채팅룸에 상대방이 존재하지 않을 경우
             if(webSocketRepository.findAllChatRoomSessionByMemberId(receiver.getMemberId()) == null){       //상대방이 채팅 목록 세션을 연결 안하고 있는 경우
