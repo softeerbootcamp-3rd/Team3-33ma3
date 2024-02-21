@@ -19,8 +19,8 @@ const CenterContainer = styled.div`
 `;
 
 const Logo = styled.img`
-  width: 70px;
-  height: 80px;
+  width: 60px;
+  height: 75px;
 `;
 
 const CenterInfo = styled.div`
@@ -35,10 +35,12 @@ const SuccessfulBidButton = styled.button`
   height: 40px;
   background: ${(props) => props.theme.colors.surface_brand};
   border-radius: 14px;
+  font-weight: 500;
 `;
 
 const CenterName = styled.div`
   font-size: 30px;
+  font-weight: 700;
 `;
 
 const CenterStatus = styled.div`

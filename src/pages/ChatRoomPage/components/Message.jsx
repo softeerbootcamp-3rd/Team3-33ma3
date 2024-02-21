@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import CenterLogo from "/src/assets/33MA3_logo.png";
 import { useNavigate } from "react-router-dom";
+import { getCurrentTimeFormatted } from "../../../utils/dateTimeHelper";
 
 const Logo = styled.img`
   width: 45px;
@@ -12,12 +13,13 @@ const OpponentInfo = styled.div`
   flex-direction: column;
   gap: 10px;
   justify-content: center;
+  flex: 1;
 `;
 
 const OpponentName = styled.p`
   color: ${(props) => props.theme.colors.surface_black};
   font-size: ${(props) => props.theme.fontSize.medium};
-  font-weight: 350;
+  font-weight: 700;
 `;
 
 const OpponentMessage = styled.p`
@@ -45,12 +47,26 @@ const MessageBox = styled.li`
   &:hover {
     background: ${(props) => props.theme.colors.surface_weak};
   }
+  font-weight: 500;
 `;
 
 const KeyContent = styled.div`
   display: flex;
   flex-direction: row;
   gap: 20px;
+  flex: 1;
+`;
+
+const TimeContainer = styled.div`
+  color: ${(props) => props.theme.colors.border_strong};
+  font-size: 16px;
+`;
+
+const NameTimeWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
 `;
 
 function Message(props) {
@@ -67,7 +83,10 @@ function Message(props) {
         <KeyContent>
           <Logo src={CenterLogo} />
           <OpponentInfo>
-            <OpponentName>{props.info.memberName}</OpponentName>
+            <NameTimeWrapper>
+              <OpponentName>{props.info.memberName}</OpponentName>
+              <TimeContainer>{props.info.createTime}</TimeContainer>
+            </NameTimeWrapper>
             <OpponentMessage>{props.info.lastMessage}</OpponentMessage>
           </OpponentInfo>
         </KeyContent>

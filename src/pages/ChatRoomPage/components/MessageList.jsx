@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import { BASE_URL, IP } from "../../../constants/url";
-import { useSearchParams, useLoaderData } from "react-router-dom";
 import styled from "styled-components";
 import { Message } from "./Message";
 import { MessageHeader } from "./MessageHeader";
-import { getMemberId } from "../../../utils/auth";
 
 const MessageBody = styled.ul`
   width: ${(props) => (props.chatmode === "true" ? "400px;" : "1000px;")}
@@ -24,20 +22,13 @@ const MessageContainer = styled.div`
   padding: 20px;
 `;
 
-function MessageList() {
-  // const [isChatMode, setIsChatMode] = useState(false);
-
+function MessageList(props) {
   const [messages, setMessages] = useState([]);
   const [webSocket, setWebSocket] = useState(null);
 
-  const [searchParams] = useSearchParams();
-  const mode = searchParams.get("mode");
-  const isChatMode = mode === "chat";
-  const authData = useLoaderData();
-  const accessToken = authData.accessToken;
-  const memberId = getMemberId();
+  const isChatMode = (props.mode === "chat").toString();
 
-  const WebSocketServerUrl = `ws://${IP}/connect/chatRoom/all/${memberId}`;
+  const WebSocketServerUrl = `ws://${IP}/connect/chatRoom/all/${props.memberId}`;
   useEffect(() => {
     const ws = new WebSocket(WebSocketServerUrl);
     setWebSocket(ws);
@@ -45,7 +36,7 @@ function MessageList() {
       console.log("웹소켓 연결 성공");
       fetch(`${BASE_URL}chatRoom/all`, {
         headers: {
-          Authorization: accessToken,
+          Authorization: props.accessToken,
           Accept: "application/json",
         },
       })
@@ -80,7 +71,7 @@ function MessageList() {
       if (ws.readyState === WebSocket.OPEN) {
         const closeMessage = {
           type: "chatRoom",
-          memberId: memberId,
+          memberId: props.memberId,
         };
         ws.send(JSON.stringify(closeMessage));
         ws.close();
@@ -89,9 +80,9 @@ function MessageList() {
   }, []);
 
   return (
-    <MessageContainer chatmode={isChatMode.toString()}>
-      <MessageHeader chatmode={isChatMode.toString()} />
-      <MessageBody chatmode={isChatMode.toString()}>
+    <MessageContainer chatmode={isChatMode}>
+      <MessageHeader chatmode={isChatMode} />
+      <MessageBody chatmode={isChatMode}>
         {messages.map((item, index) => {
           return <Message key={index} info={item} />;
         })}

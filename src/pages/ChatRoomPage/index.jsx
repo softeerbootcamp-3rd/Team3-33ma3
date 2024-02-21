@@ -1,26 +1,52 @@
 import React from "react";
 import { MessageList } from "./components/MessageList";
 import { ChatList } from "./components/ChatList";
-import { useSearchParams } from "react-router-dom";
+import { useLoaderData, useSearchParams } from "react-router-dom";
 import styled from "styled-components";
+import { getMemberId } from "../../utils/auth";
+import Page from "/src/components/post/Page.jsx";
 
 const ChatMessageContainer = styled.div`
-  display: ${(props) => (props.mode === "chat" ? "flex;" : ";")}
+  display: ${(props) => (props.mode === "chat" ? "flex;" : ";")};
+  width: 100%;
   flex-direction: row;
 `;
 
 function ChatRoomPage() {
+  const authData = useLoaderData();
+  const accessToken = authData.accessToken;
+
   const [searchParams] = useSearchParams();
   const urlMode = searchParams.get("mode");
   const urlRoomId = searchParams.get("room-id");
+  const urlClientId = searchParams.get("client-id");
+  const urlCenterId = searchParams.get("center-id");
   const urlCenterName = searchParams.get("center-name");
+  const memberId = getMemberId();
+  const receiverId = memberId === urlClientId ? urlCenterId : urlClientId;
+
   return (
-    <ChatMessageContainer mode={urlMode}>
-      <MessageList />
-      {urlMode === "chat" && (
-        <ChatList roomId={urlRoomId} centerName={urlCenterName} />
-      )}
-    </ChatMessageContainer>
+    <Page>
+      <ChatMessageContainer mode={urlMode}>
+        <MessageList
+          mode={urlMode}
+          memberId={memberId}
+          roomId={urlRoomId}
+          accessToken={accessToken}
+        />
+        {urlMode === "chat" && (
+          <ChatList
+            memberId={memberId}
+            receiverId={receiverId}
+            clientId={urlClientId}
+            centerId={urlCenterId}
+            roomId={urlRoomId}
+            centerName={urlCenterName}
+            accessToken={accessToken}
+          />
+        )}
+      </ChatMessageContainer>
+    </Page>
   );
 }
 

@@ -4,16 +4,32 @@ import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import { BASE_URL } from "../../../constants/url";
 import { getMemberId } from "../../../utils/auth";
+import { getCurrentTimeFormatted } from "../../../utils/dateTimeHelper";
 
-function getCurrentTimeFormatted() {
-  const now = new Date();
-  const hours = now.getHours();
-  const minutes = now.getMinutes();
-  const isAM = hours < 12;
-  const formattedHours = isAM ? hours : hours - 12;
-  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-  return `${isAM ? "오전" : "오후"} ${formattedHours}:${formattedMinutes}`;
-}
+const InputContainer = styled.div`
+  display: flex;
+  height: 80px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0px 0px 14px 14px;
+  background: #f8f8f8fa;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  gap: 25px;
+`;
+
+const InputText = styled.input`
+  width: 700px;
+  height: 40px;
+  font-size: 20px;
+  border-radius: 10px;
+  border: none;
+  padding: 5px;
+`;
+
+const SubmitText = styled.button`
+  width: 50px;
+  height: 50px;
+`;
 
 function ChatInput(props) {
   const [inputValue, setInputValue] = useState("");
@@ -66,30 +82,5 @@ function ChatInput(props) {
     </InputContainer>
   );
 }
-
-const InputContainer = styled.div`
-  display: flex;
-  height: 80px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0px 0px 14px 14px;
-  background: #f8f8f8fa;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-  gap: 25px;
-`;
-
-const InputText = styled.input`
-  width: 700px;
-  height: 40px;
-  font-size: 20px;
-  border-radius: 10px;
-  border: none;
-  padding: 5px;
-`;
-
-const SubmitText = styled.button`
-  width: 50px;
-  height: 50px;
-`;
 
 export { ChatInput };
