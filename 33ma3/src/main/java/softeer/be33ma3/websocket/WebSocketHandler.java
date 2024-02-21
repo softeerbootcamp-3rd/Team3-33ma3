@@ -22,7 +22,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
         try {
-            webSocketService.receiveMsg(session, message);
+            webSocketService.receiveExitMsg(session, message);
         } catch(Exception e) {
             log.error("메세지 수신 에러");
         }
@@ -41,11 +41,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 Long postId = (Long) attributes.get("postId");
                 Long memberId = (Long) attributes.get("memberId");
                 webSocketService.saveInPost(postId, memberId, session);
-            }
-            if(type.equals("chat")){
-                Long roomId = (Long) attributes.get("roomId");
-                Long senderId = (Long) attributes.get("memberId");
-                webSocketService.saveInChat(roomId, senderId, session);
             }
             if(type.equals("chatRoom")){
                 Long memberId = (Long) attributes.get("memberId");

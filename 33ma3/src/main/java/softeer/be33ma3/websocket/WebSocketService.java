@@ -18,7 +18,7 @@ public class WebSocketService {
     private final WebSocketRepository webSocketRepository;
     private final ObjectMapper objectMapper;
 
-    public void receiveMsg(WebSocketSession session, TextMessage message) throws IOException {
+    public void receiveExitMsg(WebSocketSession session, TextMessage message) throws IOException {
         String payload = message.getPayload();
         // 게시글 관련 웹 소켓 연결이 종료된 유저가 있다고 메세지를 받았을 경우
         if(payload.contains("post") && payload.contains("memberId")) {
@@ -31,11 +31,11 @@ public class WebSocketService {
             ExitMember exitMember = objectMapper.readValue(payload, ExitMember.class);
             closeAllChatRoomConnection(exitMember.getMemberId());
         }
-        if(payload.contains("chat") && payload.contains("memberId")) {
-            log.info("채팅방에서 유저가 나갔습니다.");
-            ExitRoomMember exitRoomMember = objectMapper.readValue(payload, ExitRoomMember.class);
-            closeChatConnection(exitRoomMember.getRoomId(), exitRoomMember.getMemberId());
-        }
+//        if(payload.contains("chat") && payload.contains("memberId")) {
+//            log.info("채팅방에서 유저가 나갔습니다.");
+//            ExitRoomMember exitRoomMember = objectMapper.readValue(payload, ExitRoomMember.class);
+//            closeChatConnection(exitRoomMember.getRoomId(), exitRoomMember.getMemberId());
+//        }
 
         log.info("메세지 수신 성공: {}", payload); // 수신한 메세지 log
         TextMessage textMessage = new TextMessage("메세지 수신 성공");
@@ -44,11 +44,6 @@ public class WebSocketService {
 
     public void saveInPost(Long postId, Long memberId, WebSocketSession session) {
         webSocketRepository.saveMemberInPost(postId, memberId);
-        webSocketRepository.saveSessionWithMemberId(memberId, session);
-    }
-
-    public void saveInChat(Long roomId, Long memberId, WebSocketSession session) {
-        webSocketRepository.saveMemberInChat(roomId, memberId);
         webSocketRepository.saveSessionWithMemberId(memberId, session);
     }
 
