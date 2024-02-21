@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.dto.response.AvgPriceDto;
 import softeer.be33ma3.exception.BusinessException;
+import softeer.be33ma3.repository.MemberRepository;
 import softeer.be33ma3.repository.review.ReviewRepository;
 import softeer.be33ma3.websocket.WebSocketHandler;
 import softeer.be33ma3.domain.Member;
@@ -34,6 +35,7 @@ public class OfferService {
     private final OfferRepository offerRepository;
     private final PostRepository postRepository;
     private final ReviewRepository reviewRepository;
+    private final MemberRepository memberRepository;
     private final WebSocketHandler webSocketHandler;
 
     // 견적 제시 댓글 하나 반환
@@ -43,7 +45,8 @@ public class OfferService {
         // 2. 해당 댓글 가져오기
         Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
         Double score = reviewRepository.findAvgScoreByCenterId(offer.getCenter().getMemberId()).orElse(0.0);
-        return OfferDetailDto.fromEntity(offer, score);
+        String profile = memberRepository.findProfileLinkByMemberId(offer.getCenter().getMemberId()).get();
+        return OfferDetailDto.fromEntity(offer, score, profile);
     }
 
     // 견적 제시 댓글 생성
@@ -146,7 +149,8 @@ public class OfferService {
         List<OfferDetailDto> offerDetailDtos = new ArrayList<>(
                 offerList.stream().map(offer -> {
                     Double score = reviewRepository.findAvgScoreByCenterId(offer.getCenter().getMemberId()).orElse(0.0);
-                    return OfferDetailDto.fromEntity(offer, score);
+                    String profile = memberRepository.findProfileLinkByMemberId(memberId).get();
+                    return OfferDetailDto.fromEntity(offer, score, profile);
                 }).toList());
         Collections.sort(offerDetailDtos);
         // 2. 해당 게시글 화면에 진입해 있을 경우 전송하기

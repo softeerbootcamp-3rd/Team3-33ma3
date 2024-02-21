@@ -35,6 +35,7 @@ public class PostService {
     private final PostPerCenterRepository postPerCenterRepository;
     private final ReviewRepository reviewRepository;
     private final ImageRepository imageRepository;
+    private final MemberRepository memberRepository;
     private final ImageService imageService;
 
     // 게시글 목록 조회
@@ -133,7 +134,8 @@ public class PostService {
             List<OfferDetailDto> offerDetailDtos = new ArrayList<>(
                     offerList.stream().map(offer -> {
                         Double score = reviewRepository.findAvgScoreByCenterId(offer.getCenter().getMemberId()).orElse(0.0);
-                        return OfferDetailDto.fromEntity(offer, score);
+                        String profile = memberRepository.findProfileLinkByMemberId(offer.getCenter().getMemberId()).get();
+                        return OfferDetailDto.fromEntity(offer, score, profile);
                     }).toList());
             Collections.sort(offerDetailDtos);
             return new PostWithOffersDto(postDetailDto, offerDetailDtos);
@@ -158,7 +160,8 @@ public class PostService {
             return null;
         }
         Double score = reviewRepository.findAvgScoreByCenterId(offer.get().getCenter().getMemberId()).orElse(0.0);
-        return OfferDetailDto.fromEntity(offer.get(), score);
+        String profile = memberRepository.findProfileLinkByMemberId(offer.get().getCenter().getMemberId()).get();
+        return OfferDetailDto.fromEntity(offer.get(), score, profile);
     }
 
     private Region getRegion(String location) {
