@@ -20,7 +20,15 @@ public class WebSocketRepository {
     public Set<Long> findAllMemberInPost(Long postId) {
         return postRoom.get(postId);
     }
-
+    public boolean isMemberInChatRoom(Long roomId, Long memberId){
+        Set<Long> members = chatRoom.get(roomId);
+        // 만약 members가 null이면 해당 roomId에 대한 채팅 룸이 존재하지 않음
+        if (members == null) {
+            return false;
+        }
+        // Set<Long>에 memberId가 포함되어 있는지 확인
+        return members.contains(memberId);
+    }
     public WebSocketSession findSessionByMemberId(Long memberId) {
         return sessions.get(memberId);
     }
@@ -92,5 +100,4 @@ public class WebSocketRepository {
     public void deletePostRoom(Long postId) {
         postRoom.remove(postId);
     }
-
 }

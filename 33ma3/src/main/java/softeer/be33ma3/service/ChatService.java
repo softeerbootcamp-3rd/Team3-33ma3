@@ -7,12 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.domain.*;
 import softeer.be33ma3.dto.response.ChatHistoryDto;
 import softeer.be33ma3.dto.response.AllChatRoomDto;
-import softeer.be33ma3.dto.response.ChatMessageResponseDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.*;
 import softeer.be33ma3.repository.post.PostRepository;
-import softeer.be33ma3.websocket.WebSocketHandler;
-import softeer.be33ma3.websocket.WebSocketRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +28,6 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
-    private final WebSocketHandler webSocketHandler;
-    private final WebSocketRepository webSocketRepository;
-    private final AlertRepository alertRepository;
 
     @Transactional
     public Long createRoom(Member client, Long centerId, Long postId) {
@@ -49,34 +43,6 @@ public class ChatService {
 
         ChatRoom chatRoom = ChatRoom.createChatRoom(client, center);
         return chatRoomRepository.save(chatRoom).getChatRoomId();
-    }
-
-    @Transactional
-    public void sendMessage(Member sender, Long roomId, Long receiverId, String contents) {
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BusinessException(NOT_FOUND_CHAT_ROOM));
-        Member receiver = memberRepository.findById(receiverId).orElseThrow(() -> new BusinessException(NOT_FOUND_MEMBER));
-        isValidSenderAndReceiver(sender, chatRoom, receiver);      //보내는 사람, 받는 사람이 해당 방의 멤버가 맞는지 검증
-
-        ChatMessage chatMessage = ChatMessage.createChatMessage(sender, chatRoom, contents);
-        ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
-
-        AllChatRoomDto chatDto = getChatDto(chatRoom, receiver.getLoginId(), sender);     //업데이트 할 목록 생성
-//        webSocketHandler.sendAllChatData2Client(sender.getMemberId(), chatDto);     //보낸사람 목록도 실시간 업데이트 //TODO: 얘도 연결 되어 있는지 체크
-
-        if(webSocketRepository.findSessionByMemberId(receiver.getMemberId()) == null){      //채팅룸에 상대방이 존재하지 않을 경우
-            if(webSocketRepository.findAllChatRoomSessionByMemberId(receiver.getMemberId()) == null){       //상대방이 채팅 목록 세션을 연결 안하고 있는 경우
-                Alert alert = Alert.createAlert(chatRoom.getChatRoomId(), receiver);        //채팅방 & 채팅 목록에도 없는 경우는 알림 테이블에 저장
-                alertRepository.save(alert);
-                return;
-            }
-            chatDto = getChatDto(chatRoom, sender.getLoginId(), receiver);     //업데이트 할 목록 생성
-            webSocketHandler.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //실시간 전송 - 채팅 목록
-            return;
-        }
-        //채팅룸에 상대방이 존재하는 경우
-        savedChatMessage.setReadDoneTrue();   //읽음 처리
-        ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.create(savedChatMessage, createTimeParsing(savedChatMessage.getCreateTime()));
-        webSocketHandler.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);   //실시간 전송 - 채팅 내용
     }
 
     public List<AllChatRoomDto> showAllChatRoom(Member member) {
@@ -132,22 +98,6 @@ public class ChatService {
 
         if (member.getMemberType() == CENTER_TYPE && !chatRoom.getCenter().equals(member)) {
             throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
-        }
-    }
-
-    private void isValidSenderAndReceiver(Member sender, ChatRoom chatRoom, Member receiver) {
-        Member client = chatRoom.getClient();
-        Member center = chatRoom.getCenter();
-
-        if (sender.getMemberType() == CLIENT_TYPE) {
-            if (!(client.getMemberId().equals(sender.getMemberId()) && center.getMemberId().equals(receiver.getMemberId()))) {
-                throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
-            }
-        }
-        if (sender.getMemberType() == CENTER_TYPE) {
-            if (!(client.getMemberId().equals(receiver.getMemberId()) && center.getMemberId().equals(sender.getMemberId()))) {
-                throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
-            }
         }
     }
 }

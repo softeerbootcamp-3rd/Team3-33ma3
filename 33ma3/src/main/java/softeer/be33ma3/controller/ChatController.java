@@ -8,12 +8,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import softeer.be33ma3.domain.Member;
-import softeer.be33ma3.dto.request.ChatMessageRequestDto;
 import softeer.be33ma3.dto.response.ChatHistoryDto;
 import softeer.be33ma3.dto.response.AllChatRoomDto;
 import softeer.be33ma3.jwt.CurrentUser;
@@ -43,22 +41,6 @@ public class ChatController {
         Long roomId = chatService.createRoom(member, centerId, postId);
 
         return ResponseEntity.ok().body(DataResponse.success("채팅방 생성 성공", roomId));
-    }
-
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "메세지 전송 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "401", description = "해당 방의 회원이 아닙니다.", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 회원" + "<br>존재하지 않는 채팅 룸", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
-    })
-    @Parameter(name = "room_id", description = "채팅방 id", required = true, example = "1", in = ParameterIn.PATH)
-    @Parameter(name = "receiver_id", description = "메세지 받는 사람 id", required = true, example = "2", in = ParameterIn.PATH)
-    @Operation(summary = "채팅 메세지 보내기", description = "채팅 메세지 보내기 메서드 입니다.")
-    @PostMapping("/chat/{room_id}/{receiver_id}")
-    public ResponseEntity<?> sendMessage(@Schema(hidden = true) @CurrentUser Member sender, @PathVariable("room_id") Long roomId,
-                                  @PathVariable("receiver_id") Long receiverId, @RequestBody @Valid ChatMessageRequestDto chatMessageRequestDto){
-        chatService.sendMessage(sender, roomId, receiverId, chatMessageRequestDto.getMessage());
-
-        return ResponseEntity.ok().body(SingleResponse.success("메세지 전송 성공"));
     }
 
     @ApiResponse(responseCode = "200", description = "문의 내역 전송 성공", content = @Content(schema = @Schema(implementation = DataResponse.class)))

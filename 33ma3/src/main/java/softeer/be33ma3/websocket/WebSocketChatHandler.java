@@ -8,7 +8,12 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import softeer.be33ma3.dto.request.ChatMessageDto;
+
 import java.util.Map;
+
+import static softeer.be33ma3.dto.request.ChatMessageDto.MessageType.EXIT;
+import static softeer.be33ma3.dto.request.ChatMessageDto.MessageType.TALK;
 
 @Component
 @RequiredArgsConstructor
@@ -16,6 +21,7 @@ import java.util.Map;
 public class WebSocketChatHandler extends TextWebSocketHandler {
     private final ObjectMapper objectMapper;
     private final WebSocketRepository webSocketRepository;
+    private final WebSocketService webSocketService;
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         try {
@@ -33,6 +39,17 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
     }
     @Override   //소켓 통신 시 메세지 다루는 부분
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        String payload = message.getPayload();
+        log.info("payload {}", payload);
+        //payload -> chatMessageDto 로 변환
+        ChatMessageDto chatMessageDto = objectMapper.readValue(payload, ChatMessageDto.class);
+
+        if(chatMessageDto.getMessageType().equals(TALK)){
+            webSocketService.sendChatMessage(chatMessageDto);
+        }
+        if(chatMessageDto.getMessageType().equals(EXIT)){    //채팅방을 나간경우
+            webSocketService.closeChatConnection(chatMessageDto.getRoomId(), chatMessageDto.getSenderId());
+        }
     }
 
     @Override
