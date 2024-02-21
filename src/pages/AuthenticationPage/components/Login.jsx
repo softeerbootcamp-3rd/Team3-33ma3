@@ -99,7 +99,7 @@ function Login() {
           <SubmitButton>{"로그인"}</SubmitButton>
         </SubmitContainer>
         <ChangeTypeContainer>
-          <AuthLink to={"?mode=signUp"}>{"회원가입"}</AuthLink>
+          <AuthLink to={"?mode=setting"}>{"회원가입"}</AuthLink>
         </ChangeTypeContainer>
       </AuthContainer>
     </Form>
