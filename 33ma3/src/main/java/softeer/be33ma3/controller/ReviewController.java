@@ -71,8 +71,10 @@ public class ReviewController {
 
         return ResponseEntity.ok().body(DataResponse.success("전체 리뷰 조회 성공", showAllReviewDtos));
     }
-
-    @ApiResponse(responseCode = "200", description = "센터 리뷰 조회 성공", content = @Content(schema = @Schema(implementation = DataResponse.class)))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "센터 리뷰 조회 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 센터", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+    })
     @Operation(summary = "센터 리뷰 조회", description = "센터 리뷰 조회 메서드 입니다.")
     @Parameter(name = "center_id", description = "center id", required = true, example = "1", in = ParameterIn.PATH)
     @GetMapping("/{center_id}")
