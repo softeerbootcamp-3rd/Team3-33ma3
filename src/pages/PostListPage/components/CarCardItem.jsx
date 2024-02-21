@@ -116,15 +116,16 @@ function CarCardItem({ cardInfo }) {
           <ModelName>{cardInfo.modelName}</ModelName>
           <CreateTime>{cardInfo.createTime}</CreateTime>
         </HeaderContext>
-        <RemainTime>
-          {cardInfo.dday === -1 ? (
-            <img src={DeadLineCompleteImg} />
-          ) : cardInfo.dday > 0 ? (
-            <p>D-{cardInfo.dday}</p>
-          ) : (
-            <p>{useTimer()}</p>
-          )}
-        </RemainTime>
+        {cardInfo.dday === -1 ? (
+          <img
+            src={DeadLineCompleteImg}
+            style={{ width: "50px", height: "50px" }}
+          />
+        ) : cardInfo.dday > 0 ? (
+          <RemainTime>D-{cardInfo.dday}</RemainTime>
+        ) : (
+          <RemainTime>{useTimer()}</RemainTime>
+        )}
       </CardHeader>
       <CarouselContainer>
         <Carousel imgList={cardInfo.imageList} size={"medium"} />

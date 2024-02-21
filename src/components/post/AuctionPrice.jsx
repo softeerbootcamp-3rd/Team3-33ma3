@@ -252,7 +252,6 @@ function AuctionPrice({
   isSelected,
   onClick,
 }) {
-  console.log("hi", !isEnd && !isEdited);
   return (
     <Container
       $isActive={isActive}
