@@ -43,7 +43,8 @@ public class OfferService {
         // 2. 해당 댓글 가져오기
         Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
         Double score = reviewRepository.findAvgScoreByCenterId(offer.getCenter().getMemberId()).orElse(0.0);
-        return OfferDetailDto.fromEntity(offer, score);
+        String profile = offer.getCenter().getImage().getLink();
+        return OfferDetailDto.fromEntity(offer, score, profile);
     }
 
     // 견적 제시 댓글 생성
@@ -121,13 +122,6 @@ public class OfferService {
         return post;
     }
 
-    // 해당 견적을 작성한 서비스 센터들의 member id 목록 반환
-    private List<Long> findMemberIdsWithOfferList(List<Offer> offerList) {
-        return offerList.stream()
-                .map(offer -> offer.getCenter().getMemberId())
-                .toList();
-    }
-
     public void sendAboutOfferUpdate(Long postId) {
         // 1. 해당 게시글 가져오기
         Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
@@ -146,7 +140,8 @@ public class OfferService {
         List<OfferDetailDto> offerDetailDtos = new ArrayList<>(
                 offerList.stream().map(offer -> {
                     Double score = reviewRepository.findAvgScoreByCenterId(offer.getCenter().getMemberId()).orElse(0.0);
-                    return OfferDetailDto.fromEntity(offer, score);
+                    String profile = offer.getCenter().getImage().getLink();
+                    return OfferDetailDto.fromEntity(offer, score, profile);
                 }).toList());
         Collections.sort(offerDetailDtos);
         // 2. 해당 게시글 화면에 진입해 있을 경우 전송하기
