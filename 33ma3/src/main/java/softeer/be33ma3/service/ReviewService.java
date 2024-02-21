@@ -68,11 +68,11 @@ public class ReviewService {
         reviewRepository.delete(review);
     }
 
-    public List<ShowReviewDto> showAllReview() {
+    public List<ShowReviewDto> showAllReview() {    //전체 리뷰 조회
         return reviewCustomRepository.findReviewGroupByCenter();
     }
 
-    public ShowCenterReviewsDto showOneCenterReviews(Long centerId) {
+    public ShowCenterReviewsDto showOneCenterReviews(Long centerId) {   //특정 센터 리뷰 조회
         List<OneReviewDto> oneReviewDtos = new ArrayList<>();
         double totalScore = 0.0;
         Member center = memberRepository.findById(centerId).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
@@ -83,7 +83,7 @@ public class ReviewService {
             oneReviewDtos.add(OneReviewDto.create(review));
         }
 
-        double scoreAvg = Math.round(totalScore/reviews.size() * 10 ) / 10.0;
+        double scoreAvg = Math.round(totalScore/reviews.size() * 10 ) / 10.0;   //별점 평균
         return ShowCenterReviewsDto.create(center, scoreAvg, oneReviewDtos);
     }
 }
