@@ -14,34 +14,53 @@ function AuctionStatus({ postId, curOfferDetails }) {
   console.log(prevOfferList.current);
 
   useEffect(() => {
-    // /connect/{postId}/{memberId}
-    webSocket.current = new WebSocket(
-      `ws://${IP}/connect/post/${postId}/${memberId}`
-    );
+    function connectWebSocket() {
+      console.log("websocket 연결 시도!");
+      webSocket.current = new WebSocket(
+        `ws://${IP}/connect/post/${postId}/${memberId}`
+      );
 
-    // socket 연결 시 이벤트
-    webSocket.current.onopen = () => {
-      console.log("WebSocket 연결!!!!!");
-      // socket 연결 시 memberId, postId 전송
-    };
+      // socket 연결 시 이벤트
+      webSocket.current.onopen = () => {
+        console.log("연결 성공");
+        // socket 연결 시 memberId, postId 전송
+      };
 
-    // socket 해제 시 이벤트
-    webSocket.current.onclose = () => {
-      console.log("closed");
-    };
+      // unmounted되지 않았을 때, 소켓이 닫힌다면 0.5초마다 재연결 시도
+      webSocket.current.onclose = (event) => {
+        if (event.code !== 1000 && event.message !== "close") {
+          setTimeout(connectWebSocket, 500);
+        }
+      };
 
-    // socket에서 메세지 전달 시 이벤트
-    webSocket.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      prevOfferList.current.push(new Set(data.map((offer) => offer.offerId)));
-      prevOfferList.current.shift();
-      setOfferList(data);
-    };
+      // socket에서 메세지 전달 시 이벤트
+      webSocket.current.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        prevOfferList.current.push(new Set(data.map((offer) => offer.offerId)));
+        prevOfferList.current.shift();
+        setOfferList(data);
+      };
 
-    // socket 에러 발생 시 이벤트
-    webSocket.current.error = (event) => {
-      alert("연결이 끊어졌습니다.");
-    };
+      // socket 에러 발생 시 이벤트
+      webSocket.current.error = (error) => {
+        alert("에러가 발생했습니다.", error);
+      };
+    }
+
+    connectWebSocket();
+
+    // 브라우저 새로고침, 탭 닫을 시 정상 종료
+    window.addEventListener("beforeunload", () => {
+      if (webSocket.current.readyState === WebSocket.OPEN) {
+        const closeMessage = {
+          type: "post",
+          roomId: postId,
+          memberId: memberId,
+        };
+        webSocket.current.send(JSON.stringify(closeMessage));
+        webSocket.current.close();
+      }
+    });
 
     // clean up 함수
     // unmount 될 때 webSocket 연결 해제
@@ -71,7 +90,6 @@ function AuctionStatus({ postId, curOfferDetails }) {
       .then((res) => res.json())
       .then((json) => console.log(json))
       .finally(() => {
-        console.log("끝");
         window.location.reload();
       });
   }

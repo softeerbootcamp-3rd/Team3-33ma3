@@ -10,6 +10,7 @@ const CenterCardContainer = styled.div`
   background-color: ${({ theme }) => theme.colors.surface_default};
   border-radius: ${({ theme }) => theme.radiuses.radius_m};
   box-shadow: ${({ theme }) => theme.boxShadow.up};
+  box-sizing: border-box;
   gap: 30px;
   transition: transform 0.2s;
 
@@ -22,6 +23,7 @@ const ImgContainer = styled.div`
   width: 123px;
   height: 123px;
   border-radius: ${({ theme }) => theme.radiuses.radius_s};
+  overflow: hidden;
 `;
 
 const Img = styled.img`
@@ -31,7 +33,7 @@ const Img = styled.img`
 `;
 
 const ContentContainer = styled.div`
-  width: 100%;
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
