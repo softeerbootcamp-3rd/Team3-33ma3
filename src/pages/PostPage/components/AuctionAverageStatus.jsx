@@ -49,27 +49,33 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
 
   // TODO: 웹 소켓 연결
   useEffect(function () {
-    webSocket.current = new WebSocket(
-      `ws://${IP}/connect/post/${postId}/${memberId}`
-    );
+    function connectWebSocket() {
+      webSocket.current = new WebSocket(
+        `ws://${IP}/connect/post/${postId}/${memberId}`
+      );
 
-    webSocket.current.onopen = () => {
-      console.log("WebSocket 연결! - 평균 버전");
-    };
+      webSocket.current.onopen = () => {
+        console.log("WebSocket 연결! - 평균 버전");
+      };
 
-    webSocket.current.onclose = () => {
-      alert("연결이 끊겼습니다.");
-    };
+      webSocket.current.onclose = (event) => {
+        if (event.code !== 1000 && event.message !== "close") {
+          setTimeout(connectWebSocket, 500);
+        }
+      };
 
-    webSocket.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log(data);
-      if (data.message) {
-        setEndMessage(data);
-      } else {
-        setAvgPrice(JSON.parse(event.data).avgPrice);
-      }
-    };
+      webSocket.current.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log(data);
+        if (data.message) {
+          setEndMessage(data);
+        } else {
+          setAvgPrice(JSON.parse(event.data).avgPrice);
+        }
+      };
+    }
+
+    connectWebSocket();
 
     return () => {
       if (webSocket.current.readyState === WebSocket.OPEN) {
