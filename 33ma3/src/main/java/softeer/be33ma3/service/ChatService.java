@@ -10,6 +10,7 @@ import softeer.be33ma3.dto.response.AllChatRoomDto;
 import softeer.be33ma3.dto.response.ChatMessageResponseDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.*;
+import softeer.be33ma3.repository.post.PostRepository;
 import softeer.be33ma3.websocket.WebSocketHandler;
 import softeer.be33ma3.websocket.WebSocketRepository;
 
@@ -34,14 +35,13 @@ public class ChatService {
     private final WebSocketHandler webSocketHandler;
     private final WebSocketRepository webSocketRepository;
     private final AlertRepository alertRepository;
-    private final CenterRepository centerRepository;
 
     @Transactional
     public Long createRoom(Member client, Long centerId, Long postId) {
         Member center = memberRepository.findById(centerId).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
         Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
 
-        if(!post.getMember().equals(client)){
+        if(!post.getMember().equals(client)){   //게시글 작성자만 생성할 수 있음
             throw new BusinessException(ONLY_POST_AUTHOR_ALLOWED);
         }
         if(chatRoomRepository.findRoomIdByCenterIdAndClientId(centerId, client.getMemberId()).isPresent()){     // 이미 방이 존재하는 경우
@@ -67,7 +67,8 @@ public class ChatService {
                 alertRepository.save(alert);
                 return;
             }
-            updateAllChatRoom(receiver, chatRoom);    //실시간 전송 - 채팅 목록
+            AllChatRoomDto chatDto = getChatDto(chatRoom, sender.getLoginId(), receiver);     //업데이트 할 목록 생성
+            webSocketHandler.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //실시간 전송 - 채팅 목록
             return;
         }
         //채팅룸에 상대방이 존재하는 경우
@@ -111,11 +112,6 @@ public class ChatService {
         }
 
         return chatHistoryDtos;
-    }
-
-    private void updateAllChatRoom(Member receiver, ChatRoom chatRoom) {
-        AllChatRoomDto chatDto = getChatDto(chatRoom, receiver.getLoginId(), receiver);
-        webSocketHandler.sendAllChatData2Client(receiver.getMemberId(), chatDto);
     }
 
     private AllChatRoomDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {

@@ -1,9 +1,6 @@
 package softeer.be33ma3.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +18,9 @@ public class Member {
 
     private String password;
 
-    private Long profileId;
+    @OneToOne
+    @JoinColumn(name = "image_id")
+    private Image image;
 
     private String refreshToken;
 
@@ -39,7 +38,7 @@ public class Member {
         this.refreshToken = refreshToken;
     }
 
-    public void setProfileId(Long profileId) {
-        this.profileId = profileId;
+    public void setProfile(Image image) {
+        this.image = image;
     }
 }

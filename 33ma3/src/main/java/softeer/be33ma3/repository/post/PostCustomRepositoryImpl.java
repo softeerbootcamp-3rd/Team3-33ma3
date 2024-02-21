@@ -1,4 +1,4 @@
-package softeer.be33ma3.repository;
+package softeer.be33ma3.repository.post;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import softeer.be33ma3.domain.Post;
+
 import static softeer.be33ma3.domain.QPost.post;
 
 import java.util.List;

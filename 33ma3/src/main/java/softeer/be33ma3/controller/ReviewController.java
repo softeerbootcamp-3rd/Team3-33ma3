@@ -14,10 +14,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.ReviewCreateDto;
+import softeer.be33ma3.dto.response.ShowCenterReviewsDto;
+import softeer.be33ma3.dto.response.ShowAllReviewDto;
 import softeer.be33ma3.jwt.CurrentUser;
 import softeer.be33ma3.response.DataResponse;
 import softeer.be33ma3.response.SingleResponse;
 import softeer.be33ma3.service.ReviewService;
+
+import java.util.List;
+
 
 @Tag(name = "Review", description = "센터 리뷰 관련 api")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -56,5 +61,26 @@ public class ReviewController {
                                           @Schema(hidden = true) @CurrentUser Member member) {
         reviewService.deleteReview(reviewId, member);
         return ResponseEntity.ok().body(SingleResponse.success("센터 리뷰 삭제 성공"));
+    }
+
+    @ApiResponse(responseCode = "200", description = "전체 리뷰 조회 성공", content = @Content(schema = @Schema(implementation = DataResponse.class)))
+    @Operation(summary = "모든 센터 리뷰 조회", description = "모든 센터 리뷰 조회 메서드 입니다.")
+    @GetMapping
+    public ResponseEntity<?> showAllReview(){
+        List<ShowAllReviewDto> showAllReviewDtos = reviewService.showAllReview();
+
+        return ResponseEntity.ok().body(DataResponse.success("전체 리뷰 조회 성공", showAllReviewDtos));
+    }
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "센터 리뷰 조회 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 센터", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
+    })
+    @Operation(summary = "센터 리뷰 조회", description = "센터 리뷰 조회 메서드 입니다.")
+    @Parameter(name = "center_id", description = "center id", required = true, example = "1", in = ParameterIn.PATH)
+    @GetMapping("/{center_id}")
+    public ResponseEntity<?> showOneCenterReview(@PathVariable("center_id") Long centerId){
+        ShowCenterReviewsDto showCenterReviewsDtos = reviewService.showOneCenterReviews(centerId);
+
+        return ResponseEntity.ok().body(DataResponse.success("센터 리뷰 조회 성공", showCenterReviewsDtos));
     }
 }

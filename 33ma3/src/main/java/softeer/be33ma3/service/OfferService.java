@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.dto.response.AvgPriceDto;
 import softeer.be33ma3.exception.BusinessException;
-import softeer.be33ma3.repository.ReviewRepository;
+import softeer.be33ma3.repository.review.ReviewRepository;
 import softeer.be33ma3.websocket.WebSocketHandler;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Offer;
@@ -14,10 +14,12 @@ import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.dto.request.OfferCreateDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
 import softeer.be33ma3.repository.OfferRepository;
-import softeer.be33ma3.repository.PostRepository;
+import softeer.be33ma3.repository.post.PostRepository;
 import softeer.be33ma3.response.DataResponse;
 
 import java.util.*;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static softeer.be33ma3.exception.ErrorCode.*;

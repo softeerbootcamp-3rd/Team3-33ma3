@@ -10,6 +10,8 @@ import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.dto.response.*;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.*;
+import softeer.be33ma3.repository.post.PostRepository;
+import softeer.be33ma3.repository.review.ReviewRepository;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -20,6 +22,7 @@ import java.util.List;
 import static softeer.be33ma3.exception.ErrorCode.*;
 import static softeer.be33ma3.service.MemberService.CENTER_TYPE;
 import static softeer.be33ma3.service.MemberService.CLIENT_TYPE;
+import static softeer.be33ma3.utils.StringParser.stringCommaParsing;
 
 @Service
 @RequiredArgsConstructor
@@ -70,11 +73,10 @@ public class PostService {
 
     @Transactional
     public Long createPost(Member currentMember, PostCreateDto postCreateDto, List<MultipartFile> multipartFiles) {
-        //회원이랑 지역 찾기
-        if(currentMember.getMemberType() == CENTER_TYPE){
+        if(currentMember.getMemberType() == CENTER_TYPE){   //센터인 경우 글 작성 불가능
             throw new BusinessException(POST_CREATION_DISABLED);
         }
-        Region region = getRegion(postCreateDto.getLocation());
+        Region region = getRegion(postCreateDto.getLocation()); //지역 찾기
 
         //게시글 저장
         Post post = Post.createPost(postCreateDto, region, currentMember);
@@ -83,7 +85,7 @@ public class PostService {
         //정비소랑 게시물 매핑하기
         centerAndPostMapping(postCreateDto, savedPost);
 
-        if(multipartFiles == null){     //이미지가 없는 경우
+        if(multipartFiles.isEmpty()){     //이미지가 없는 경우
             return savedPost.getPostId();
         }
 
@@ -187,20 +189,9 @@ public class PostService {
         if (!post.getMember().getMemberId().equals(member.getMemberId())) {
             throw new BusinessException(AUTHOR_ONLY_ACCESS);
         }
-
         if (!offerRepository.findByPost_PostId(postId).isEmpty()) { //댓글이 있는 경우(경매 시작 후)
             throw new BusinessException(PRE_AUCTION_ONLY);
         }
-
         return post;
-    }
-
-    // 구분자 콤마로 문자열 파싱 후 각각의 토큰에서 공백 제거 후 리스트 반환
-    private List<String> stringCommaParsing(String inputString) {
-        if(inputString == null || inputString.isBlank())
-            return List.of();
-        return Arrays.stream(inputString.split(","))
-                .map(String::strip)
-                .toList();
     }
 }
