@@ -45,7 +45,6 @@ const MessageBox = styled.li`
   box-sizing: border-box;
   padding: 15px;
   align-items: center;
-  border-bottom: 1px solid ${(props) => props.theme.colors.surface_weak};
   &:hover {
     background: ${(props) => props.theme.colors.surface_weak};
   }

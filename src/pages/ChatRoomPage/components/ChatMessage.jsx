@@ -13,7 +13,7 @@ const Message = styled.div`
   max-width: 300px;
   font-size: ${({ theme }) => theme.fontSize.regular};
   font-weight: 500;
-  padding: 20px;
+  padding: 10px 20px;
   border-radius: 14px;
   overflow: hidden;
   word-wrap: break-word;
@@ -25,17 +25,16 @@ const Message = styled.div`
 const StatusContainer = styled.div`
   font-size: ${({ theme }) => theme.fontSize.small};
   font-weight: 500;
-  padding-bottom: 5px;
 `;
 
 const TimeContainer = styled.div`
-  padding-top: 5px;
+  padding-top: 3px;
   color: ${(props) => props.theme.colors.border_strong};
 `;
 
 const ReadContainer = styled.div`
   display: flex;
-  color: ${({ theme }) => theme.colors.text_weak};
+  color: ${({ theme }) => theme.colors.text_brand};
   justify-content: ${(props) => (props.mode === "true" ? "end;" : "start;")};
 `;
 
