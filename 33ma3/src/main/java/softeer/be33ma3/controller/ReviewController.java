@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.ReviewCreateDto;
 import softeer.be33ma3.dto.response.ShowCenterReviewsDto;
-import softeer.be33ma3.dto.response.ShowReviewDto;
+import softeer.be33ma3.dto.response.ShowAllReviewDto;
 import softeer.be33ma3.jwt.CurrentUser;
 import softeer.be33ma3.response.DataResponse;
 import softeer.be33ma3.response.SingleResponse;
@@ -67,9 +67,9 @@ public class ReviewController {
     @Operation(summary = "모든 센터 리뷰 조회", description = "모든 센터 리뷰 조회 메서드 입니다.")
     @GetMapping
     public ResponseEntity<?> showAllReview(){
-        List<ShowReviewDto> showReviewDtos = reviewService.showAllReview();
+        List<ShowAllReviewDto> showAllReviewDtos = reviewService.showAllReview();
 
-        return ResponseEntity.ok().body(DataResponse.success("전체 리뷰 조회 성공", showReviewDtos));
+        return ResponseEntity.ok().body(DataResponse.success("전체 리뷰 조회 성공", showAllReviewDtos));
     }
 
     @ApiResponse(responseCode = "200", description = "센터 리뷰 조회 성공", content = @Content(schema = @Schema(implementation = DataResponse.class)))

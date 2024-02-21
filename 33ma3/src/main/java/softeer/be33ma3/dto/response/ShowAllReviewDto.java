@@ -5,10 +5,10 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ShowReviewDto {
+public class ShowAllReviewDto {
     private Long centerId;
     private double scoreAvg;   //별점 평균
     private Long reviewCount;    //리뷰 개수
     private String centerName;
-    private String link;
+    private String centerImage;
 }
