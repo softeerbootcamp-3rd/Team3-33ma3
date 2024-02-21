@@ -78,17 +78,16 @@ const Img = styled.img`
 `;
 
 function ReviewComment({ reviewInfo }) {
-  const { accessToken } = useRouteLoaderData("root");
+  const { memberId, accessToken } = useRouteLoaderData("root");
   const [isLoading, setIsLoading] = useState(false);
-  const { memberId } = useRouteLoaderData("root");
 
   const services = [...reviewInfo.repairList, ...reviewInfo.tuneUpList].map(
-    () => <ChipButton block type={"부품 교체"} />
+    (type, index) => <ChipButton block type={type} key={index} />
   );
 
   function handleRemoveComment() {
     setIsLoading(true);
-    fetch(`${BASE_URL}review/${reviewId}`, {
+    fetch(`${BASE_URL}review/${reviewInfo.reviewId}`, {
       method: "DELETE",
       headers: {
         Authorization: accessToken,
@@ -115,7 +114,7 @@ function ReviewComment({ reviewInfo }) {
           </ImgContainer>
           <Writer>{reviewInfo.writerName}</Writer>
         </UserContainer>
-        {reviewInfo.writerName === memberId && (
+        {reviewInfo.writerId === Number(memberId) && (
           <SubmitButton
             disabled={isLoading}
             size={"small"}

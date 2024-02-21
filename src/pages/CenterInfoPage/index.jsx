@@ -3,11 +3,10 @@ import styled from "styled-components";
 import Page from "../../components/post/Page";
 import Carousel from "../../components/image/Carousel";
 import OptionType from "../../components/post/OptionType";
-import SubmitButton from "../../components/button/SubmitButton";
 import OptionItem from "../../components/post/OptionItem";
 import StarRating from "../../components/post/StarRating";
-import StarImg from "../../assets/star.svg";
 import ReviewComment from "./components/ReviewComment";
+import PictureArea from "../../components/image/PictureArea";
 import { useParams, useSearchParams } from "react-router-dom";
 import { BASE_URL } from "../../constants/url";
 
@@ -26,7 +25,7 @@ const TopContainer = styled.div`
 
 const TopContentContainer = styled.div`
   padding-top: 30px;
-  width: 100%;
+  flex: 1;
 `;
 
 function CenterInfoPage() {
@@ -55,11 +54,7 @@ function CenterInfoPage() {
         {!isLoading && (
           <>
             <TopContainer>
-              <Carousel
-                imgList={[centerInfo.centerImage]}
-                thumbnail
-                size="large"
-              />
+              <PictureArea size="large" img={centerInfo.centerImage} />
               <TopContentContainer>
                 <OptionType title={"센터 정보"}>
                   <OptionItem title={"센터 이름"}>
