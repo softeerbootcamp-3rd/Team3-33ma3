@@ -70,7 +70,7 @@ function CenterCardItem({ centerInfo }) {
   return (
     <CenterCardContainer>
       <ImgContainer>
-        <Img src={centerInfo.link} />
+        <Img src={centerInfo.centerImage} />
       </ImgContainer>
       <ContentContainer>
         <TextContainer>
