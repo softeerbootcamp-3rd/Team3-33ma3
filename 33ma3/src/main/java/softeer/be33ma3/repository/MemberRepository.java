@@ -12,7 +12,4 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findMemberByRefreshToken(String refreshToken);
 
     Optional<Member> findByLoginIdAndPassword(String loginId, String password);
-
-    @Query("SELECT m.image.link FROM Member m WHERE m.memberId = :memberId")
-    Optional<String> findProfileLinkByMemberId(Long memberId);
 }
