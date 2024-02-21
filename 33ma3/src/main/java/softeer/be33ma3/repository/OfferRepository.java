@@ -12,7 +12,10 @@ public interface OfferRepository extends JpaRepository<Offer, Long> {
     List<Offer> findByPost_PostId(Long postId);
     Optional<Offer> findByPost_PostIdAndCenter_MemberId(Long postId, Long centerId);
     Optional<Offer> findByPost_PostIdAndOfferId(Long postId, Long offerId);
-
     @Query("SELECT o.center FROM Offer o WHERE o.post.postId = :postId AND o.selected = true")
     Optional<Member> findSelectedCenterByPostId(Long postId);
+    @Query("SELECT AVG(o.price) FROM Offer o WHERE o.post.postId = :postId")
+    Optional<Double> findAvgPriceByPostId(Long postId);
+    @Query("SELECT o.center.memberId FROM Offer o WHERE o.post.postId = :postId")
+    List<Long> findCenterMemberIdsByPost_PostId(Long postId);
 }

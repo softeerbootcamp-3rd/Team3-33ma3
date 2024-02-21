@@ -6,21 +6,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.dto.response.AvgPriceDto;
 import softeer.be33ma3.exception.BusinessException;
+import softeer.be33ma3.repository.ReviewRepository;
 import softeer.be33ma3.websocket.WebSocketHandler;
-import softeer.be33ma3.domain.Center;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Offer;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.dto.request.OfferCreateDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
-import softeer.be33ma3.repository.CenterRepository;
 import softeer.be33ma3.repository.OfferRepository;
 import softeer.be33ma3.repository.PostRepository;
 import softeer.be33ma3.response.DataResponse;
 
-import java.util.IntSummaryStatistics;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static softeer.be33ma3.exception.ErrorCode.*;
@@ -34,7 +31,7 @@ public class OfferService {
 
     private final OfferRepository offerRepository;
     private final PostRepository postRepository;
-    private final CenterRepository centerRepository;
+    private final ReviewRepository reviewRepository;
     private final WebSocketHandler webSocketHandler;
 
     // 견적 제시 댓글 하나 반환
@@ -43,7 +40,8 @@ public class OfferService {
         postRepository.findById(postId).orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
         // 2. 해당 댓글 가져오기
         Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
-        return OfferDetailDto.fromEntity(offer);
+        Double score = reviewRepository.findAvgScoreByCenterId(offer.getCenter().getMemberId()).orElse(0.0);
+        return OfferDetailDto.fromEntity(offer, score);
     }
 
     // 견적 제시 댓글 생성
@@ -128,15 +126,6 @@ public class OfferService {
                 .toList();
     }
 
-    // 견적 제시 댓글 목록의 평균 제시 가격 계산하여 반환하기
-    public static double calculateAvgPrice(List<Offer> offerList) {
-        if(offerList.isEmpty()) {
-            return 0.0;
-        }
-        int total = offerList.stream().mapToInt(Offer::getPrice).sum();
-        return Math.round( (double)total/offerList.size() * 10 ) / 10.0;      // 소수점 첫째 자리까지 반올림
-    }
-
     public void sendAboutOfferUpdate(Long postId) {
         // 1. 해당 게시글 가져오기
         Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
@@ -152,19 +141,22 @@ public class OfferService {
     public void sendOfferList2Writer(Long postId, Long memberId) {
         // 1. 게시글에 속해있는 댓글 목록 가져오기
         List<Offer> offerList = offerRepository.findByPost_PostId(postId);
-        List<OfferDetailDto> offerDetailList = OfferDetailDto.fromEntityList(offerList);
+        List<OfferDetailDto> offerDetailDtos = new ArrayList<>(
+                offerList.stream().map(offer -> {
+                    Double score = reviewRepository.findAvgScoreByCenterId(offer.getCenter().getMemberId()).orElse(0.0);
+                    return OfferDetailDto.fromEntity(offer, score);
+                }).toList());
+        Collections.sort(offerDetailDtos);
         // 2. 해당 게시글 화면에 진입해 있을 경우 전송하기
         if(webSocketHandler.isInPostRoom(postId, memberId)) {
             log.info("게시글 작성자에게 실시간 댓글 전송 진행");
-            webSocketHandler.sendData2Client(memberId, offerDetailList);
+            webSocketHandler.sendData2Client(memberId, offerDetailDtos);
         }
     }
 
     // 해당 게시글 화면을 보고 있는 모든 유저들에게 평균 견적 제시 가격 실시간 전송
     public void sendAvgPrice2Others(Long postId, Long writerId) {
-        // 1. 해당 게시글에 달린 모든 견적 가져오기
-        List<Offer> offerList = offerRepository.findByPost_PostId(postId);
-        // 2. 해당 게시글을 보고 있는 모든 유저들 가져오기 (글 작성자도 포함되어있을 경우 제외시키기)
+        // 1. 해당 게시글을 보고 있는 모든 유저들 가져오기 (글 작성자도 포함되어있을 경우 제외시키기)
         Set<Long> memberList = webSocketHandler.findAllMemberInPost(postId);
         if(memberList == null) {
             log.info("해당 게시글을 보고 있는 유저가 없습니다.");
@@ -173,9 +165,10 @@ public class OfferService {
         memberList = memberList.stream()
                 .filter(memberId -> !memberId.equals(writerId))
                 .collect(Collectors.toSet());
-        // 3. 평균 견적 가격 계산하기
-        AvgPriceDto avgPriceDto = new AvgPriceDto(calculateAvgPrice(offerList));
-        // 4. 전송하기
+        // 2. 평균 견적 가격 계산하기
+        Double avgPrice = offerRepository.findAvgPriceByPostId(postId).orElse(0.0);
+        AvgPriceDto avgPriceDto = new AvgPriceDto(Math.round( avgPrice * 10 ) / 10.0);
+        // 3. 전송하기
         memberList.forEach(memberId -> webSocketHandler.sendData2Client(memberId, avgPriceDto));
     }
 
@@ -186,8 +179,7 @@ public class OfferService {
         webSocketHandler.sendData2Client(selectedMemberId, selectAlert);
         // 경매 마감 메세지
         DataResponse<Boolean> endAlert = DataResponse.success("견적 미선정으로 경매가 마감되었습니다. 다음 기회를 노려보세요!", false);
-        List<Offer> offerList = offerRepository.findByPost_PostId(postId);
-        List<Long> memberIdsInPost = findMemberIdsWithOfferList(offerList);
+        List<Long> memberIdsInPost = offerRepository.findCenterMemberIdsByPost_PostId(postId);
         memberIdsInPost.stream()
                 .filter(memberId -> !memberId.equals(selectedMemberId))
                 .forEach(memberId -> webSocketHandler.sendData2Client(memberId, endAlert));
