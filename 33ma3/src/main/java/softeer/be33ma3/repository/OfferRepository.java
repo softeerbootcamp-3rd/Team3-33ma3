@@ -16,4 +16,6 @@ public interface OfferRepository extends JpaRepository<Offer, Long> {
     Optional<Member> findSelectedCenterByPostId(Long postId);
     @Query("SELECT AVG(o.price) FROM Offer o WHERE o.post.postId = :postId")
     Optional<Double> findAvgPriceByPostId(Long postId);
+    @Query("SELECT o.center.memberId FROM Offer o WHERE o.post.postId = :postId")
+    List<Long> findCenterMemberIdsByPost_PostId(Long postId);
 }

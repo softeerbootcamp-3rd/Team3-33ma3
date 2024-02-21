@@ -179,8 +179,7 @@ public class OfferService {
         webSocketHandler.sendData2Client(selectedMemberId, selectAlert);
         // 경매 마감 메세지
         DataResponse<Boolean> endAlert = DataResponse.success("견적 미선정으로 경매가 마감되었습니다. 다음 기회를 노려보세요!", false);
-        List<Offer> offerList = offerRepository.findByPost_PostId(postId);
-        List<Long> memberIdsInPost = findMemberIdsWithOfferList(offerList);
+        List<Long> memberIdsInPost = offerRepository.findCenterMemberIdsByPost_PostId(postId);
         memberIdsInPost.stream()
                 .filter(memberId -> !memberId.equals(selectedMemberId))
                 .forEach(memberId -> webSocketHandler.sendData2Client(memberId, endAlert));
