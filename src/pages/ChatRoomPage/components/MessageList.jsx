@@ -4,22 +4,28 @@ import styled from "styled-components";
 import { Message } from "./Message";
 import { MessageHeader } from "./MessageHeader";
 
-const MessageBody = styled.ul`
-  width: ${(props) => (props.chatmode === "true" ? "400px;" : "1000px;")}
-  height: 700px;
+const MessageBodyContainer = styled.div`
+  flex: 1;
+  width: 100%;
   background: #f8f8fa;
   border-radius: 0px 0px 14px 14px;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: auto;
+`;
+
+const MessageBody = styled.ul`
+  width: ${(props) => (props.chatmode === "true" ? "400px" : "100%")};
+  height: 0;
 `;
 
 const MessageContainer = styled.div`
-  width: ${(props) => (props.chatmode === "true" ? "400px;" : "auto;")}
-  display: ${(props) => (props.chatmode === "true" ? ";" : "flex;")}
+  width: ${(props) => (props.chatmode === "true" ? "400px" : "100%")};
+  height: 100%;
+  display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 20px 0px 0px 0px;
+  box-sizing: border-box;
 `;
 
 function MessageList(props) {
@@ -82,11 +88,13 @@ function MessageList(props) {
   return (
     <MessageContainer chatmode={isChatMode}>
       <MessageHeader chatmode={isChatMode} />
-      <MessageBody chatmode={isChatMode}>
-        {messages.map((item, index) => {
-          return <Message key={index} info={item} />;
-        })}
-      </MessageBody>
+      <MessageBodyContainer>
+        <MessageBody chatmode={isChatMode}>
+          {messages.map((item, index) => {
+            return <Message key={index} info={item} />;
+          })}
+        </MessageBody>
+      </MessageBodyContainer>
     </MessageContainer>
   );
 }

@@ -7,9 +7,11 @@ import { getMemberId } from "../../utils/auth";
 import Page from "/src/components/post/Page.jsx";
 
 const ChatMessageContainer = styled.div`
-  display: ${(props) => (props.mode === "chat" ? "flex;" : ";")};
+  display: flex;
   width: 100%;
+  height: 100%;
   flex-direction: row;
+  gap: 20px;
 `;
 
 function ChatRoomPage() {
