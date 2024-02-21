@@ -28,9 +28,10 @@ const CardListHeader = styled.div`
 `;
 
 const CardList = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 25px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 25px;
 `;
 
 function PostListPage() {
