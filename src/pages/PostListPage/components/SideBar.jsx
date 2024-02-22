@@ -92,7 +92,7 @@ function SideBar({
         name={"done"}
         setIsDone={setIsDone}
       />
-      {Number(memberType) === MEMBER_TYPE && (
+      {(!memberType || Number(memberType) === MEMBER_TYPE) && (
         <DropDownButton title={"지역"} number={DISTRICTS.length}>
           {districts}
         </DropDownButton>
