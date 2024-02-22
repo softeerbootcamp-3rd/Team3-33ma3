@@ -70,8 +70,9 @@ public class WebSocketRepository {
 
     public void deleteMemberInPost(Long postId, Long memberId) {
         Set<Long> members = postRoom.get(postId);
-        if(members == null)
+        if(members == null) {
             return;
+        }
         members.remove(memberId);
         if(members.isEmpty())
             postRoom.remove(postId);
@@ -91,6 +92,7 @@ public class WebSocketRepository {
         sessions.remove(memberId);
         log.info("세션 삭제 완료! 세션 저장소 크키: {}", sessions.size());
     }
+
     public void deleteAllChatRoomSessionWithMemberId(Long memberId) {
         allChatRoomSessions.remove(memberId);
         log.info("목록: 세션 삭제 완료! 세션 저장소 크키: {}", sessions.size());

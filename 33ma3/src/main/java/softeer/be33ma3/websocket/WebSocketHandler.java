@@ -6,10 +6,9 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import softeer.be33ma3.service.ChatService;
 
-import java.io.IOException;
 import java.util.Map;
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -17,16 +16,17 @@ import java.util.Set;
 public class WebSocketHandler extends TextWebSocketHandler {
 
     private final WebSocketService webSocketService;
+    private final ChatService chatService;
 
     // 클라이언트로부터 메세지를 수신
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
         try {
             String payload = message.getPayload();
-            if (payload.contains("senderId") && payload.contains("receiverId")) {
-                webSocketService.sendChatMessage(session, message);
+            if (payload.contains("senderId") && payload.contains("receiverId")) {   //채팅인 경우
+                chatService.sendChatMessage(message);
             }
-            webSocketService.receiveExitMsg(session, message);
+            webSocketService.receiveExitMsg(session, message);  //나가는 경우
 
         } catch (Exception e) {
             log.error("메세지 수신 에러");
@@ -60,6 +60,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
         }
     }
+
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         try {
@@ -67,15 +68,5 @@ public class WebSocketHandler extends TextWebSocketHandler {
         } catch(Exception e) {
             log.error("연결 종료 후 에러 발생");
         }
-    }
-
-    public void deletePostRoom(Long postId) {
-        webSocketService.deletePostRoom(postId);
-    }
-    public Set<Long> findAllMemberInPost(Long postId) {
-        return webSocketService.findAllMemberInPost(postId);
-    }
-    public boolean isInPostRoom(Long postId, Long memberId) {
-        return webSocketService.isInPostRoom(postId, memberId);
     }
 }
