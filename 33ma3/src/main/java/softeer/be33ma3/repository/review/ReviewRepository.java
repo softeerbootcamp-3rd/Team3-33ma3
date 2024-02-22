@@ -8,7 +8,7 @@ import softeer.be33ma3.domain.Review;
 import java.util.List;
 import java.util.Optional;
 
-public interface ReviewRepository extends JpaRepository<Review, Long> {
+public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewCustomRepository {
     Optional<Review> findByPost_PostId(Long postId);
 
     @Query("SELECT AVG(r.score) FROM Review r WHERE r.center.memberId = :memberId")

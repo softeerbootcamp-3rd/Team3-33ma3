@@ -12,8 +12,11 @@ import softeer.be33ma3.dto.request.ChatMessageDto;
 import softeer.be33ma3.dto.response.ChatHistoryDto;
 import softeer.be33ma3.dto.response.AllChatRoomDto;
 import softeer.be33ma3.dto.response.ChatMessageResponseDto;
+import softeer.be33ma3.dto.response.LastMessageDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.*;
+import softeer.be33ma3.repository.Chat.ChatMessageRepository;
+import softeer.be33ma3.repository.Chat.ChatRoomRepository;
 import softeer.be33ma3.repository.post.PostRepository;
 import softeer.be33ma3.websocket.WebSocketRepository;
 import softeer.be33ma3.websocket.WebSocketService;
@@ -116,12 +119,12 @@ public class ChatService {
     }
 
     private AllChatRoomDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
-        ChatMessage lastChatMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());//마지막 메세지
-        if(lastChatMessage == null){    //방이 만들어지고 메세지를 보내지 않은 경우
+        LastMessageDto lastMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());//마지막 메세지
+        if(lastMessage == null){    //방이 만들어지고 메세지를 보내지 않은 경우
             return AllChatRoomDto.create(chatRoom, "", memberName, 0, "");
         }
         int count = (int) chatMessageRepository.countReadDoneIsFalse(chatRoom.getChatRoomId(), member.getMemberId());     //안읽은 메세지 개수
-        return AllChatRoomDto.create(chatRoom, lastChatMessage.getContents(), memberName, count, createTimeParsing(lastChatMessage.getCreateTime()));
+        return AllChatRoomDto.create(chatRoom, lastMessage.getMessage(), memberName, count, createTimeParsing(lastMessage.getCreateTime()));
     }
 
     @Transactional

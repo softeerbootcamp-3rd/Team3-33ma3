@@ -1,4 +1,4 @@
-package softeer.be33ma3.repository;
+package softeer.be33ma3.repository.Chat;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

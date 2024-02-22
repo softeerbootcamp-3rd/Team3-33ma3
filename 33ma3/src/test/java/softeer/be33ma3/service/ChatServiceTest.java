@@ -12,6 +12,7 @@ import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.repository.*;
+import softeer.be33ma3.repository.Chat.ChatMessageRepository;
 import softeer.be33ma3.repository.post.PostRepository;
 
 import java.util.ArrayList;
@@ -24,9 +25,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ChatServiceTest {
     @Autowired ChatService chatService;
     @Autowired MemberRepository memberRepository;
-    @Autowired ChatRoomRepository chatRoomRepository;
+    @Autowired
+    ChatRoomRepository chatRoomRepository;
     @Autowired PostRepository postRepository;
-    @Autowired ChatMessageRepository chatMessageRepository;
+    @Autowired
+    ChatMessageRepository chatMessageRepository;
 
     @AfterEach
     void tearDown() {
