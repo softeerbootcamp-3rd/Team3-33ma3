@@ -1,13 +1,22 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import Camera from "../../../assets/camera.svg";
-import ImageUploadCard from "./ImageUploadCard";
-import { MAX_FILE_COUNT } from "../../../constants/options";
+import ImageUploadCard from "../../PostCreatePage/components/ImageUploadCard";
+
+const MAX_FILE_COUNT = 1;
+
+const Form = styled.form``;
+
+const ProfileHeader = styled.div`
+  font-size: ${(props) => props.theme.fontSize.medium};
+  font-weight: 700;
+`;
 
 const ImageUploadContainer = styled.div`
   display: flex;
   width: 100%;
-  height: 195px;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const ImageUploadButton = styled.button`
@@ -31,19 +40,18 @@ const Images = styled.div`
   white-space: nowrap;
 `;
 
-function ImageUpload({ imageFiles }) {
+function UploadProfile({ imageFiles }) {
   const imageInputRef = useRef();
-  // TODO: 부모 컴포넌트에서 state 받아옴
   const [previewImageList, setPreviewImageList] = useState([]);
+  const [existImage, setExistImage] = useState(false);
 
-  // 버튼 클릭시 file input태그에 클릭이벤트 발생
   function onClickImageUpload() {
     imageInputRef.current.click();
   }
 
-  // image 업로드
   function onImageUpload(e) {
     const fileList = e.target.files;
+    setExistImage(true);
 
     if (!validateImageFilesLength(fileList.length)) {
       return;
@@ -57,7 +65,6 @@ function ImageUpload({ imageFiles }) {
     imageFiles.current = [...imageFiles.current, ...fileList];
   }
 
-  // 이미지 업로드 5장 이상일 시 업로드 불가능
   function validateImageFilesLength(newFileLength) {
     if (imageFiles.current.length + newFileLength > MAX_FILE_COUNT) {
       alert("사진은 최대 " + MAX_FILE_COUNT + "장까지 업로드 가능합니다.");
@@ -66,8 +73,8 @@ function ImageUpload({ imageFiles }) {
     return true;
   }
 
-  // 이미지 삭제
   function deleteImage(key) {
+    setExistImage(false);
     setPreviewImageList(previewImageList.filter((img, index) => index !== key));
     imageFiles.current = imageFiles.current.filter(
       (file, index) => index !== key
@@ -84,25 +91,31 @@ function ImageUpload({ imageFiles }) {
 
   return (
     <ImageUploadContainer>
-      <ImageUploadButton onClick={onClickImageUpload} type="button">
-        <img
-          src={Camera}
-          style={{ width: "48px", height: "48px", margin: "auto" }}
-        />
-      </ImageUploadButton>
-      <input
-        type="file"
-        multiple
-        accept="image/jpg, image/jpeg, image/png"
-        style={{ display: "none" }}
-        ref={imageInputRef}
-        onChange={onImageUpload}
-      />
-      <ImageList>
-        <Images>{images}</Images>
-      </ImageList>
+      {!existImage && (
+        <>
+          <ImageUploadButton onClick={onClickImageUpload} type="button">
+            <img
+              src={Camera}
+              style={{ width: "48px", height: "48px", margin: "auto" }}
+            />
+          </ImageUploadButton>
+          <input
+            type="file"
+            multiple
+            accept="image/jpg, image/jpeg, image/png"
+            style={{ display: "none" }}
+            ref={imageInputRef}
+            onChange={onImageUpload}
+          />
+        </>
+      )}
+      {existImage && (
+        <ImageList>
+          <Images>{images}</Images>
+        </ImageList>
+      )}
     </ImageUploadContainer>
   );
 }
 
-export default ImageUpload;
+export default UploadProfile;

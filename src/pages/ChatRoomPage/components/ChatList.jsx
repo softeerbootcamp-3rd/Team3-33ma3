@@ -34,6 +34,7 @@ function scrollToBottom(scroll) {
 }
 
 function ChatList(props) {
+  // console.log(props.accessToken);
   const [chatHistory, setChatHistory] = useState([]);
   const [webSocket, setWebSocket] = useState(null);
 
@@ -45,18 +46,25 @@ function ChatList(props) {
     const ws = new WebSocket(WebSocketServerUrl);
     setWebSocket(ws);
     ws.onopen = () => {
-      console.log("웹소켓 연결 성공");
+      console.log(
+        `ws://${IP}/connect/chat/${props.roomId}/${props.memberId} ChatList 웹소켓 연결 성공`
+      );
     };
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      console.log("메시지 수신:", data);
+      console.log(
+        `ws://${IP}/connect/chat/${props.roomId}/${props.memberId} ChatList 메시지 수신:`,
+        data
+      );
 
       setChatHistory((prev) => [...prev, data]);
     };
 
     ws.onclose = () => {
-      console.log("ChatList 웹소켓 연결 종료");
+      console.log(
+        `ws://${IP}/connect/chat/${props.roomId}/${props.memberId} ChatList 웹소켓 연결 종료`
+      );
     };
 
     ws.onerror = (error) => {
@@ -66,10 +74,11 @@ function ChatList(props) {
     return () => {
       if (ws.readyState === WebSocket.OPEN) {
         const closeMessage = {
-          type: "chatRoom",
+          type: "chat",
           roomId: props.roomId,
           memberId: props.memberId,
         };
+        console.log(closeMessage);
         ws.send(JSON.stringify(closeMessage));
         ws.close();
       }
@@ -96,8 +105,8 @@ function ChatList(props) {
   return (
     <ChatContainer>
       <ChatHeader centerName={props.centerName} />
-      <ChatBodyContainer>
-        <ChatBody ref={scrollRef}>
+      <ChatBodyContainer ref={scrollRef}>
+        <ChatBody>
           {chatHistory &&
             chatHistory.map((item, index) => {
               return <ChatMessage key={index} info={item} />;

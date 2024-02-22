@@ -12,11 +12,8 @@ import {
   useRouteLoaderData,
 } from "react-router-dom";
 import { tokenLoader } from "./auth";
-import AuthenticationPage, {
-  action,
-} from "../pages/AuthenticationPage/AuthenticationPage";
 import { CENTER_TYPE } from "../constants/options";
-import { ChatList } from "../pages/ChatRoomPage/components/ChatList";
+import { AuthenticationPage } from "../pages/AuthenticationPage";
 
 const router = createBrowserRouter([
   {
@@ -33,8 +30,8 @@ const router = createBrowserRouter([
       },
       {
         path: "auth",
-        action: action,
         element: <AuthenticationPage />,
+        loader: tokenLoader,
       },
       {
         path: "post/info",
