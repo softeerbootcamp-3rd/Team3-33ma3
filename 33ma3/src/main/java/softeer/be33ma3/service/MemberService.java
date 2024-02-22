@@ -69,24 +69,6 @@ public class MemberService {
     }
 
     @Transactional
-    public void addProfile(Long memberId, MultipartFile profile) {
-        // 해당하는 유저 가져오기
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(NOT_FOUND_MEMBER));
-
-        if(profile.isEmpty()) {
-            if(member.getMemberType() == CENTER_TYPE){
-                Image image = Image.createImage(s3Service.getFileUrl("profile.png"), "profile.png");
-                member.setProfile(imageRepository.save(image));
-            }
-            //TODO: 일반 회원 전용 프로필 이미지 생기면 저장하는 로직 추가하기
-            return;
-        }
-        // 이미지 저장하기
-        Image image = imageService.saveImage(profile);
-        member.setProfile(image);
-    }
-
-    @Transactional
     public LoginSuccessDto login(LoginDto loginDto) {
         Member member = memberRepository.findByLoginIdAndPassword(loginDto.getLoginId(), loginDto.getPassword())
                 .orElseThrow(() -> new BusinessException(ID_PASSWORD_MISMATCH));
