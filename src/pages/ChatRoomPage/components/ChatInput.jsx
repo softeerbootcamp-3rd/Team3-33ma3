@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import SubmitIcon from "/src/assets/chatSubmit.svg";
 import { useState } from "react";
-import { useLoaderData } from "react-router-dom";
 
 const InputContainer = styled.form`
   display: flex;
@@ -33,9 +32,6 @@ const SubmitText = styled.button`
 
 function ChatInput(props) {
   const [inputValue, setInputValue] = useState("");
-
-  const authData = useLoaderData();
-  const accessToken = authData.accessToken;
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);

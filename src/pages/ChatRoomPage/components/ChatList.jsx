@@ -57,12 +57,22 @@ function ChatList(props) {
     setWebSocket(ws);
     ws.onopen = () => {
       console.log(`웹소켓 연결 성공`);
+      fetch(`${BASE_URL}chat/history/${props.roomId}`, {
+        headers: {
+          Authorization: props.accessToken,
+          Accept: "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setChatHistory(data.data);
+        })
+        .catch((error) => console.log(error));
     };
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       console.log(`메시지 수신:`, data);
-      data.noReadCount = 0;
 
       setChatHistory((prev) => [...prev, data]);
     };
@@ -93,19 +103,6 @@ function ChatList(props) {
   useEffect(() => {
     scrollToBottom(scrollRef.current);
   }, [chatHistory]);
-
-  useEffect(() => {
-    fetch(`${BASE_URL}chat/history/${props.roomId}`, {
-      headers: {
-        Authorization: props.accessToken,
-        Accept: "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setChatHistory(data.data);
-      });
-  }, [props.roomId]);
 
   return (
     <ChatContainer>
