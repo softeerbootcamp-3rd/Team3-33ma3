@@ -11,7 +11,7 @@ const AuctionList = styled.div`
   align-items: center;
 `;
 
-function OfferList({ prevOfferList, offerList, disabled, handleSelectOffer }) {
+function OfferList({ offerList, offerState, disabled }) {
   const [focusOffer, setFocusOffer] = useState();
 
   function clickOffer(index) {
@@ -26,9 +26,12 @@ function OfferList({ prevOfferList, offerList, disabled, handleSelectOffer }) {
       key={offer.offerId + "/" + offer.price + "/" + offer.contents}
       onClick={() => clickOffer(index)}
       isActive={focusOffer === index}
-      isEdited={!disabled && prevOfferList && prevOfferList.has(offer.offerId)}
+      isEdited={false}
       isEnd={disabled}
       isSelected={offer.selected}
+      animation={
+        offerState && offer.offerId === offerState.offerId && offerState.state
+      }
     />
   ));
 
@@ -36,15 +39,7 @@ function OfferList({ prevOfferList, offerList, disabled, handleSelectOffer }) {
     <>
       <AuctionList>{offers}</AuctionList>
       {focusOffer !== undefined && (
-        <Comment
-          centerName={!disabled && offerList[focusOffer].centerName}
-          contents={offerList[focusOffer].contents}
-          disabled={disabled}
-          handleSelectOffer={() =>
-            handleSelectOffer(offerList[focusOffer].offerId)
-          }
-          centerId={offerList[focusOffer].memberId}
-        />
+        <Comment offerInfo={offerList[focusOffer]} disabled={disabled} />
       )}
     </>
   );

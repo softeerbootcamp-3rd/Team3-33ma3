@@ -43,7 +43,11 @@ const router = createBrowserRouter([
       },
       {
         path: "post/create",
-        element: <PostCreatePage />,
+        element: (
+          <RequireAuth>
+            <PostCreatePage />
+          </RequireAuth>
+        ),
       },
       {
         path: "inquiry-history",

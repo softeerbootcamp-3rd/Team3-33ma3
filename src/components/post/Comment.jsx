@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import SubmitButton from "../button/SubmitButton";
 import Logo from "../../assets/33MA3_logo.png";
@@ -6,6 +6,8 @@ import { useNavigate, useRouteLoaderData } from "react-router-dom";
 import { BASE_URL } from "../../constants/url";
 import { useSearchParams } from "react-router-dom";
 import { getMemberId } from "../../utils/auth";
+import OfferSelectModal from "./OfferSelectModal";
+import StarRating from "./StarRating";
 
 const CommentContainer = styled.div`
   width: 100%;
@@ -45,20 +47,29 @@ const ButtonContainer = styled.div`
   gap: 10px;
 `;
 
-function Comment({
-  centerName,
-  contents,
-  disabled,
-  handleSelectOffer,
-  centerId,
-}) {
+const ImgContainer = styled.div`
+  width: 30px;
+  height: 30px;
+  border-radius: ${({ theme }) => theme.radiuses.radius_s};
+  overflow: hidden;
+`;
+
+const Img = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+function Comment({ offerInfo, disabled }) {
   // TODO: 문의 기능 구현
   const navigate = useNavigate();
   const { accessToken } = useRouteLoaderData("root");
   const [searchParams] = useSearchParams();
   const urlPostId = searchParams.get("post_id");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   function handleCreateChatRoom() {
-    fetch(`${BASE_URL}chatRoom/${urlPostId}/${centerId}`, {
+    fetch(`${BASE_URL}chatRoom/${urlPostId}/${offerInfo.memberId}`, {
       method: "POST",
       headers: {
         Authorization: accessToken,
@@ -81,10 +92,22 @@ function Comment({
 
   return (
     <CommentContainer>
+      {isModalOpen && (
+        <OfferSelectModal
+          handleClose={() => setIsModalOpen(false)}
+          offerInfo={offerInfo}
+        />
+      )}
       <WriterContainer>
         <Writer>
-          <img src={Logo} style={{ width: "28px", height: "36px" }} />
-          {centerName ? centerName : "익명"}
+          {!disabled ? (
+            <ImgContainer>
+              <Img src={offerInfo.profile} />
+            </ImgContainer>
+          ) : (
+            <img src={Logo} style={{ width: "28px", height: "36px" }} />
+          )}
+          {!disabled ? offerInfo.centerName : "익명"}
         </Writer>
         {!disabled && (
           <ButtonContainer>
@@ -96,12 +119,13 @@ function Comment({
             <SubmitButton
               size={"small"}
               children={"낙찰"}
-              onClick={handleSelectOffer}
+              onClick={() => setIsModalOpen(true)}
             />
           </ButtonContainer>
         )}
+        {!disabled && <StarRating score={offerInfo.score} />}
       </WriterContainer>
-      <Description>{contents}</Description>
+      <Description>{offerInfo.contents}</Description>
     </CommentContainer>
   );
 }

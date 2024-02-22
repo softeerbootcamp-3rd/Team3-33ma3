@@ -75,6 +75,7 @@ function ChatList(props) {
     ws.onerror = (error) => {
       console.error("웹소켓 오류 발생:", error);
     };
+
     // 컴포넌트 언마운트 시 웹소켓 연결 종료
     return () => {
       if (ws.readyState === WebSocket.OPEN) {
