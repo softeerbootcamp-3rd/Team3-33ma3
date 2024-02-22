@@ -84,7 +84,7 @@ function Comment({ offerInfo, disabled }) {
         const clientId = getMemberId();
         const roomId = data.data;
         navigate(
-          `/chat-room?mode=chat&client-id=${clientId}&center-id=${centerId}&room-id=${roomId}&room-name=${centerName}`
+          `/chat-room?mode=chat&client-id=${clientId}&center-id=${offerInfo.centerId}&room-id=${roomId}&room-name=${offerInfo.centerName}`
         );
       })
       .catch((error) => console.log(error));
