@@ -31,6 +31,12 @@ const Images = styled.div`
   white-space: nowrap;
 `;
 
+const ImageUploadCardContainer = styled.div`
+  margin-left: 40px;
+  position: relative;
+  display: inline-block;
+`;
+
 function ImageUpload({ imageFiles }) {
   const imageInputRef = useRef();
   // TODO: 부모 컴포넌트에서 state 받아옴
@@ -75,11 +81,9 @@ function ImageUpload({ imageFiles }) {
   }
 
   const images = previewImageList.map((image, index) => (
-    <ImageUploadCard
-      image={image}
-      key={index}
-      onClick={() => deleteImage(index)}
-    />
+    <ImageUploadCardContainer key={index}>
+      <ImageUploadCard image={image} onClick={() => deleteImage(index)} />
+    </ImageUploadCardContainer>
   ));
 
   return (

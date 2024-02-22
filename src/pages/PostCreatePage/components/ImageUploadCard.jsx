@@ -13,7 +13,6 @@ const RemoveImage = styled.button`
   width: 195px;
   height: 195px;
   background: ${(props) => props.theme.colors.surface_black};
-  left: 40px;
   top: 0;
   border-radius: ${(props) => props.theme.radiuses.radius_s};
   opacity: 0;

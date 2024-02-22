@@ -5,13 +5,6 @@ import ImageUploadCard from "../../PostCreatePage/components/ImageUploadCard";
 
 const MAX_FILE_COUNT = 1;
 
-const Form = styled.form``;
-
-const ProfileHeader = styled.div`
-  font-size: ${(props) => props.theme.fontSize.medium};
-  font-weight: 700;
-`;
-
 const ImageUploadContainer = styled.div`
   display: flex;
   width: 100%;
