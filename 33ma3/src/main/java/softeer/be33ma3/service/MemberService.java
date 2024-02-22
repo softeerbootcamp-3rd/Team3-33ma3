@@ -36,26 +36,28 @@ public class MemberService {
     private final ImageRepository imageRepository;
 
     @Transactional
-    public void clientSignUp(ClientSignUpDto clientSignUpDto) {
+    public Long clientSignUp(ClientSignUpDto clientSignUpDto) {
         if (memberRepository.findMemberByLoginId(clientSignUpDto.getLoginId()).isPresent()) {//아이디가 이미 존재하는 경우
             throw new BusinessException(DUPLICATE_ID);
         }
 
         Member member = Member.createMember(CLIENT_TYPE, clientSignUpDto.getLoginId(), clientSignUpDto.getPassword());
-        memberRepository.save(member);
+        return memberRepository.save(member).getMemberId();
     }
 
     @Transactional
-    public void centerSignUp(CenterSignUpDto centerSignUpDto) {
+    public Long centerSignUp(CenterSignUpDto centerSignUpDto) {
         if (memberRepository.findMemberByLoginId(centerSignUpDto.getLoginId()).isPresent()) {
             throw new BusinessException(DUPLICATE_ID);
         }
 
         Member member = Member.createMember(CENTER_TYPE, centerSignUpDto.getLoginId(), centerSignUpDto.getPassword());
-        member = memberRepository.save(member);
+        Member savedMember = memberRepository.save(member);
 
-        Center center = Center.createCenter(centerSignUpDto.getLatitude(), centerSignUpDto.getLongitude(), member);
+        Center center = Center.createCenter(centerSignUpDto.getLatitude(), centerSignUpDto.getLongitude(), savedMember);
         centerRepository.save(center);
+
+        return savedMember.getMemberId();
     }
     @Transactional
     public void addProfile(Long memberId, MultipartFile profile) {
