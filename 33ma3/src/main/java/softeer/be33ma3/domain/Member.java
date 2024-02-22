@@ -18,7 +18,7 @@ public class Member {
 
     private String password;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id")
     private Image image;
 
