@@ -78,8 +78,10 @@ function PostListPage() {
         } else {
           throw new Error("게시물을 불러오는데 실패했습니다.");
         }
+        // return res.json();
       })
       .then((json) => {
+        console.log(json);
         setThumnailList(json.data);
         setIsLoading(false);
       })
