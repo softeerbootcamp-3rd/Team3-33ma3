@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import styled from "styled-components";
 import CloseImg from "../../assets/close.svg";
@@ -57,6 +57,37 @@ const ModalBody = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
+
+  &.expandOpen {
+    animation-name: expandOpen;
+    -webkit-animation-name: expandOpen;
+
+    animation-duration: 0.9s;
+    -webkit-animation-duration: 0.9s;
+
+    animation-timing-function: ease-out;
+    -webkit-animation-timing-function: ease-out;
+
+    visibility: visible !important;
+  }
+
+  @keyframes expandOpen {
+    0% {
+      transform: translate(-50%, -50%) scale(1.8);
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(0.95);
+    }
+    80% {
+      transform: translate(-50%, -50%) scale(1.05);
+    }
+    90% {
+      transform: translate(-50%, -50%) scale(0.98);
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
 `;
 
 const Title = styled.p`
@@ -81,10 +112,14 @@ const ModalContent = styled.div`
   width: 100%;
 `;
 
-function ModalPortal({ width, title, handleClose, children }) {
+function ModalPortal({ width, title, handleClose, animation, children }) {
   return createPortal(
     <Modal className="show">
-      <ModalBody width={width}>
+      <ModalBody
+        id="modal-body"
+        width={width}
+        className={animation && "expandOpen"}
+      >
         <ModalHeader>
           <Title>{title}</Title>
           <CloseButton onClick={handleClose}>

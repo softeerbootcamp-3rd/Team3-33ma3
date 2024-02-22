@@ -78,30 +78,9 @@ function AuctionStatus({ postId, curOfferDetails }) {
     };
   }, []);
 
-  // TODO: util이나 api로 분리?
-  // 댓글 낙찰
-  function handleSelectOffer(offerId) {
-    fetch(BASE_URL + `post/${postId}/offer/${offerId}/select`, {
-      method: "GET",
-      headers: {
-        Authorization: accessToken,
-        "Content-type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((json) => console.log(json))
-      .finally(() => {
-        window.location.reload();
-      });
-  }
-
   return (
     <OptionType title={"경매 현황"}>
-      <OfferList
-        offerList={offerList}
-        prevOfferList={prevOfferList}
-        handleSelectOffer={handleSelectOffer}
-      />
+      <OfferList offerList={offerList} prevOfferList={prevOfferList} />
     </OptionType>
   );
 }

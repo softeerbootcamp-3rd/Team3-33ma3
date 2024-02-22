@@ -25,8 +25,8 @@ const Container = styled.button`
     animation-name: slideExpandUp;
     -webkit-animation-name: slideExpandUp;
 
-    animation-duration: 1s;
-    -webkit-animation-duration: 1s;
+    animation-duration: 0.9s;
+    -webkit-animation-duration: 0.9s;
 
     animation-timing-function: ease-out;
     -webkit-animation-timing-function: ease -out;
@@ -104,8 +104,8 @@ const Bubble = styled.div`
     animation-name: pulse;
     -webkit-animation-name: pulse;
 
-    animation-duration: 1s;
-    -webkit-animation-duration: 1s;
+    animation-duration: 0.5s;
+    -webkit-animation-duration: 0.5s;
 
     animation-iteration-count: 3;
     -webkit-animation-iteration-count: 3;
@@ -185,7 +185,7 @@ function AuctionPrice({
         <img src={SpeechBubble} style={bubbleImageSize} />
       </Bubble>
       <img src={Person} style={{ width: "161px", height: "113px" }} />
-      <p>{centerName}</p>
+      <p>{isEnd ? "익명" : centerName}</p>
     </Container>
   );
 }

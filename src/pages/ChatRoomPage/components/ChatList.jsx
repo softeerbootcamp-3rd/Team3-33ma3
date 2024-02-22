@@ -62,11 +62,12 @@ function ChatList(props) {
     ws.onerror = (error) => {
       console.error("웹소켓 오류 발생:", error);
     };
+
     // 컴포넌트 언마운트 시 웹소켓 연결 종료
     return () => {
       if (ws.readyState === WebSocket.OPEN) {
         const closeMessage = {
-          type: "chatRoom",
+          type: "chat",
           roomId: props.roomId,
           memberId: props.memberId,
         };
@@ -96,8 +97,8 @@ function ChatList(props) {
   return (
     <ChatContainer>
       <ChatHeader centerName={props.centerName} />
-      <ChatBodyContainer>
-        <ChatBody ref={scrollRef}>
+      <ChatBodyContainer ref={scrollRef}>
+        <ChatBody>
           {chatHistory &&
             chatHistory.map((item, index) => {
               return <ChatMessage key={index} info={item} />;

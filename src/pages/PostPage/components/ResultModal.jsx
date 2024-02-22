@@ -35,7 +35,12 @@ function ResultModal({ handleClose, endMessage }) {
     .map((item, index) => <p key={index}>{item}</p>);
 
   return (
-    <ModalPortal width={"500px"} title={"경매 결과"} handleClose={handleClose}>
+    <ModalPortal
+      width={"500px"}
+      title={"경매 결과"}
+      handleClose={handleClose}
+      animation
+    >
       <Content>
         <Img src={endMessage.data ? SuccessImg : failImg} />
         {endMessage.data ? (

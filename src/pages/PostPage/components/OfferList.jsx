@@ -36,15 +36,7 @@ function OfferList({ prevOfferList, offerList, disabled, handleSelectOffer }) {
     <>
       <AuctionList>{offers}</AuctionList>
       {focusOffer !== undefined && (
-        <Comment
-          centerName={!disabled && offerList[focusOffer].centerName}
-          contents={offerList[focusOffer].contents}
-          disabled={disabled}
-          handleSelectOffer={() =>
-            handleSelectOffer(offerList[focusOffer].offerId)
-          }
-          centerId={offerList[focusOffer].memberId}
-        />
+        <Comment offerInfo={offerList[focusOffer]} disabled={disabled} />
       )}
     </>
   );
