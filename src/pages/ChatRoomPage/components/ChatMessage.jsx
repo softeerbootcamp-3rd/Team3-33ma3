@@ -5,37 +5,36 @@ const ChatBox = styled.div`
   display: flex;
   width: 100%;
   align-items: center;
-  padding: 20px;
+  padding: 10px;
   justify-content: ${(props) => (props.mode === "true" ? "end;" : "start;")};
 `;
 
 const Message = styled.div`
   max-width: 300px;
-  width: auto;
-  height: auto;
-  font-size: 18px;
-  padding: 20px;
+  font-size: ${({ theme }) => theme.fontSize.regular};
+  font-weight: 500;
+  padding: 10px 20px;
   border-radius: 14px;
   overflow: hidden;
   word-wrap: break-word;
   white-space: normal;
-  border: 1px solid
-    ${(props) => (props.mode === "true" ? "#9398be;" : "black;")};
   background: ${(props) => (props.mode === "true" ? "#dfe2fa" : "#ffffff")};
+  box-shadow: ${({ theme }) => theme.boxShadow.normal};
 `;
 
 const StatusContainer = styled.div`
-  font-size: 10px;
+  font-size: ${({ theme }) => theme.fontSize.small};
+  font-weight: 500;
 `;
 
 const TimeContainer = styled.div`
+  padding-top: 3px;
   color: ${(props) => props.theme.colors.border_strong};
-  font-size: 16px;
 `;
 
 const ReadContainer = styled.div`
   display: flex;
-  color: ${(props) => props.theme.colors.surface_brand};
+  color: ${({ theme }) => theme.colors.text_brand};
   justify-content: ${(props) => (props.mode === "true" ? "end;" : "start;")};
 `;
 
