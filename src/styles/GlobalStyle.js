@@ -46,6 +46,35 @@ const GlobalStyle = createGlobalStyle`
     a {
         text-decoration: none; 
     }
+
+    .show{
+        animation-name: show;
+        -webkit-animation-name: show;
+
+        animation-duration: 0.2s;
+        -webkit-animation-duration: 0.2s;
+
+        animation-timing-function: ease-out;
+        -webkit-animation-timing-function: ease-out;
+    }
+
+    @keyframes show {
+        0% {
+        opacity: 0;
+        }
+        100% {
+        opacity: 1;
+        }
+    }
+
+    @-webkit-keyframes show {
+        0% {
+        opacity: 0;
+        }
+        100% {
+        opacity: 1;
+        }
+    }
 `;
 
 export default GlobalStyle;
