@@ -56,7 +56,7 @@ public class WebSocketService {
         webSocketRepository.saveAllChatRoomSessionWithMemberId(memberId, session);
     }
 
-    // 데이터 (클래스 객체) 전송
+    // 데이터 전송
     public void sendData(Long memberId, Object data) throws IOException {
         if(memberId == null || data == null)
             return;
@@ -68,8 +68,14 @@ public class WebSocketService {
         }
         // data 직렬화
         String jsonString = objectMapper.writeValueAsString(data);
-        // 데이터 전송
-        session.sendMessage(new TextMessage(jsonString));
+        synchronized (session) {        // 세션 동기화
+            if (session.isOpen()) {
+                // 데이터 전송
+                session.sendMessage(new TextMessage(jsonString));
+            } else {
+                log.info("웹 소켓 세션이 이미 닫혔습니다.");
+            }
+        }
     }
 
     public void sendAllChatRoomData(Long memberId, Object data) throws IOException {
@@ -102,12 +108,5 @@ public class WebSocketService {
     // 해당 게시글에 접속해있는 유저 목록 반환
     public Set<Long> findAllMemberInPost(Long postId) {
         return webSocketRepository.findAllMemberInPost(postId);
-    }
-
-    public boolean isInPostRoom(Long postId, Long memberId) {
-        Set<Long> memberIds = webSocketRepository.findAllMemberInPost(postId);
-        if(memberIds == null)
-            return false;
-        return memberIds.contains(memberId);
     }
 }
