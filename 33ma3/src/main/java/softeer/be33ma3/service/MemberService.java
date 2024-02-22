@@ -33,45 +33,38 @@ public class MemberService {
     private final ImageRepository imageRepository;
 
     @Transactional
-    public Long clientSignUp(ClientSignUpDto clientSignUpDto) {
+    public void clientSignUp(ClientSignUpDto clientSignUpDto, MultipartFile profile) {
         if (memberRepository.findMemberByLoginId(clientSignUpDto.getLoginId()).isPresent()) {//아이디가 이미 존재하는 경우
             throw new BusinessException(DUPLICATE_ID);
         }
 
         Member member = Member.createClient(clientSignUpDto.getLoginId(), clientSignUpDto.getPassword());
-        return memberRepository.save(member).getMemberId();
+        // 프로필 이미지 저장
+        member.setProfile(saveProfile(profile));
+        memberRepository.save(member);
     }
 
     @Transactional
-    public Long centerSignUp(CenterSignUpDto centerSignUpDto) {
+    public void centerSignUp(CenterSignUpDto centerSignUpDto, MultipartFile profile) {
         if (memberRepository.findMemberByLoginId(centerSignUpDto.getLoginId()).isPresent()) {
             throw new BusinessException(DUPLICATE_ID);
         }
 
         Member member = Member.createCenter(centerSignUpDto.getLoginId(), centerSignUpDto.getPassword());
-        Member savedMember = memberRepository.save(member);
 
+        // 프로필 이미지 저장
+        member.setProfile(saveProfile(profile));
+
+        Member savedMember = memberRepository.save(member);
         Center center = Center.createCenter(centerSignUpDto.getLatitude(), centerSignUpDto.getLongitude(), savedMember);
         centerRepository.save(center);
-
-        return savedMember.getMemberId();
     }
-    @Transactional
-    public void addProfile(Long memberId, MultipartFile profile) {
-        // 해당하는 유저 가져오기
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new BusinessException(NOT_FOUND_MEMBER));
 
-        if(profile.isEmpty()) {
-            if(member.isCenter()){
-                Image image = Image.createImage(s3Service.getFileUrl("profile.png"), "profile.png");
-                member.setProfile(imageRepository.save(image));
-            }
-            //TODO: 일반 회원 전용 프로필 이미지 생기면 저장하는 로직 추가하기
-            return;
-        }
-        // 이미지 저장하기
-        Image image = imageService.saveImage(profile);
-        member.setProfile(image);
+    @Transactional
+    public Image saveProfile(MultipartFile profile) {
+        if(profile == null)
+            return imageRepository.save(Image.createImage(s3Service.getFileUrl("profile.png"), "profile.png"));
+        return imageService.saveImage(profile);
     }
 
     @Transactional
