@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
+    private static final int CLIENT_TYPE = 1;
+    private static final int CENTER_TYPE = 2;
+
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
 
@@ -30,8 +33,12 @@ public class Member {
         this.password = password;
     }
 
-    public static Member createMember(int memberType, String loginId, String password){
-        return new Member(memberType, loginId, password);
+    public static Member createClient(String loginId, String password){
+        return new Member(CLIENT_TYPE, loginId, password);
+    }
+
+    public static Member createCenter(String loginId, String password){
+        return new Member(CENTER_TYPE, loginId, password);
     }
 
     public void setRefreshToken(String refreshToken) {
@@ -40,5 +47,13 @@ public class Member {
 
     public void setProfile(Image image) {
         this.image = image;
+    }
+
+    public boolean isClient(){
+        return memberType == CLIENT_TYPE;
+    }
+
+    public boolean isCenter(){
+        return memberType == CENTER_TYPE;
     }
 }

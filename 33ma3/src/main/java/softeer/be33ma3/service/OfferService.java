@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Set;
 
 import static softeer.be33ma3.exception.ErrorCode.*;
-import static softeer.be33ma3.service.MemberService.CENTER_TYPE;
 
 @Service
 @RequiredArgsConstructor
@@ -56,7 +55,7 @@ public class OfferService {
     public Long createOffer(Long postId, OfferCreateDto offerCreateDto, Member member) {
         // 1. 해당 게시글이 마감 전인지 확인
         Post post = checkNotDonePost(postId);
-        if(member.getMemberType() != CENTER_TYPE) {
+        if(!member.isCenter()) {
             throw new BusinessException(NOT_CENTER);
         }
         // 2. 이미 견적을 작성한 센터인지 검증
@@ -136,7 +135,7 @@ public class OfferService {
         Object data = offer.getOfferId();
         if(!requestType.equals(OFFER_DELETE)) {
             Double score = reviewRepository.findAvgScoreByCenterId(offer.getCenter().getMemberId()).orElse(0.0);
-            data = OfferDetailDto.fromEntity(offer, score, offer.getCenter().getImage().getLink());
+            data = OfferDetailDto.fromEntity(offer, score);
         }
         // 게시글 작성자에게 데이터 보내기
         sendData2Writer(post.getPostId(), post.getMember().getMemberId(), requestType, data);

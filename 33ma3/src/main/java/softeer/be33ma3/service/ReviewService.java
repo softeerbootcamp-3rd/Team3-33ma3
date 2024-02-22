@@ -74,7 +74,7 @@ public class ReviewService {
         List<OneReviewDto> oneReviewDtos = new ArrayList<>();
         double totalScore = 0.0;
         Member center = memberRepository.findById(centerId).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
-        List<Review> reviews = reviewRepository.findReviewsByCenterIdOrderByScore(center.getMemberId());
+        List<Review> reviews = reviewRepository.findReviewsByCenterIdOrderByScore(centerId);
 
         for (Review review : reviews) {
             totalScore += review.getScore();

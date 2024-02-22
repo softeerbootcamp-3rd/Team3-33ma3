@@ -20,8 +20,6 @@ import java.util.stream.Collectors;
 import java.util.List;
 
 import static softeer.be33ma3.exception.ErrorCode.*;
-import static softeer.be33ma3.service.MemberService.CENTER_TYPE;
-import static softeer.be33ma3.service.MemberService.CLIENT_TYPE;
 import static softeer.be33ma3.utils.StringParser.stringCommaParsing;
 
 @Service
@@ -43,12 +41,12 @@ public class PostService {
         List<String> repairs = stringCommaParsing(repair);
         List<String> tuneUps = stringCommaParsing(tuneUp);
         List<Long> postIds = null;
-        if(member != null && member.getMemberType() == CENTER_TYPE) {   //센터인 경우
+        if(member != null && member.isCenter()) {   //센터인 경우
             Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
             postIds = postPerCenterRepository.findPostIdsByCenterId(center.getCenterId());
         }
         Long writerId = null;
-        if(Boolean.TRUE.equals(mine) && member != null && member.getMemberType() == CLIENT_TYPE) {
+        if(Boolean.TRUE.equals(mine) && member != null && member.isClient()) {
             writerId = member.getMemberId();
         }
         List<Post> posts = postRepository.findAllByConditions(writerId, done, regions, repairs, tuneUps, postIds);
@@ -63,7 +61,7 @@ public class PostService {
 
     @Transactional
     public Long createPost(Member currentMember, PostCreateDto postCreateDto, List<MultipartFile> multipartFiles) {
-        if(currentMember.getMemberType() == CENTER_TYPE){   //센터인 경우 글 작성 불가능
+        if(currentMember.isCenter()){   //센터인 경우 글 작성 불가능
             throw new BusinessException(POST_CREATION_DISABLED);
         }
         Region region = getRegion(postCreateDto.getLocation()); //지역 찾기
@@ -138,7 +136,7 @@ public class PostService {
     // 멤버 정보를 이용하여 견적을 작성한 이력이 있는 서비스 센터일 경우 작성한 견적 반환
     // 해당사항 없을 경우 null 반환
     private OfferDetailDto getCenterOffer(Long postId, Member member) {
-        if(member == null || member.getMemberType() == CLIENT_TYPE)
+        if(member == null || member.isClient())
             return null;
         // 해당 게시글에 해당 센터가 작성한 견적 찾기
         Optional<Offer> offer = offerRepository.findByPost_PostIdAndCenter_MemberId(postId, member.getMemberId());
