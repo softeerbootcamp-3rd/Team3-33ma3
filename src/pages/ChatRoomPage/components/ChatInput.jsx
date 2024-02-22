@@ -32,7 +32,6 @@ const SubmitText = styled.button`
 `;
 
 function ChatInput(props) {
-  // console.log(props.webSocket);
   const [inputValue, setInputValue] = useState("");
 
   const authData = useLoaderData();
@@ -43,36 +42,31 @@ function ChatInput(props) {
   };
 
   const handleSubmit = () => {
-    console.log("asd");
     const message = {
-      roomId: props.roomId,
-      senderId: props.senderId,
-      receiverId: props.receiverId,
       message: inputValue,
     };
-    props.webSocket.send(JSON.stringify(message));
-    // fetch(`${BASE_URL}chat/${props.roomId}/${props.receiverId}`, {
-    //   method: "POST",
-    //   headers: {
-    //     Authorization: accessToken,
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(message),
-    // })
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     console.log(data);
-    //     setInputValue("");
-    //     const newChat = {
-    //       senderId: Number(getMemberId()),
-    //       contents: inputValue,
-    //       createTime: getCurrentTimeFormatted(),
-    //       readDone: false,
-    //     };
-    //     props.updateChat((prev) => [...prev, newChat]);
-    //   })
-    //   .catch((error) => console.log(error));
+    fetch(`${BASE_URL}chat/${props.roomId}/${props.receiverId}`, {
+      method: "POST",
+      headers: {
+        Authorization: accessToken,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(message),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setInputValue("");
+        const newChat = {
+          senderId: Number(getMemberId()),
+          contents: inputValue,
+          createTime: getCurrentTimeFormatted(),
+          readDone: false,
+        };
+        props.updateChat((prev) => [...prev, newChat]);
+      })
+      .catch((error) => console.log(error));
   };
 
   return (
