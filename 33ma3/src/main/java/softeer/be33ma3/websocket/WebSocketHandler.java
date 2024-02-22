@@ -26,7 +26,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
             if (payload.contains("senderId") && payload.contains("receiverId")) {   //채팅인 경우
                 chatService.sendChatMessage(message);
             }
-            webSocketService.receiveExitMsg(session, message);  //나가는 경우
+            else{
+                webSocketService.receiveExitMsg(session, message);  //나가는 경우
+            }
 
         } catch (Exception e) {
             log.error("메세지 수신 에러");
