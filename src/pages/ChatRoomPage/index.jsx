@@ -27,7 +27,11 @@ function ChatRoomPage() {
   const urlRoomName = searchParams.get("room-name");
   const memberId = getMemberId();
   const memberType = getMemberType();
-  const receiverId = memberType === MEMBER_TYPE ? urlCenterId : urlClientId;
+  const receiverId =
+    Number(memberType) === MEMBER_TYPE ? urlCenterId : urlClientId;
+  console.log(
+    `senderId: ${memberId} receiverId: ${receiverId} memberType: ${memberType}`
+  );
 
   return (
     <Page>
@@ -35,7 +39,6 @@ function ChatRoomPage() {
         <MessageList
           mode={urlMode}
           memberId={memberId}
-          roomId={urlRoomId}
           accessToken={accessToken}
         />
         {urlMode === "chat" && (
