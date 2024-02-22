@@ -36,11 +36,12 @@ function ResultModal({ handleClose, endMessage }) {
       animation
     >
       <Content>
-        {endMessage.message !== "SUCCESS END" && (
+        {endMessage.message !== "SELECT END" && (
           <Img src={endMessage.data ? SuccessImg : failImg} />
         )}
-        {endMessage.message === "SUCCESS END" && <p>경매가 마감되었습니다.</p>}
-        {endMessage.message !== "SUCCESS END" && endMessage.data ? (
+        {endMessage.message === "SELECT END" ? (
+          <p>경매가 마감되었습니다.</p>
+        ) : endMessage.data ? (
           <p>축하드립니다! 제시한 견적이 낙찰되셨습니다!</p>
         ) : (
           <TextContainer>

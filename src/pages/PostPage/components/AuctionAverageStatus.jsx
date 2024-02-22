@@ -106,7 +106,7 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
           updateOfferDetail={setOfferDetail}
         />
       )}
-      {endMessage && offerDetail && (
+      {endMessage && (
         <ResultModal
           handleClose={() => window.location.reload()}
           endMessage={endMessage}
