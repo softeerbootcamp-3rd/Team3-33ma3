@@ -4,6 +4,7 @@ import { BASE_URL, IP } from "../../../constants/url";
 import { ChatHeader } from "./ChatHeader";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
+import { getCurrentTimeFormatted } from "../../../utils/dateTimeHelper";
 
 const ChatContainer = styled.div`
   width: 100%;
@@ -41,35 +42,33 @@ function ChatList(props) {
 
   const WebSocketServerUrl = `ws://${IP}/connect/chat/${props.roomId}/${props.memberId}`;
 
+  function updateChatHistory(newChat) {
+    const newChatData = {
+      senderId: Number(props.memberId),
+      contents: newChat,
+      createTime: getCurrentTimeFormatted(),
+      readDone: false,
+    };
+    setChatHistory((prev) => [...prev, newChatData]);
+  }
+
   useEffect(() => {
     const ws = new WebSocket(WebSocketServerUrl);
     setWebSocket(ws);
     ws.onopen = () => {
-      console.log(
-        `ws://${IP}/connect/chat/${props.roomId}/${props.memberId} ChatList 웹소켓 연결 성공`
-      );
+      console.log(`웹소켓 연결 성공`);
     };
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      console.log(
-        `ws://${IP}/connect/chat/${props.roomId}/${props.memberId} ChatList 메시지 수신:`,
-        data
-      );
-      const chatData = {
-        senderId: Number(props.memberId),
-        contents: data.contents,
-        createTime: data.createTime,
-        readDone: false,
-      };
+      console.log(`메시지 수신:`, data);
+      data.noReadCount = 0;
 
-      setChatHistory((prev) => [...prev, chatData]);
+      setChatHistory((prev) => [...prev, data]);
     };
 
     ws.onclose = () => {
-      console.log(
-        `ws://${IP}/connect/chat/${props.roomId}/${props.memberId} ChatList 웹소켓 연결 종료`
-      );
+      console.log(`웹소켓 연결 종료`);
     };
 
     ws.onerror = (error) => {
@@ -124,6 +123,7 @@ function ChatList(props) {
         roomId={props.roomId}
         senderId={props.memberId}
         receiverId={props.receiverId}
+        updateChatHistory={updateChatHistory}
       />
     </ChatContainer>
   );

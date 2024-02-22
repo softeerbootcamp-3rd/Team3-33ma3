@@ -53,9 +53,10 @@ function MessageList(props) {
     };
 
     ws.onmessage = (event) => {
-      console.log("메시지 수신:", JSON.parse(event.data));
+      const data = JSON.parse(event.data);
+      console.log("메시지 수신:", data);
       setMessages((prev) => {
-        const newData = JSON.parse(event.data);
+        const newData = data;
         const newDataArray = prev.filter(
           (item) => item.roomId !== newData.roomId
         );

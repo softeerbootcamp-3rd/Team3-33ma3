@@ -3,7 +3,7 @@ import SubmitIcon from "/src/assets/chatSubmit.svg";
 import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
 
-const InputContainer = styled.div`
+const InputContainer = styled.form`
   display: flex;
   height: 60px;
   width: 100%;
@@ -41,7 +41,8 @@ function ChatInput(props) {
     setInputValue(event.target.value);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     const message = {
       roomId: props.roomId,
       senderId: props.senderId,
@@ -49,16 +50,18 @@ function ChatInput(props) {
       message: inputValue,
     };
     props.webSocket.send(JSON.stringify(message));
+    props.updateChatHistory(inputValue);
+    setInputValue("");
   };
 
   return (
-    <InputContainer>
+    <InputContainer onSubmit={handleSubmit}>
       <InputText
         value={inputValue}
         onChange={handleInputChange}
         placeholder="메시지를 입력하세요"
       />
-      <SubmitText onClick={handleSubmit}>
+      <SubmitText>
         <img
           src={SubmitIcon}
           alt="Submit"
