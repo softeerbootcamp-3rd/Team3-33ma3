@@ -169,18 +169,18 @@ function AuctionPrice({
   centerName,
   isActive,
   isEnd,
-  isEdited,
   isSelected,
   onClick,
+  animation,
 }) {
   return (
     <Container
       $isActive={isActive}
       onClick={onClick}
-      className={!isEnd && !isEdited && "slideExpandUp"}
+      className={animation === "CREATE" && "slideExpandUp"}
     >
       {isSelected && <Prize src={PrizeImg} />}
-      <Bubble className={isEdited && "pulse"}>
+      <Bubble className={animation === "UPDATE" && "pulse"}>
         <Price>{price}만</Price>
         <img src={SpeechBubble} style={bubbleImageSize} />
       </Bubble>

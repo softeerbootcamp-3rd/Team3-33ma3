@@ -1,17 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import OptionType from "../../../components/post/OptionType";
 import OfferList from "./OfferList";
-import { BASE_URL, IP } from "../../../constants/url";
+import { IP } from "../../../constants/url";
 import { useRouteLoaderData } from "react-router-dom";
 
 function AuctionStatus({ postId, curOfferDetails }) {
   const webSocket = useRef(null);
   const [offerList, setOfferList] = useState(curOfferDetails);
-  const { memberId, accessToken } = useRouteLoaderData("root");
-  const [prevOfferList, setPrevOfferList] = useState(
-    new Set(curOfferDetails.map((offer) => offer.offerId))
-  );
-  console.log(prevOfferList.current);
+  const [offerState, setOfferState] = useState({ state: "", offerId: 0 });
+  const { memberId } = useRouteLoaderData("root");
 
   useEffect(() => {
     function connectWebSocket() {
@@ -36,10 +33,23 @@ function AuctionStatus({ postId, curOfferDetails }) {
       // socket에서 메세지 전달 시 이벤트
       webSocket.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        setOfferList((prevState) => {
-          setPrevOfferList(new Set(prevState.map((offer) => offer.offerId)));
-          return data;
+        console.log(data);
+        setOfferState({
+          state: data.message,
+          offerId: data.data.offerId ? data.data.offerId : data.data,
         });
+
+        switch (data.message) {
+          case "CREATE":
+            createOffer(data.data);
+            return;
+          case "UPDATE":
+            updateOffer(data.data);
+            return;
+          case "DELETE":
+            deleteOffer(data.data);
+            return;
+        }
       };
 
       // socket 에러 발생 시 이벤트
@@ -78,9 +88,43 @@ function AuctionStatus({ postId, curOfferDetails }) {
     };
   }, []);
 
+  // 댓글 생성
+  function createOffer(data) {
+    setOfferList((prevState) => sortOffer([...prevState, data]));
+  }
+
+  // 댓글 수정
+  function updateOffer(data) {
+    setOfferList((prevState) => {
+      const prevList = prevState.filter(
+        (offer) => offer.offerId != data.offerId
+      );
+      return sortOffer([...prevList, data]);
+    });
+  }
+
+  // 댓글 삭제
+  function deleteOffer(offerId) {
+    setOfferList((prev) =>
+      prev.filter((offer) => {
+        return offerId !== offer.offerId;
+      })
+    );
+  }
+
+  // 댓글 정렬
+  function sortOffer(list) {
+    return list.sort((o1, o2) => {
+      if (o1.price !== o2.price) {
+        return o1.price - o2.price;
+      }
+      return o2.score - o1.score;
+    });
+  }
+
   return (
     <OptionType title={"경매 현황"}>
-      <OfferList offerList={offerList} prevOfferList={prevOfferList} />
+      <OfferList offerList={offerList} offerState={offerState} />
     </OptionType>
   );
 }
