@@ -52,7 +52,11 @@ public class WebSocketService {
     }
 
     @Transactional
-    public void sendChatMessage(ChatMessageDto chatMessageDto) throws IOException {
+    public void sendChatMessage(WebSocketSession session, TextMessage message) throws IOException {
+        String payload = message.getPayload();
+        //payload -> chatMessageDto 로 변환
+        ChatMessageDto chatMessageDto = objectMapper.readValue(payload, ChatMessageDto.class);
+
         Member sender = memberRepository.findById(chatMessageDto.getSenderId()).get();
         Member receiver = memberRepository.findById(chatMessageDto.getReceiverId()).get();
         ChatRoom chatRoom = chatRoomRepository.findById(chatMessageDto.getRoomId()).get();
@@ -93,6 +97,12 @@ public class WebSocketService {
     public void saveInPost(Long postId, Long memberId, WebSocketSession session) {
         webSocketRepository.saveMemberInPost(postId, memberId);
         webSocketRepository.saveSessionWithMemberId(memberId, session);
+    }
+
+    public void saveInChat(Long roomId, Long memberId, WebSocketSession session){
+        webSocketRepository.saveMemberInChat(roomId, memberId);
+        webSocketRepository.saveSessionWithMemberId(memberId, session);
+
     }
 
     public void saveInAllChatRoom(Long memberId, WebSocketSession session) {
