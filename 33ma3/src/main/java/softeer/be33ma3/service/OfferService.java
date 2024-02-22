@@ -17,10 +17,8 @@ import softeer.be33ma3.repository.post.PostRepository;
 import softeer.be33ma3.response.DataResponse;
 import softeer.be33ma3.websocket.WebSocketService;
 
-import java.util.*;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static softeer.be33ma3.exception.ErrorCode.*;
 import static softeer.be33ma3.service.MemberService.CENTER_TYPE;
@@ -39,6 +37,9 @@ public class OfferService {
     private static final String OFFER_CREATE = "CREATE";
     private static final String OFFER_UPDATE = "UPDATE";
     private static final String OFFER_DELETE = "DELETE";
+    private static final String SELECT_SUCCESS = "SELECT SUCCESS";
+    private static final String SELECT_FAIL = "SELECT FAIL";
+    private static final String SELECT_END = "SELECT END";
 
     // 견적 제시 댓글 하나 반환
     public OfferDetailDto showOffer(Long postId, Long offerId) {
@@ -119,7 +120,7 @@ public class OfferService {
         offer.setSelected();
         post.setDone();
         // 6. 서비스 센터들에게 낙찰 또는 경매 마감 메세지 보내기
-        sendMessageAfterSelection(postId, offer.getCenter().getMemberId());
+        sendMessageAfterSelection(postId, post.getMember().getMemberId(), offer.getCenter().getMemberId());
         webSocketService.deletePostRoom(postId);
     }
 
@@ -138,14 +139,16 @@ public class OfferService {
             data = OfferDetailDto.fromEntity(offer, score, offer.getCenter().getImage().getLink());
         }
         // 게시글 작성자에게 데이터 보내기
-        sendData2Writer(post.getMember().getMemberId(), requestType, data);
+        sendData2Writer(post.getPostId(), post.getMember().getMemberId(), requestType, data);
         // 그 외 화면을 보고 있는 유저들에게 평균 제시 가격 보내기
         sendAvgPrice2others(post.getPostId(), post.getMember().getMemberId());
     }
 
-    public void sendData2Writer(Long memberId, String requestType, Object data) {
+    public void sendData2Writer(Long postId, Long memberId, String requestType, Object data) {
         DataResponse<?> response = DataResponse.success(requestType, data);
-        webSocketService.sendData2Client(memberId, response);
+        if(webSocketService.isInPostRoom(postId, memberId)) {
+            webSocketService.sendData2Client(memberId, response);
+        }
     }
 
     public void sendAvgPrice2others(Long postId, Long writerId) {
@@ -162,15 +165,26 @@ public class OfferService {
     }
 
     // 낙찰 처리 후 서비스 센터들에게 낙찰 메세지, 경매 마감 메세지 전송
-    private void sendMessageAfterSelection(Long postId, Long selectedMemberId) {
-        // 낙찰 메세지
-        DataResponse<Boolean> selectAlert = DataResponse.success("제시한 견적이 낙찰되었습니다.", true);
-        webSocketService.sendData2Client(selectedMemberId, selectAlert);
-        // 경매 마감 메세지
-        DataResponse<Boolean> endAlert = DataResponse.success("견적 미선정으로 경매가 마감되었습니다. 다음 기회를 노려보세요!", false);
-        List<Long> memberIdsInPost = offerRepository.findCenterMemberIdsByPost_PostId(postId);
-        memberIdsInPost.stream()
-                .filter(memberId -> !memberId.equals(selectedMemberId))
-                .forEach(memberId -> webSocketService.sendData2Client(memberId, endAlert));
+    private void sendMessageAfterSelection(Long postId, Long writerId, Long selectedMemberId) {
+        DataResponse<Boolean> selectSuccess = DataResponse.success(SELECT_SUCCESS, true);
+        DataResponse<Boolean> selectFail = DataResponse.success(SELECT_FAIL, false);
+        DataResponse<Boolean> selectEnd = DataResponse.success(SELECT_END, false);
+        // 낙찰된 센터에게 메세지 보내기
+        webSocketService.sendData2Client(selectedMemberId, selectSuccess);
+        // 현재 관전자들
+        Set<Long> memberIdsInPost = webSocketService.findAllMemberInPost(postId);
+        memberIdsInPost.remove(writerId);
+        memberIdsInPost.remove(selectedMemberId);
+        // 경매에 참여한 서비스 센터들
+        List<Long> participants = offerRepository.findCenterMemberIdsByPost_PostId(postId);
+
+        memberIdsInPost.forEach(memberId -> {
+            if(participants.contains(memberId)) {
+                webSocketService.sendData2Client(memberId, selectFail);
+            }
+            else {
+                webSocketService.sendData2Client(memberId, selectEnd);
+            }
+        });
     }
 }
