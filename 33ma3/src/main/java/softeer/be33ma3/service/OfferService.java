@@ -36,6 +36,10 @@ public class OfferService {
     private final ReviewRepository reviewRepository;
     private final WebSocketHandler webSocketHandler;
 
+    private static final String OFFER_CREATE = "CREATE";
+    private static final String OFFER_UPDATE = "UPDATE";
+    private static final String OFFER_DELETE = "DELETE";
+
     // 견적 제시 댓글 하나 반환
     public OfferDetailDto showOffer(Long postId, Long offerId) {
         // 1. 해당 게시글 가져오기
@@ -61,7 +65,7 @@ public class OfferService {
         Offer offer = offerCreateDto.toEntity(post, member);
         Offer savedOffer = offerRepository.save(offer);
         // 4. 업데이트된 사항 실시간 전송
-        sendAboutOfferUpdate(post, "CREATE", savedOffer);
+        sendAboutOfferUpdate(post, OFFER_CREATE, savedOffer);
         return savedOffer.getOfferId();
     }
 
@@ -82,7 +86,7 @@ public class OfferService {
         offer.setContents(offerCreateDto.getContents());
         offerRepository.save(offer);
         // 5. 업데이트된 사항 실시간 전송
-        sendAboutOfferUpdate(post, "UPDATE", offer);
+        sendAboutOfferUpdate(post, OFFER_UPDATE, offer);
     }
 
     // 견적 제시 댓글 삭제
@@ -98,7 +102,7 @@ public class OfferService {
         // 4. 댓글 삭제
         offerRepository.delete(offer);
         // 5. 업데이트된 사항 실시간 전송
-        sendAboutOfferUpdate(post, "DELETE", offer);
+        sendAboutOfferUpdate(post, OFFER_DELETE, offer);
     }
 
     // 견적 제시 댓글 낙찰
@@ -129,7 +133,7 @@ public class OfferService {
 
     public void sendAboutOfferUpdate(Post post, String requestType, Offer offer) {
         Object data = offer.getOfferId();
-        if(!requestType.equals("DELETE")) {
+        if(!requestType.equals(OFFER_DELETE)) {
             Double score = reviewRepository.findAvgScoreByCenterId(offer.getCenter().getMemberId()).orElse(0.0);
             data = OfferDetailDto.fromEntity(offer, score, offer.getCenter().getImage().getLink());
         }
