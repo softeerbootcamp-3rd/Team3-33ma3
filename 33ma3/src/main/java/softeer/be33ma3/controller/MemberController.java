@@ -33,11 +33,6 @@ public class MemberController {
     private final MemberService memberService;
     private final JwtService jwtService;
 
-    @GetMapping
-    public ResponseEntity<?> home() {
-        return ResponseEntity.ok().build();
-    }
-
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
             @ApiResponse(responseCode = "400", description = "이미 존재하는 아이디", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
