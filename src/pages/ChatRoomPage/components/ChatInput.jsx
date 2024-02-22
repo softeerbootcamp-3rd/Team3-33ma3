@@ -2,9 +2,6 @@ import styled from "styled-components";
 import SubmitIcon from "/src/assets/chatSubmit.svg";
 import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
-import { BASE_URL } from "../../../constants/url";
-import { getMemberId } from "../../../utils/auth";
-import { getCurrentTimeFormatted } from "../../../utils/dateTimeHelper";
 
 const InputContainer = styled.div`
   display: flex;
@@ -46,30 +43,12 @@ function ChatInput(props) {
 
   const handleSubmit = () => {
     const message = {
+      roomId: props.roomId,
+      senderId: props.senderId,
+      receiverId: props.receiverId,
       message: inputValue,
     };
-    fetch(`${BASE_URL}chat/${props.roomId}/${props.receiverId}`, {
-      method: "POST",
-      headers: {
-        Authorization: accessToken,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(message),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setInputValue("");
-        const newChat = {
-          senderId: Number(getMemberId()),
-          contents: inputValue,
-          createTime: getCurrentTimeFormatted(),
-          readDone: false,
-        };
-        props.updateChat((prev) => [...prev, newChat]);
-      })
-      .catch((error) => console.log(error));
+    props.webSocket.send(JSON.stringify(message));
   };
 
   return (

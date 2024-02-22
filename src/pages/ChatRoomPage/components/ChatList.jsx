@@ -34,7 +34,6 @@ function scrollToBottom(scroll) {
 }
 
 function ChatList(props) {
-  // console.log(props.accessToken);
   const [chatHistory, setChatHistory] = useState([]);
   const [webSocket, setWebSocket] = useState(null);
 
@@ -57,8 +56,14 @@ function ChatList(props) {
         `ws://${IP}/connect/chat/${props.roomId}/${props.memberId} ChatList 메시지 수신:`,
         data
       );
+      const chatData = {
+        senderId: Number(props.memberId),
+        contents: data.contents,
+        createTime: data.createTime,
+        readDone: false,
+      };
 
-      setChatHistory((prev) => [...prev, data]);
+      setChatHistory((prev) => [...prev, chatData]);
     };
 
     ws.onclose = () => {
@@ -104,7 +109,7 @@ function ChatList(props) {
 
   return (
     <ChatContainer>
-      <ChatHeader centerName={props.centerName} />
+      <ChatHeader roomName={props.roomName} />
       <ChatBodyContainer ref={scrollRef}>
         <ChatBody>
           {chatHistory &&
@@ -114,9 +119,10 @@ function ChatList(props) {
         </ChatBody>
       </ChatBodyContainer>
       <ChatInput
+        webSocket={webSocket}
         roomId={props.roomId}
+        senderId={props.memberId}
         receiverId={props.receiverId}
-        updateChat={setChatHistory}
       />
     </ChatContainer>
   );
