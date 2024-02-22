@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.dto.response.AvgPriceDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.review.ReviewRepository;
-import softeer.be33ma3.websocket.WebSocketHandler;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Offer;
 import softeer.be33ma3.domain.Post;
@@ -16,6 +15,7 @@ import softeer.be33ma3.dto.response.OfferDetailDto;
 import softeer.be33ma3.repository.OfferRepository;
 import softeer.be33ma3.repository.post.PostRepository;
 import softeer.be33ma3.response.DataResponse;
+import softeer.be33ma3.websocket.WebSocketService;
 
 import java.util.*;
 import java.util.List;
@@ -34,7 +34,7 @@ public class OfferService {
     private final OfferRepository offerRepository;
     private final PostRepository postRepository;
     private final ReviewRepository reviewRepository;
-    private final WebSocketHandler webSocketHandler;
+    private final WebSocketService webSocketService;
 
     // 견적 제시 댓글 하나 반환
     public OfferDetailDto showOffer(Long postId, Long offerId) {
@@ -110,7 +110,7 @@ public class OfferService {
         // 6. 서비스 센터들에게 낙찰 또는 경매 마감 메세지 보내기
         Long selectedMemberId = offer.getCenter().getMemberId();
         sendMessageAfterSelection(postId, selectedMemberId);
-        webSocketHandler.deletePostRoom(postId);
+        webSocketService.deletePostRoom(postId);
     }
 
     // 해당 게시글을 가져오고, 마감 전인지 판단
@@ -150,16 +150,16 @@ public class OfferService {
                 }).toList());
         Collections.sort(offerDetailDtos);
         // 2. 해당 게시글 화면에 진입해 있을 경우 전송하기
-        if(webSocketHandler.isInPostRoom(postId, memberId)) {
+        if(webSocketService.isInPostRoom(postId, memberId)) {
             log.info("게시글 작성자에게 실시간 댓글 전송 진행");
-            webSocketHandler.sendData2Client(memberId, offerDetailDtos);
+            webSocketService.sendData2Client(memberId, offerDetailDtos);
         }
     }
 
     // 해당 게시글 화면을 보고 있는 모든 유저들에게 평균 견적 제시 가격 실시간 전송
     public void sendAvgPrice2Others(Long postId, Long writerId) {
         // 1. 해당 게시글을 보고 있는 모든 유저들 가져오기 (글 작성자도 포함되어있을 경우 제외시키기)
-        Set<Long> memberList = webSocketHandler.findAllMemberInPost(postId);
+        Set<Long> memberList = webSocketService.findAllMemberInPost(postId);
         if(memberList == null) {
             log.info("해당 게시글을 보고 있는 유저가 없습니다.");
             return;
@@ -171,19 +171,19 @@ public class OfferService {
         Double avgPrice = offerRepository.findAvgPriceByPostId(postId).orElse(0.0);
         AvgPriceDto avgPriceDto = new AvgPriceDto(Math.round( avgPrice * 10 ) / 10.0);
         // 3. 전송하기
-        memberList.forEach(memberId -> webSocketHandler.sendData2Client(memberId, avgPriceDto));
+        memberList.forEach(memberId -> webSocketService.sendData2Client(memberId, avgPriceDto));
     }
 
     // 낙찰 처리 후 서비스 센터들에게 낙찰 메세지, 경매 마감 메세지 전송
     private void sendMessageAfterSelection(Long postId, Long selectedMemberId) {
         // 낙찰 메세지
         DataResponse<Boolean> selectAlert = DataResponse.success("제시한 견적이 낙찰되었습니다.", true);
-        webSocketHandler.sendData2Client(selectedMemberId, selectAlert);
+        webSocketService.sendData2Client(selectedMemberId, selectAlert);
         // 경매 마감 메세지
         DataResponse<Boolean> endAlert = DataResponse.success("견적 미선정으로 경매가 마감되었습니다. 다음 기회를 노려보세요!", false);
         List<Long> memberIdsInPost = offerRepository.findCenterMemberIdsByPost_PostId(postId);
         memberIdsInPost.stream()
                 .filter(memberId -> !memberId.equals(selectedMemberId))
-                .forEach(memberId -> webSocketHandler.sendData2Client(memberId, endAlert));
+                .forEach(memberId -> webSocketService.sendData2Client(memberId, endAlert));
     }
 }

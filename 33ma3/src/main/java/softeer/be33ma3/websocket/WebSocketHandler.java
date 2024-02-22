@@ -7,7 +7,9 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -65,5 +67,15 @@ public class WebSocketHandler extends TextWebSocketHandler {
         } catch(Exception e) {
             log.error("연결 종료 후 에러 발생");
         }
+    }
+
+    public void deletePostRoom(Long postId) {
+        webSocketService.deletePostRoom(postId);
+    }
+    public Set<Long> findAllMemberInPost(Long postId) {
+        return webSocketService.findAllMemberInPost(postId);
+    }
+    public boolean isInPostRoom(Long postId, Long memberId) {
+        return webSocketService.isInPostRoom(postId, memberId);
     }
 }
