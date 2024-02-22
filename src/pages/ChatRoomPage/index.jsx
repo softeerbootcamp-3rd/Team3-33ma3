@@ -3,8 +3,9 @@ import { MessageList } from "./components/MessageList";
 import { ChatList } from "./components/ChatList";
 import { useLoaderData, useSearchParams } from "react-router-dom";
 import styled from "styled-components";
-import { getMemberId } from "../../utils/auth";
+import { getMemberId, getMemberType } from "../../utils/auth";
 import Page from "/src/components/post/Page.jsx";
+import { MEMBER_TYPE } from "../../constants/options";
 
 const ChatMessageContainer = styled.div`
   display: flex;
@@ -23,9 +24,10 @@ function ChatRoomPage() {
   const urlRoomId = searchParams.get("room-id");
   const urlClientId = searchParams.get("client-id");
   const urlCenterId = searchParams.get("center-id");
-  const urlCenterName = searchParams.get("center-name");
+  const urlRoomName = searchParams.get("room-name");
   const memberId = getMemberId();
-  const receiverId = memberId === urlClientId ? urlCenterId : urlClientId;
+  const memberType = getMemberType();
+  const receiverId = memberType === MEMBER_TYPE ? urlCenterId : urlClientId;
 
   return (
     <Page>
@@ -43,7 +45,7 @@ function ChatRoomPage() {
             clientId={urlClientId}
             centerId={urlCenterId}
             roomId={urlRoomId}
-            centerName={urlCenterName}
+            roomName={urlRoomName}
             accessToken={accessToken}
           />
         )}
