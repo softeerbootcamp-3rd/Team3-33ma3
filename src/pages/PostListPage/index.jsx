@@ -37,11 +37,11 @@ const CardList = styled.div`
 function PostListPage() {
   const [thumnailList, setThumnailList] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [regionList, setRegionList] = useState();
-  const [repairList, setRepairList] = useState();
-  const [tuneUpList, setTuneUpList] = useState();
-  const [isDone, setIsDone] = useState();
-  const [isMine, setIsMine] = useState();
+  const [regionList, setRegionList] = useState([]);
+  const [repairList, setRepairList] = useState([]);
+  const [tuneUpList, setTuneUpList] = useState([]);
+  const [isDone, setIsDone] = useState(false);
+  const [isMine, setIsMine] = useState(false);
   const { accessToken } = useRouteLoaderData("root");
   const headers = accessToken ? { Authorization: accessToken } : {};
 
@@ -75,12 +75,15 @@ function PostListPage() {
       .then((res) => {
         if (res.ok) {
           return res.json();
+        } else {
+          throw new Error("게시물을 불러오는데 실패했습니다.");
         }
       })
       .then((json) => {
         setThumnailList(json.data);
         setIsLoading(false);
-      });
+      })
+      .catch((error) => alert(error));
   }, [regionList, repairList, tuneUpList, isDone, isMine]);
 
   const carList =

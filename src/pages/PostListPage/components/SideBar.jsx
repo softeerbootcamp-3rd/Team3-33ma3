@@ -40,7 +40,9 @@ function SideBar({
     />
   ));
 
-  const repairServices = REPAIR_SERVICE_OPTIONS.map((item, index) => (
+  const repairServices = REPAIR_SERVICE_OPTIONS.filter(
+    (item) => item !== "기타"
+  ).map((item, index) => (
     <ChipButton
       type={item}
       key={index}
@@ -48,7 +50,9 @@ function SideBar({
     />
   ));
 
-  const tuneUpServices = TUNEUP_SERVICE_OPTIONS.map((item, index) => (
+  const tuneUpServices = TUNEUP_SERVICE_OPTIONS.filter(
+    (item) => item !== "기타"
+  ).map((item, index) => (
     <ChipButton
       type={item}
       key={index}
