@@ -5,10 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import softeer.be33ma3.domain.Offer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 @Getter
 @Builder
 @Schema(description = "견적 상세보기 응답 DTO")

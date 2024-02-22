@@ -25,17 +25,14 @@ class ChatServiceTest {
     @Autowired ChatService chatService;
     @Autowired MemberRepository memberRepository;
     @Autowired ChatRoomRepository chatRoomRepository;
-    @Autowired
-    PostRepository postRepository;
+    @Autowired PostRepository postRepository;
     @Autowired ChatMessageRepository chatMessageRepository;
-    @Autowired AlertRepository alertRepository;
 
     @AfterEach
     void tearDown() {
         chatMessageRepository.deleteAllInBatch();
         chatRoomRepository.deleteAllInBatch();
         postRepository.deleteAllInBatch();
-        alertRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();
     }
 

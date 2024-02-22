@@ -140,7 +140,7 @@ public class OfferService {
         // 게시글 작성자에게 데이터 보내기
         sendData2Writer(post.getMember().getMemberId(), requestType, data);
         // 그 외 화면을 보고 있는 유저들에게 평균 제시 가격 보내기
-        sendAvgPrice2Others(post.getPostId(), post.getMember().getMemberId());
+        sendAvgPrice2others(post.getPostId(), post.getMember().getMemberId());
     }
 
     public void sendData2Writer(Long memberId, String requestType, Object data) {
