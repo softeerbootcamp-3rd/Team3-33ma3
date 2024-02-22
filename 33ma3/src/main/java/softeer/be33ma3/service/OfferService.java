@@ -139,14 +139,16 @@ public class OfferService {
             data = OfferDetailDto.fromEntity(offer, score, offer.getCenter().getImage().getLink());
         }
         // 게시글 작성자에게 데이터 보내기
-        sendData2Writer(post.getMember().getMemberId(), requestType, data);
+        sendData2Writer(post.getPostId(), post.getMember().getMemberId(), requestType, data);
         // 그 외 화면을 보고 있는 유저들에게 평균 제시 가격 보내기
         sendAvgPrice2others(post.getPostId(), post.getMember().getMemberId());
     }
 
-    public void sendData2Writer(Long memberId, String requestType, Object data) {
+    public void sendData2Writer(Long postId, Long memberId, String requestType, Object data) {
         DataResponse<?> response = DataResponse.success(requestType, data);
-        webSocketService.sendData2Client(memberId, response);
+        if(webSocketService.isInPostRoom(postId, memberId)) {
+            webSocketService.sendData2Client(memberId, response);
+        }
     }
 
     public void sendAvgPrice2others(Long postId, Long writerId) {
