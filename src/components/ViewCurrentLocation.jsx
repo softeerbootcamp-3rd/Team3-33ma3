@@ -4,6 +4,8 @@ import {
   searchCoordinateToAddress,
 } from "../utils/locationUtils";
 import {
+  DEFAULT_LATITUDE,
+  DEFAULT_LONGITUDE,
   DEFAULT_MAX_ZOOM,
   DEFAULT_MIN_ZOOM,
   DEFAULT_ZOOM_SCALE,
@@ -12,7 +14,11 @@ import {
 // 현재 위치 좌표 기반 map, marker, circle 객체 생성 및 주소 상태 업데이트 함수
 function initMap(latitude, longitude, mapElement, setNewAddress) {
   const center = new naver.maps.LatLng(latitude, longitude);
-  searchCoordinateToAddress(center, setNewAddress);
+  searchCoordinateToAddress(center)
+    .then((res) => {
+      setNewAddress(res);
+    })
+    .catch((error) => console.log(error));
 
   const mapOptions = {
     center: center,
@@ -51,10 +57,10 @@ export default function ViewCurrentLocation({
     // 현재 좌표 값 기반 비동기 처리 함수
     async function fetchAndSetLocation() {
       try {
-        const currentLocation = await getCurrentLocation();
+        // const currentLocation = await getCurrentLocation();
         const { map, marker, circle } = initMap(
-          currentLocation.latitude,
-          currentLocation.longitude,
+          DEFAULT_LATITUDE,
+          DEFAULT_LONGITUDE,
           mapElement.current,
           setAddress
         );
