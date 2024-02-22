@@ -35,8 +35,11 @@ public class Post extends BaseTimeEntity{
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Offer> offers = new ArrayList<>();
 
     //셍성 메소드
     public static Post createPost(PostCreateDto postCreateDto, Region region, Member member) {
@@ -66,10 +69,5 @@ public class Post extends BaseTimeEntity{
         this.repairService = postCreateDto.getRepairService();
         this.tuneUpService = postCreateDto.getTuneUpService();
         this.region = region;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
     }
 }

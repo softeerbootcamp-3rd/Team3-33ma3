@@ -45,4 +45,9 @@ public class Offer {
     public void setSelected() {
         selected = true;
     }
+
+    public void setPost(Post post){
+        this.post = post;
+        post.getOffers().add(this);
+    }
 }

@@ -43,7 +43,7 @@ public class PostService {
         List<String> repairs = stringCommaParsing(repair);
         List<String> tuneUps = stringCommaParsing(tuneUp);
         List<Long> postIds = null;
-        if(member != null && member.getMemberType() == CENTER_TYPE) {
+        if(member != null && member.getMemberType() == CENTER_TYPE) {   //센터인 경ㅇ
             Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
             postIds = postPerCenterRepository.findPostIdsByCenterId(center.getCenterId());
         }
@@ -57,18 +57,8 @@ public class PostService {
 
     // List<Post> -> List<PostThumbnailDto>로 변환
     private List<PostThumbnailDto> fromPostList(List<Post> posts) {
-        return new ArrayList<>(posts.stream()
-                .map(post -> {
-                    List<String> repairList = stringCommaParsing(post.getRepairService());
-                    List<String> tuneUpList = stringCommaParsing(post.getTuneUpService());
-                    int offerCount = countOfferNum(post.getPostId());
-                    return PostThumbnailDto.fromEntity(post, repairList, tuneUpList, offerCount);
-                }).toList());
-    }
-
-    // 해당 게시글에 달린 댓글 개수 반환
-    private int countOfferNum(Long postId) {
-        return offerRepository.findByPost_PostId(postId).size();
+        return posts.stream()
+                .map(PostThumbnailDto::fromEntity).toList();
     }
 
     @Transactional
