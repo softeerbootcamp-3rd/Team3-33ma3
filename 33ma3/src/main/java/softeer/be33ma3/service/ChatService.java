@@ -116,6 +116,15 @@ public class ChatService {
         webSocketService.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);   //채팅 내용 실시간 전송
     }
 
+    private AllChatRoomDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
+        ChatMessage lastChatMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());//마지막 메세지
+        if(lastChatMessage == null){    //방이 만들어지고 메세지를 보내지 않은 경우
+            return AllChatRoomDto.create(chatRoom, "", memberName, 0, "");
+        }
+        int count = (int) chatMessageRepository.countReadDoneIsFalse(chatRoom.getChatRoomId(), member.getMemberId());     //안읽은 메세지 개수
+        return AllChatRoomDto.create(chatRoom, lastChatMessage.getContents(), memberName, count, createTimeParsing(lastChatMessage.getCreateTime()));
+    }
+
     @Transactional
     public List<ChatHistoryDto> showOneChatHistory(Member member, Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BusinessException(NOT_FOUND_CHAT_ROOM));
@@ -132,15 +141,6 @@ public class ChatService {
         }
 
         return chatHistoryDtos;
-    }
-
-    private AllChatRoomDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
-        ChatMessage lastChatMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());//마지막 메세지
-        if(lastChatMessage == null){    //방이 만들어지고 메세지를 보내지 않은 경우
-            return AllChatRoomDto.create(chatRoom, "", memberName, 0, "");
-        }
-        int count = (int) chatMessageRepository.countReadDoneIsFalse(chatRoom.getChatRoomId(), member.getMemberId());     //안읽은 메세지 개수
-        return AllChatRoomDto.create(chatRoom, lastChatMessage.getContents(), memberName, count, createTimeParsing(lastChatMessage.getCreateTime()));
     }
 
     private void isValidRoomMember(Member member, ChatRoom chatRoom) {
