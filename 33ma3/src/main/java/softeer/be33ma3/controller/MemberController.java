@@ -34,39 +34,27 @@ public class MemberController {
     private final JwtService jwtService;
 
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
+            @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
             @ApiResponse(responseCode = "400", description = "이미 존재하는 아이디", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "일반 사용자 회원가입", description = "사용자 회원가입 메서드 입니다.")
-    @PostMapping("/client/signUp")
-    public ResponseEntity<?> clientSignUp(@RequestBody @Valid ClientSignUpDto clientSignUpDto){
-        Long memberId = memberService.clientSignUp(clientSignUpDto);
-
-        return ResponseEntity.ok(DataResponse.success("회원가입 성공", memberId));
+    @PostMapping(value = "/client/signUp", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> clientSignUp(@RequestPart(name = "request") @Valid ClientSignUpDto clientSignUpDto,
+                                          @RequestPart(name = "profile", required = false) MultipartFile profile){
+        memberService.clientSignUp(clientSignUpDto, profile);
+        return ResponseEntity.ok(SingleResponse.success("회원가입 성공"));
     }
 
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
+            @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
             @ApiResponse(responseCode = "400", description = "이미 존재하는 아이디", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "센터 회원가입", description = "센터 회원가입 메서드 입니다.")
-    @PostMapping("/center/signUp")
-    public ResponseEntity<?> centerSignUp(@RequestBody @Valid CenterSignUpDto centerSignUpDto){
-        Long memberId = memberService.centerSignUp(centerSignUpDto);
-
-        return ResponseEntity.ok(DataResponse.success("회원가입 성공",memberId));
-    }
-
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "프로필 사진 저장 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 회원", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
-    })
-    @Operation(summary = "프로필 사진 저장", description = "회원가입 시 프로필 사진 저장 메서드 입니다.")
-    @Parameter(name = "member_id", description = "member id", required = true, example = "1", in = ParameterIn.PATH)
-    @PostMapping(value = "/profile/{member_id}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> addProfile(@PathVariable("member_id") Long memberId, @RequestPart(name = "profile", required = false) MultipartFile profile) {
-        memberService.addProfile(memberId, profile);
-        return ResponseEntity.ok().body(SingleResponse.success("프로필 사진 저장 성공"));
+    @PostMapping(value = "/center/signUp", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> centerSignUp(@RequestPart(name = "request") @Valid CenterSignUpDto centerSignUpDto,
+                                          @RequestPart(name = "profile", required = false) MultipartFile profile){
+        memberService.centerSignUp(centerSignUpDto, profile);
+        return ResponseEntity.ok(SingleResponse.success("회원가입 성공"));
     }
 
     @ApiResponses({

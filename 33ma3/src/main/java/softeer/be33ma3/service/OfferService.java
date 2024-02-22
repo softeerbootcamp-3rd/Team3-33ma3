@@ -120,7 +120,7 @@ public class OfferService {
         offer.setSelected();
         post.setDone();
         // 6. 서비스 센터들에게 낙찰 또는 경매 마감 메세지 보내기
-        sendMessageAfterSelection(postId, offer.getCenter().getMemberId());
+        sendMessageAfterSelection(postId, post.getMember().getMemberId(), offer.getCenter().getMemberId());
         webSocketService.deletePostRoom(postId);
     }
 
@@ -163,18 +163,18 @@ public class OfferService {
     }
 
     // 낙찰 처리 후 서비스 센터들에게 낙찰 메세지, 경매 마감 메세지 전송
-    private void sendMessageAfterSelection(Long postId, Long selectedMemberId) {
-        // 1. 낙찰된 센터에게 메세지 보내기
+    private void sendMessageAfterSelection(Long postId, Long writerId, Long selectedMemberId) {
         DataResponse<Boolean> selectSuccess = DataResponse.success(SELECT_SUCCESS, true);
-        webSocketService.sendData2Client(selectedMemberId, selectSuccess);
-        // 2. 그 외 관전자들에게 메세지 보내기
         DataResponse<Boolean> selectFail = DataResponse.success(SELECT_FAIL, false);
         DataResponse<Boolean> selectEnd = DataResponse.success(SELECT_END, false);
+        // 낙찰된 센터에게 메세지 보내기
+        webSocketService.sendData2Client(selectedMemberId, selectSuccess);
         // 현재 관전자들
         Set<Long> memberIdsInPost = webSocketService.findAllMemberInPost(postId);
-        // 낙찰에 실패한 서비스 센터들
+        memberIdsInPost.remove(writerId);
+        memberIdsInPost.remove(selectedMemberId);
+        // 경매에 참여한 서비스 센터들
         List<Long> participants = offerRepository.findCenterMemberIdsByPost_PostId(postId);
-        participants.remove(selectedMemberId);
 
         memberIdsInPost.forEach(memberId -> {
             if(participants.contains(memberId)) {

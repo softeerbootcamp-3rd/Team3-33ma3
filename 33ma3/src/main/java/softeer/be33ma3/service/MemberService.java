@@ -36,29 +36,38 @@ public class MemberService {
     private final ImageRepository imageRepository;
 
     @Transactional
-    public Long clientSignUp(ClientSignUpDto clientSignUpDto) {
+    public void clientSignUp(ClientSignUpDto clientSignUpDto, MultipartFile profile) {
         if (memberRepository.findMemberByLoginId(clientSignUpDto.getLoginId()).isPresent()) {//아이디가 이미 존재하는 경우
             throw new BusinessException(DUPLICATE_ID);
         }
 
         Member member = Member.createMember(CLIENT_TYPE, clientSignUpDto.getLoginId(), clientSignUpDto.getPassword());
-        return memberRepository.save(member).getMemberId();
+        // 프로필 이미지 저장
+        member.setProfile(saveProfile(profile));
+        memberRepository.save(member);
     }
 
     @Transactional
-    public Long centerSignUp(CenterSignUpDto centerSignUpDto) {
+    public void centerSignUp(CenterSignUpDto centerSignUpDto, MultipartFile profile) {
         if (memberRepository.findMemberByLoginId(centerSignUpDto.getLoginId()).isPresent()) {
             throw new BusinessException(DUPLICATE_ID);
         }
 
         Member member = Member.createMember(CENTER_TYPE, centerSignUpDto.getLoginId(), centerSignUpDto.getPassword());
+        // 프로필 이미지 저장
+        member.setProfile(saveProfile(profile));
         Member savedMember = memberRepository.save(member);
-
         Center center = Center.createCenter(centerSignUpDto.getLatitude(), centerSignUpDto.getLongitude(), savedMember);
         centerRepository.save(center);
-
-        return savedMember.getMemberId();
     }
+
+    @Transactional
+    public Image saveProfile(MultipartFile profile) {
+        if(profile == null)
+            return imageRepository.save(Image.createImage(s3Service.getFileUrl("profile.png"), "profile.png"));
+        return imageService.saveImage(profile);
+    }
+
     @Transactional
     public void addProfile(Long memberId, MultipartFile profile) {
         // 해당하는 유저 가져오기
