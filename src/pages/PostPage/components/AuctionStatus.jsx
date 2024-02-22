@@ -93,7 +93,9 @@ function AuctionStatus({ postId, curOfferDetails }) {
 
   // 댓글 생성
   function createOffer(data) {
-    setOfferList((prevState) => sortOffer([...prevState, data]));
+    setOfferList((prevState) =>
+      sortOffer([...prevState, { ...data, animation: "CREATE" }])
+    );
   }
 
   // 댓글 수정
@@ -103,7 +105,7 @@ function AuctionStatus({ postId, curOfferDetails }) {
       const prevList = prevState.filter(
         (offer) => offer.offerId != data.offerId
       );
-      return sortOffer([...prevList, data]);
+      return sortOffer([...prevList, { ...data, animation: "UPDATE" }]);
     });
   }
 
