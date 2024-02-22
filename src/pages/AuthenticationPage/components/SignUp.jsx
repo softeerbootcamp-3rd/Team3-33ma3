@@ -53,48 +53,32 @@ function SignUp() {
     event.preventDefault();
 
     const formData = new FormData(formRef.current);
-    const authData = Object.fromEntries(formData.entries());
-    console.log(authData);
-
-    fetch(`${BASE_URL}${type}/signUp`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(authData),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const status = data.status;
-        const message = data.message;
-        localStorage.setItem("memberId", data.data);
-        if (status !== "ERROR") {
-          console.log("signUp success");
-        }
-      });
+    const request = Object.fromEntries(formData.entries());
 
     const fd = new FormData();
     imageFiles.current.forEach((file) => {
+      console.log(file);
       fd.append("profile", file);
     });
+    fd.append(
+      "request",
+      new Blob([JSON.stringify(request)], { type: "application/json" })
+    );
 
-    fetch(`${BASE_URL}profile/${memberId}`, {
+    fetch(`${BASE_URL}${type}/signUp`, {
       method: "POST",
-      headers: {
-        Accept: "application/json",
-      },
       body: fd,
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
         const status = data.status;
         const message = data.message;
-        if (status === "ERROR") {
-          alert("프로필을 다시 등록해주세요.");
-          return navigate(`?mode=signUp&type=${type}`);
+        if (status !== "ERROR") {
+          console.log("signUp success");
+          localStorage.setItem("memberId", data.data);
+          navigate("?mode=login");
         }
-        console.log("signUp success");
-        return navigate("?mode=login");
       });
   }
 

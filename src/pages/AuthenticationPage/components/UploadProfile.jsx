@@ -32,11 +32,9 @@ const ImageUploadButton = styled.button`
 
 const ImageList = styled.div`
   flex: 1;
-  width: 0%;
 `;
 
 const Images = styled.div`
-  overflow-x: auto;
   white-space: nowrap;
 `;
 
