@@ -27,7 +27,7 @@ const WriterContainer = styled.div`
   align-items: center;
 `;
 
-const Writer = styled.p`
+const Writer = styled.div`
   display: flex;
   font-weight: 500;
   color: ${(props) => props.theme.colors.text_weak};
@@ -123,9 +123,9 @@ function Comment({ offerInfo, disabled }) {
             />
           </ButtonContainer>
         )}
-        {!disabled && <StarRating score={offerInfo.score} />}
       </WriterContainer>
       <Description>{offerInfo.contents}</Description>
+      {!disabled && <StarRating score={offerInfo.score} />}
     </CommentContainer>
   );
 }

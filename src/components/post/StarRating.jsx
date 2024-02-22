@@ -9,8 +9,10 @@ const Img = styled.img`
 
 const StarContainer = styled.div`
   display: flex;
-  gap: 5px;
+  gap: 10px;
   align-items: center;
+  font-size: ${({ theme }) => theme.fontSize.regular};
+  font-weight: 500;
 `;
 
 function StarRating({ score }) {

@@ -54,7 +54,7 @@ function CenterInfoPage() {
         {!isLoading && (
           <>
             <TopContainer>
-              <PictureArea size="large" img={centerInfo.centerImage} />
+              <PictureArea size="small" img={centerInfo.centerImage} />
               <TopContentContainer>
                 <OptionType title={"센터 정보"}>
                   <OptionItem title={"센터 이름"}>
