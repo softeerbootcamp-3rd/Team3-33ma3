@@ -5,6 +5,8 @@ import InputText from "../../../components/input/InputText";
 import SubmitButton from "../../../components/button/SubmitButton";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { CenterAuthForm } from "./CenterAuthForm";
+import UploadProfile from "./UploadProfile";
+import { getMemberId } from "../../../utils/auth";
 
 const Form = styled.form``;
 
@@ -41,15 +43,18 @@ const AuthLink = styled(Link)`
 
 function SignUp() {
   const formRef = useRef(null);
+  const imageFiles = useRef([]);
   const navigate = useNavigate();
   const [searchParam] = useSearchParams();
   const type = searchParam.get("type");
+  const memberId = getMemberId();
 
   function handleSubmit(event) {
     event.preventDefault();
 
     const formData = new FormData(formRef.current);
     const authData = Object.fromEntries(formData.entries());
+    console.log(authData);
 
     fetch(`${BASE_URL}${type}/signUp`, {
       method: "POST",
@@ -62,9 +67,34 @@ function SignUp() {
       .then((data) => {
         const status = data.status;
         const message = data.message;
+        localStorage.setItem("memberId", data.data);
         if (status !== "ERROR") {
-          navigate("?mode=login");
+          console.log("signUp success");
         }
+      });
+
+    const fd = new FormData();
+    imageFiles.current.forEach((file) => {
+      fd.append("profile", file);
+    });
+
+    fetch(`${BASE_URL}profile/${memberId}`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+      },
+      body: fd,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const status = data.status;
+        const message = data.message;
+        if (status === "ERROR") {
+          alert("프로필을 다시 등록해주세요.");
+          return navigate(`?mode=signUp&type=${type}`);
+        }
+        console.log("signUp success");
+        return navigate("?mode=login");
       });
   }
 
@@ -74,7 +104,7 @@ function SignUp() {
       <AuthContainer>
         <AuthHeader>{"회원가입"}</AuthHeader>
         <AuthInputContainer>
-          {type === "center"}
+          <UploadProfile imageFiles={imageFiles} />
           <InputText
             id="loginId"
             type="text"

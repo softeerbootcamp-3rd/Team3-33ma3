@@ -4,6 +4,8 @@ import { Login } from "./components/Login";
 import { SignUp } from "./components/SignUp";
 import { removeAuthToken } from "../../utils/auth";
 import { SettingType } from "./components/SettingType";
+import UploadProfile from "./components/UploadProfile";
+import { useRef } from "react";
 
 function AuthenticationPage() {
   const [searchParams] = useSearchParams();
