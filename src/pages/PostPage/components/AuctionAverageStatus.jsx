@@ -35,6 +35,7 @@ const BoldText = styled.p`
 
 const Text = styled.div`
   display: flex;
+  gap: 5px;
 `;
 
 function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
@@ -59,7 +60,10 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
       };
 
       webSocket.current.onclose = (event) => {
-        if (event.code !== 1000 && event.message !== "close") {
+        console.log("close");
+        console.log(event.code);
+        if (event.code !== 4000 && event.code !== 1000) {
+          console.log("재연결");
           setTimeout(connectWebSocket, 500);
         }
       };
@@ -67,7 +71,7 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
       webSocket.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log(data);
-        if (data.message) {
+        if (data.message && data.message.startsWith("SELECT")) {
           setEndMessage(data);
         } else {
           setAvgPrice(JSON.parse(event.data).avgPrice);
@@ -85,7 +89,7 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
           memberId: memberId,
         };
         webSocket.current.send(JSON.stringify(closeMessage));
-        webSocket.current.close();
+        webSocket.current.close(4000, "close");
       }
     };
   }, []);
@@ -115,7 +119,9 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
               {offerDetail && (
                 <Text>
                   <p>내가 제시한 금액은 </p>
-                  <BoldText>{offerDetail.price}만원</BoldText>
+                  <BoldText className="show" key={Math.random()}>
+                    {offerDetail.price}만원
+                  </BoldText>
                   <p>입니다.</p>
                 </Text>
               )}
@@ -125,7 +131,9 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
                 ) : (
                   <>
                     <p>현재 제시 금액의 </p>
-                    <BoldText color="red">평균가는 {avgPrice}만원</BoldText>
+                    <BoldText color="red" className="show" key={Math.random()}>
+                      평균가는 {avgPrice}만원
+                    </BoldText>
                     <p>입니다. {offerDetail && "수정하시겠습니까?"}</p>
                   </>
                 )}

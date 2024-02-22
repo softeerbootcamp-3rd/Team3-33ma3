@@ -47,6 +47,19 @@ const ButtonContainer = styled.div`
   gap: 10px;
 `;
 
+const ImgContainer = styled.div`
+  width: 30px;
+  height: 30px;
+  border-radius: ${({ theme }) => theme.radiuses.radius_s};
+  overflow: hidden;
+`;
+
+const Img = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
 function Comment({ offerInfo, disabled }) {
   // TODO: 문의 기능 구현
   const navigate = useNavigate();
@@ -87,9 +100,14 @@ function Comment({ offerInfo, disabled }) {
       )}
       <WriterContainer>
         <Writer>
-          <img src={Logo} style={{ width: "28px", height: "36px" }} />
+          {!disabled ? (
+            <ImgContainer>
+              <Img src={offerInfo.profile} />
+            </ImgContainer>
+          ) : (
+            <img src={Logo} style={{ width: "28px", height: "36px" }} />
+          )}
           {!disabled ? offerInfo.centerName : "익명"}
-          {!disabled && <StarRating score={offerInfo.score} />}
         </Writer>
         {!disabled && (
           <ButtonContainer>
@@ -105,6 +123,7 @@ function Comment({ offerInfo, disabled }) {
             />
           </ButtonContainer>
         )}
+        {!disabled && <StarRating score={offerInfo.score} />}
       </WriterContainer>
       <Description>{offerInfo.contents}</Description>
     </CommentContainer>

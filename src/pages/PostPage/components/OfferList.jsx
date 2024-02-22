@@ -29,7 +29,9 @@ function OfferList({ offerList, offerState, disabled }) {
       isEdited={false}
       isEnd={disabled}
       isSelected={offer.selected}
-      animation={offer.offerId === offerState.offerId && offerState.state}
+      animation={
+        offerState && offer.offerId === offerState.offerId && offerState.state
+      }
     />
   ));
 

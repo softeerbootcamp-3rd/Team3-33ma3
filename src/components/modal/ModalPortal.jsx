@@ -14,33 +14,6 @@ const Modal = styled.div`
   height: 100vh;
   background-color: rgba(134, 134, 134, 0.53);
   z-index: 5;
-
-  animation-name: show;
-  -webkit-animation-name: show;
-
-  animation-duration: 0.2s;
-  -webkit-animation-duration: 0.2s;
-
-  animation-timing-function: ease-out;
-  -webkit-animation-timing-function: ease-out;
-
-  @keyframes show {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
-  @-webkit-keyframes show {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
 `;
 
 const ModalBody = styled.div`

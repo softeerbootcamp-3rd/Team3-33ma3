@@ -25,7 +25,10 @@ function AuctionStatus({ postId, curOfferDetails }) {
 
       // unmounted되지 않았을 때, 소켓이 닫힌다면 0.5초마다 재연결 시도
       webSocket.current.onclose = (event) => {
-        if (event.code !== 1000 && event.message !== "close") {
+        console.log("close");
+        console.log(event.code);
+        if (event.code !== 4000 && event.code !== 1000) {
+          console.log("재연결");
           setTimeout(connectWebSocket, 500);
         }
       };
@@ -69,7 +72,7 @@ function AuctionStatus({ postId, curOfferDetails }) {
           memberId: memberId,
         };
         webSocket.current.send(JSON.stringify(closeMessage));
-        webSocket.current.close();
+        webSocket.current.close(4000, "close");
       }
     });
 
@@ -83,7 +86,7 @@ function AuctionStatus({ postId, curOfferDetails }) {
           memberId: memberId,
         };
         webSocket.current.send(JSON.stringify(closeMessage));
-        webSocket.current.close();
+        webSocket.current.close(4000, "close");
       }
     };
   }, []);
