@@ -61,7 +61,6 @@ const Img = styled.img`
 `;
 
 function Comment({ offerInfo, disabled }) {
-  // TODO: 문의 기능 구현
   const navigate = useNavigate();
   const { accessToken } = useRouteLoaderData("root");
   const [searchParams] = useSearchParams();
@@ -84,7 +83,7 @@ function Comment({ offerInfo, disabled }) {
         const clientId = getMemberId();
         const roomId = data.data;
         navigate(
-          `/chat-room?mode=chat&client-id=${clientId}&center-id=${offerInfo.centerId}&room-id=${roomId}&room-name=${offerInfo.centerName}`
+          `/chat-room?mode=chat&client-id=${clientId}&center-id=${offerInfo.memberId}&room-id=${roomId}&room-name=${offerInfo.centerName}`
         );
       })
       .catch((error) => console.log(error));
