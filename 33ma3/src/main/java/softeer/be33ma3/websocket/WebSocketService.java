@@ -14,11 +14,10 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Slf4j
 public class WebSocketService {
-
     private final WebSocketRepository webSocketRepository;
     private final ObjectMapper objectMapper;
 
-    public void receiveMsg(WebSocketSession session, TextMessage message) throws IOException {
+    public void receiveExitMsg(WebSocketSession session, TextMessage message) throws IOException {
         String payload = message.getPayload();
         // 게시글 관련 웹 소켓 연결이 종료된 유저가 있다고 메세지를 받았을 경우
         if(payload.contains("post") && payload.contains("memberId")) {
@@ -26,15 +25,15 @@ public class WebSocketService {
             ExitRoomMember exitRoomMember = objectMapper.readValue(payload, ExitRoomMember.class);
             closePostConnection(exitRoomMember.getRoomId(), exitRoomMember.getMemberId());
         }
-        if(payload.contains("chatRoom") && payload.contains("memberId")){
-            log.info("채팅 목록에서 유저가 나갔습니다.");
-            ExitMember exitMember = objectMapper.readValue(payload, ExitMember.class);
-            closeAllChatRoomConnection(exitMember.getMemberId());
-        }
         if(payload.contains("chat") && payload.contains("memberId")) {
             log.info("채팅방에서 유저가 나갔습니다.");
             ExitRoomMember exitRoomMember = objectMapper.readValue(payload, ExitRoomMember.class);
             closeChatConnection(exitRoomMember.getRoomId(), exitRoomMember.getMemberId());
+        }
+        if(payload.contains("chatRoom") && payload.contains("memberId")){
+            log.info("채팅 목록에서 유저가 나갔습니다.");
+            ExitMember exitMember = objectMapper.readValue(payload, ExitMember.class);
+            closeAllChatRoomConnection(exitMember.getMemberId());
         }
 
         log.info("메세지 수신 성공: {}", payload); // 수신한 메세지 log
@@ -42,22 +41,8 @@ public class WebSocketService {
         session.sendMessage(textMessage);
     }
 
-    public void saveInPost(Long postId, Long memberId, WebSocketSession session) {
-        webSocketRepository.saveMemberInPost(postId, memberId);
-        webSocketRepository.saveSessionWithMemberId(memberId, session);
-    }
-
-    public void saveInChat(Long roomId, Long memberId, WebSocketSession session) {
-        webSocketRepository.saveMemberInChat(roomId, memberId);
-        webSocketRepository.saveSessionWithMemberId(memberId, session);
-    }
-
-    public void saveInAllChatRoom(Long memberId, WebSocketSession session) {
-        webSocketRepository.saveAllChatRoomSessionWithMemberId(memberId, session);
-    }
-
-    // 데이터 전송
-    public void sendData(Long memberId, Object data) throws IOException {
+    // 서버 -> 클라이언트 데이터 전송
+    public void sendData2Client(Long memberId, Object data){
         if(memberId == null || data == null)
             return;
         // 클라이언트에 해당하는 세션 가져오기
@@ -78,13 +63,40 @@ public class WebSocketService {
         }
     }
 
-    public void sendAllChatRoomData(Long memberId, Object data) throws IOException {
-        // 클라이언트에 해당하는 세션 가져오기
-        WebSocketSession session = webSocketRepository.findAllChatRoomSessionByMemberId(memberId);
-        // data 직렬화
-        String jsonString = objectMapper.writeValueAsString(data);
-        // 데이터 전송
-        session.sendMessage(new TextMessage(jsonString));
+    public void sendAllChatData2Client(Long memberId, Object data) {
+        try {
+            // 클라이언트에 해당하는 세션 가져오기
+            WebSocketSession session = webSocketRepository.findAllChatRoomSessionByMemberId(memberId);
+            // data 직렬화
+            String jsonString = objectMapper.writeValueAsString(data);
+            // 데이터 전송
+            session.sendMessage(new TextMessage(jsonString));
+        } catch(IOException e) {
+            log.error("실시간 데이터 전송 에러");
+        }
+    }
+
+    public boolean isInPostRoom(Long postId, Long memberId) {
+        Set<Long> memberIds = webSocketRepository.findAllMemberInPost(postId);
+        if(memberIds == null){
+            return false;
+        }
+        return memberIds.contains(memberId);
+    }
+
+    public void saveInPost(Long postId, Long memberId, WebSocketSession session) {
+        webSocketRepository.saveMemberInPost(postId, memberId);
+        webSocketRepository.saveSessionWithMemberId(memberId, session);
+    }
+
+    public void saveInChat(Long roomId, Long memberId, WebSocketSession session){
+        webSocketRepository.saveMemberInChat(roomId, memberId);
+        webSocketRepository.saveSessionWithMemberId(memberId, session);
+
+    }
+
+    public void saveInAllChatRoom(Long memberId, WebSocketSession session) {
+        webSocketRepository.saveAllChatRoomSessionWithMemberId(memberId, session);
     }
 
     private void closePostConnection(Long postId, Long memberId) {
@@ -92,7 +104,7 @@ public class WebSocketService {
         webSocketRepository.deleteSessionWithMemberId(memberId);
     }
 
-    private void closeChatConnection(Long roomId, Long memberId) {
+    public void closeChatConnection(Long roomId, Long memberId) {
         webSocketRepository.deleteMemberInChatRoom(roomId, memberId);
         webSocketRepository.deleteSessionWithMemberId(memberId);
     }
@@ -104,8 +116,6 @@ public class WebSocketService {
     public void deletePostRoom(Long postId) {
         webSocketRepository.deletePostRoom(postId);
     }
-
-    // 해당 게시글에 접속해있는 유저 목록 반환
     public Set<Long> findAllMemberInPost(Long postId) {
         return webSocketRepository.findAllMemberInPost(postId);
     }

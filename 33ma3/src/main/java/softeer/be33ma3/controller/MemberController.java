@@ -34,27 +34,27 @@ public class MemberController {
     private final JwtService jwtService;
 
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
             @ApiResponse(responseCode = "400", description = "이미 존재하는 아이디", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "일반 사용자 회원가입", description = "사용자 회원가입 메서드 입니다.")
     @PostMapping("/client/signUp")
     public ResponseEntity<?> clientSignUp(@RequestBody @Valid ClientSignUpDto clientSignUpDto){
-        memberService.clientSignUp(clientSignUpDto);
+        Long memberId = memberService.clientSignUp(clientSignUpDto);
 
-        return ResponseEntity.ok(SingleResponse.success("회원가입 성공"));
+        return ResponseEntity.ok(DataResponse.success("회원가입 성공", memberId));
     }
 
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = SingleResponse.class))),
+            @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = DataResponse.class))),
             @ApiResponse(responseCode = "400", description = "이미 존재하는 아이디", content = @Content(schema = @Schema(implementation = SingleResponse.class)))
     })
     @Operation(summary = "센터 회원가입", description = "센터 회원가입 메서드 입니다.")
     @PostMapping("/center/signUp")
     public ResponseEntity<?> centerSignUp(@RequestBody @Valid CenterSignUpDto centerSignUpDto){
-        memberService.centerSignUp(centerSignUpDto);
+        Long memberId = memberService.centerSignUp(centerSignUpDto);
 
-        return ResponseEntity.ok(SingleResponse.success("회원가입 성공"));
+        return ResponseEntity.ok(DataResponse.success("회원가입 성공",memberId));
     }
 
     @ApiResponses({

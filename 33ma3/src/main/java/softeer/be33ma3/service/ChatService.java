@@ -1,19 +1,24 @@
 package softeer.be33ma3.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.socket.TextMessage;
 import softeer.be33ma3.domain.*;
+import softeer.be33ma3.dto.request.ChatMessageDto;
 import softeer.be33ma3.dto.response.ChatHistoryDto;
 import softeer.be33ma3.dto.response.AllChatRoomDto;
 import softeer.be33ma3.dto.response.ChatMessageResponseDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.*;
 import softeer.be33ma3.repository.post.PostRepository;
-import softeer.be33ma3.websocket.WebSocketHandler;
 import softeer.be33ma3.websocket.WebSocketRepository;
+import softeer.be33ma3.websocket.WebSocketService;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,13 +32,13 @@ import static softeer.be33ma3.utils.StringParser.createTimeParsing;
 @Slf4j
 @Transactional(readOnly = true)
 public class ChatService {
+    private final ObjectMapper objectMapper;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
-    private final WebSocketHandler webSocketHandler;
     private final WebSocketRepository webSocketRepository;
-    private final AlertRepository alertRepository;
+    private final WebSocketService webSocketService;
 
     @Transactional
     public Long createRoom(Member client, Long centerId, Long postId) {
@@ -49,34 +54,6 @@ public class ChatService {
 
         ChatRoom chatRoom = ChatRoom.createChatRoom(client, center);
         return chatRoomRepository.save(chatRoom).getChatRoomId();
-    }
-
-    @Transactional
-    public void sendMessage(Member sender, Long roomId, Long receiverId, String contents) {
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BusinessException(NOT_FOUND_CHAT_ROOM));
-        Member receiver = memberRepository.findById(receiverId).orElseThrow(() -> new BusinessException(NOT_FOUND_MEMBER));
-        isValidSenderAndReceiver(sender, chatRoom, receiver);      //보내는 사람, 받는 사람이 해당 방의 멤버가 맞는지 검증
-
-        ChatMessage chatMessage = ChatMessage.createChatMessage(sender, chatRoom, contents);
-        ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
-
-        AllChatRoomDto chatDto = getChatDto(chatRoom, receiver.getLoginId(), sender);     //업데이트 할 목록 생성
-        webSocketHandler.sendAllChatData2Client(sender.getMemberId(), chatDto);     //보낸사람 목록도 실시간 업데이트
-
-        if(webSocketRepository.findSessionByMemberId(receiver.getMemberId()) == null){      //채팅룸에 상대방이 존재하지 않을 경우
-            if(webSocketRepository.findAllChatRoomSessionByMemberId(receiver.getMemberId()) == null){       //상대방이 채팅 목록 세션을 연결 안하고 있는 경우
-                Alert alert = Alert.createAlert(chatRoom.getChatRoomId(), receiver);        //채팅방 & 채팅 목록에도 없는 경우는 알림 테이블에 저장
-                alertRepository.save(alert);
-                return;
-            }
-            chatDto = getChatDto(chatRoom, sender.getLoginId(), receiver);     //업데이트 할 목록 생성
-            webSocketHandler.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //실시간 전송 - 채팅 목록
-            return;
-        }
-        //채팅룸에 상대방이 존재하는 경우
-        savedChatMessage.setReadDoneTrue();   //읽음 처리
-        ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.create(savedChatMessage, createTimeParsing(savedChatMessage.getCreateTime()));
-        webSocketHandler.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);   //실시간 전송 - 채팅 내용
     }
 
     public List<AllChatRoomDto> showAllChatRoom(Member member) {
@@ -99,6 +76,55 @@ public class ChatService {
     }
 
     @Transactional
+    public void sendChatMessage(TextMessage message) throws IOException {
+        ChatMessageDto chatMessageDto = getChatMessageDto(message);
+
+        Member sender = memberRepository.findById(chatMessageDto.getSenderId()).get();
+        Member receiver = memberRepository.findById(chatMessageDto.getReceiverId()).get();
+        ChatRoom chatRoom = chatRoomRepository.findById(chatMessageDto.getRoomId()).get();
+
+        ChatMessage chatMessage = ChatMessage.createChatMessage(sender, chatRoom, chatMessageDto.getMessage());
+        ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
+
+        if(!webSocketRepository.isMemberInChatRoom(chatRoom.getChatRoomId(), receiver.getMemberId())){      //채팅룸에 상대방이 존재하지 않을 경우
+            if(webSocketRepository.findAllChatRoomSessionByMemberId(receiver.getMemberId()) != null){   //목록 세션에 있는 경우
+                AllChatRoomDto chatDto = getChatDto(chatRoom, sender.getLoginId(), receiver);     //업데이트 할 목록 생성
+                webSocketService.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //실시간 전송 - 채팅 목록
+                return;
+            }
+            return;
+        }
+        sendDirectToReceiver(savedChatMessage, chatRoom, sender, receiver);     //채팅방에 상대방이 존재하는 경우
+    }
+
+    private ChatMessageDto getChatMessageDto(TextMessage message) throws JsonProcessingException {
+        String payload = message.getPayload();
+        return objectMapper.readValue(payload, ChatMessageDto.class);   //payload -> chatMessageDto 로 변환
+    }
+
+    private void sendDirectToReceiver(ChatMessage savedChatMessage, ChatRoom chatRoom, Member sender, Member receiver) {
+        AllChatRoomDto chatDto = getChatDto(chatRoom, receiver.getLoginId(), sender); //sender 한테 전송할 목록
+        webSocketService.sendAllChatData2Client(sender.getMemberId(), chatDto);  //목록 실시간 전송
+
+        savedChatMessage.setReadDoneTrue();   //읽음 처리
+
+        //receiver 에게 전송
+        ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.create(savedChatMessage);
+        chatDto = getChatDto(chatRoom, sender.getLoginId(), receiver);     //전송할 목록 생성
+        webSocketService.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //목록 실시간 전송
+        webSocketService.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);   //채팅 내용 실시간 전송
+    }
+
+    private AllChatRoomDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
+        ChatMessage lastChatMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());//마지막 메세지
+        if(lastChatMessage == null){    //방이 만들어지고 메세지를 보내지 않은 경우
+            return AllChatRoomDto.create(chatRoom, "", memberName, 0, "");
+        }
+        int count = (int) chatMessageRepository.countReadDoneIsFalse(chatRoom.getChatRoomId(), member.getMemberId());     //안읽은 메세지 개수
+        return AllChatRoomDto.create(chatRoom, lastChatMessage.getContents(), memberName, count, createTimeParsing(lastChatMessage.getCreateTime()));
+    }
+
+    @Transactional
     public List<ChatHistoryDto> showOneChatHistory(Member member, Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new BusinessException(NOT_FOUND_CHAT_ROOM));
         isValidRoomMember(member, chatRoom);
@@ -116,15 +142,6 @@ public class ChatService {
         return chatHistoryDtos;
     }
 
-    private AllChatRoomDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
-        ChatMessage lastChatMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());//마지막 메세지
-        if(lastChatMessage == null){    //방이 만들어지고 메세지를 보내지 않은 경우
-            return AllChatRoomDto.create(chatRoom, "", memberName, 0, "");
-        }
-        int count = (int) chatMessageRepository.countReadDoneIsFalse(chatRoom.getChatRoomId(), member.getMemberId());     //안읽은 메세지 개수
-        return AllChatRoomDto.create(chatRoom, lastChatMessage.getContents(), memberName, count, createTimeParsing(lastChatMessage.getCreateTime()));
-    }
-
     private void isValidRoomMember(Member member, ChatRoom chatRoom) {
         if (member.getMemberType() == CLIENT_TYPE && !chatRoom.getClient().equals(member)) {
             throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
@@ -132,22 +149,6 @@ public class ChatService {
 
         if (member.getMemberType() == CENTER_TYPE && !chatRoom.getCenter().equals(member)) {
             throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
-        }
-    }
-
-    private void isValidSenderAndReceiver(Member sender, ChatRoom chatRoom, Member receiver) {
-        Member client = chatRoom.getClient();
-        Member center = chatRoom.getCenter();
-
-        if (sender.getMemberType() == CLIENT_TYPE) {
-            if (!(client.getMemberId().equals(sender.getMemberId()) && center.getMemberId().equals(receiver.getMemberId()))) {
-                throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
-            }
-        }
-        if (sender.getMemberType() == CENTER_TYPE) {
-            if (!(client.getMemberId().equals(receiver.getMemberId()) && center.getMemberId().equals(sender.getMemberId()))) {
-                throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
-            }
         }
     }
 }
