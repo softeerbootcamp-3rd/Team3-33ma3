@@ -11,11 +11,16 @@ const AuctionList = styled.div`
   align-items: center;
 `;
 
-function OfferList({ offerList, offerState, disabled }) {
-  const [focusOffer, setFocusOffer] = useState();
+function OfferList({ offerList, disabled }) {
+  const [focusOffer, setFocusOffer] = useState(null);
 
   function clickOffer(index) {
-    setFocusOffer(index);
+    setFocusOffer((prevState) => {
+      if (prevState === index) {
+        return null;
+      }
+      return index;
+    });
   }
 
   // 기존에도 존재했던 offerId라면 hetch 애니메이션 실행
@@ -29,16 +34,14 @@ function OfferList({ offerList, offerState, disabled }) {
       isEdited={false}
       isEnd={disabled}
       isSelected={offer.selected}
-      animation={
-        offerState && offer.offerId === offerState.offerId && offerState.state
-      }
+      animation={offer.animation}
     />
   ));
 
   return (
     <>
       <AuctionList>{offers}</AuctionList>
-      {focusOffer !== undefined && (
+      {focusOffer !== null && (
         <Comment offerInfo={offerList[focusOffer]} disabled={disabled} />
       )}
     </>
