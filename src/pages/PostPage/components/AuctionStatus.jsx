@@ -98,6 +98,7 @@ function AuctionStatus({ postId, curOfferDetails }) {
 
   // 댓글 수정
   function updateOffer(data) {
+    console.log("update", data);
     setOfferList((prevState) => {
       const prevList = prevState.filter(
         (offer) => offer.offerId != data.offerId

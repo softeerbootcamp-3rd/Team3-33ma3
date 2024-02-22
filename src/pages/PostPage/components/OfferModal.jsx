@@ -15,6 +15,19 @@ const OfferContainer = styled.form`
   width: 100%;
 `;
 
+const SubmitItems = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+
+  & > span {
+    font-size: ${({ theme }) => theme.fontSize.small};
+    color: ${({ theme }) => theme.colors.text_red};
+    font-weight: 500;
+  }
+`;
+
 const OfferPrice = styled.div`
   display: flex;
   align-items: center;
@@ -34,29 +47,33 @@ const ButtonContainer = styled.div`
 function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
   const { accessToken } = useRouteLoaderData("root");
   const [isLoading, setIsLoading] = useState(false);
+  const [errorForm, setErrorForm] = useState({});
 
   // 경매 참여
   function handleSubmitOffer(e) {
     e.preventDefault();
 
     const formData = new FormData(e.target);
+    const newOffer = { ...Object.fromEntries(formData.entries()) };
+
+    if (!validateForm(newOffer)) {
+      return;
+    }
     // 경매 참여
     if (!offerDetail) {
       console.log("경매 참여");
-      submitOffer(formData);
+      submitOffer(newOffer);
     }
     // 기존 댓글 수정
     else {
       console.log("경매 수정");
-      editOffer(formData);
+      editOffer(newOffer);
     }
   }
 
   // 경매 참여
-  function submitOffer(formData) {
+  function submitOffer(newOffer) {
     setIsLoading(true);
-    const newOffer = { ...Object.fromEntries(formData.entries()) };
-    console.log(newOffer);
     fetch(BASE_URL + `post/${postId}/offer`, {
       method: "POST",
       headers: {
@@ -69,7 +86,7 @@ function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
         // if (res.ok) {
         //   return res.json();
         // } else {
-        //   throw new Error("not ok");
+        //   throw new Error("입찰에 오류가 발생했습니다.");
         // }
         return res.json();
       })
@@ -78,15 +95,13 @@ function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
         updateOfferDetail({ ...newOffer, offerId: json.data });
         setIsLoading(false);
         handleClose();
-      });
+      })
+      .catch((error) => alert(error.message));
   }
 
   // 입찰 댓글 수정
-  function editOffer(formData) {
+  function editOffer(newOffer) {
     setIsLoading(true);
-    const newOffer = { ...Object.fromEntries(formData.entries()) };
-    console.log(newOffer);
-    console.log("수정");
 
     fetch(BASE_URL + `post/${postId}/offer/${offerDetail.offerId}`, {
       method: "PATCH",
@@ -97,19 +112,19 @@ function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
       body: JSON.stringify({ ...offerDetail, ...newOffer }),
     })
       .then((res) => {
-        // if (res.ok) {
-        //   return res.json();
-        // } else {
-        //   throw new Error("not ok");
-        // }
-        return res.json();
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw new Error("입찰 수정에 오류가 발생했습니다.");
+        }
       })
       .then((json) => {
         console.log(json);
         updateOfferDetail({ ...offerDetail, ...newOffer });
         setIsLoading(false);
         handleClose();
-      });
+      })
+      .catch((error) => alert(error.message));
   }
 
   // 입찰 댓글 삭제
@@ -122,33 +137,63 @@ function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
       },
     })
       .then((res) => {
-        return res.json();
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw new Error("입찰 댓글 삭제에 오류가 발생했습니다.");
+        }
       })
       .then((json) => {
         console.log(json);
         updateOfferDetail(null);
         handleClose();
-      });
+      })
+      .catch((error) => alert(error.message));
+  }
+
+  function validateForm(offer) {
+    const errors = {};
+
+    if (offer.price <= 0 || offer.price > 1000) {
+      errors.price = "1~1000 사이의 금액을 입력해주세요.";
+    }
+
+    if (offerDetail && offer.price > offerDetail.price) {
+      errors.price = `기존 금액보다 낮은 금액만 입력 가능합니다. ${offerDetail.price}보다 낮은 금액을 입력해주세요.`;
+    }
+
+    if (offer.contents.length <= 0) {
+      errors.contents = "내용을 입력해주세요.";
+    }
+
+    setErrorForm(errors);
+    return Object.keys(errors).length === 0;
   }
 
   return (
     <ModalPortal title={"제시 금액"} width={"750px"} handleClose={handleClose}>
       <OfferContainer onSubmit={handleSubmitOffer}>
-        <OfferPrice>
-          <InputText
-            placeholder={"1~1000"}
-            name="price"
-            type="number"
-            defaultValue={offerDetail && offerDetail.price}
+        <SubmitItems>
+          <OfferPrice>
+            <InputText
+              placeholder={"1~1000"}
+              name="price"
+              type="number"
+              defaultValue={offerDetail && offerDetail.price}
+            />
+            <p>만원</p>
+          </OfferPrice>
+          {errorForm.price && <span>{errorForm.price}</span>}
+        </SubmitItems>
+        <SubmitItems>
+          {errorForm.contents && <span>{errorForm.contents}</span>}
+          <TextArea
+            maxLength={200}
+            name="contents"
+            placeholder={"견적 제시 방법, 수리 방법 등 자세하게 써주세요."}
+            defaultValue={offerDetail && offerDetail.contents}
           />
-          <p>만원</p>
-        </OfferPrice>
-        <TextArea
-          maxLength={200}
-          name="contents"
-          placeholder={"견적 제시 방법, 수리 방법 등 자세하게 써주세요."}
-          defaultValue={offerDetail && offerDetail.contents}
-        />
+        </SubmitItems>
         {offerDetail ? (
           <ButtonContainer>
             <SubmitButton type="button" onClick={handleDeleteOffer}>
