@@ -43,7 +43,7 @@ public class PostService {
         List<String> repairs = stringCommaParsing(repair);
         List<String> tuneUps = stringCommaParsing(tuneUp);
         List<Long> postIds = null;
-        if(member != null && member.getMemberType() == CENTER_TYPE) {   //센터인 경ㅇ
+        if(member != null && member.getMemberType() == CENTER_TYPE) {   //센터인 경우
             Center center = centerRepository.findByMember_MemberId(member.getMemberId()).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
             postIds = postPerCenterRepository.findPostIdsByCenterId(center.getCenterId());
         }
@@ -114,17 +114,14 @@ public class PostService {
         if(member == null && !post.isDone())
             throw new BusinessException(LOGIN_REQUIRED);
         // 2. 게시글 세부 사항 가져오기
-        List<String> repairList = stringCommaParsing(post.getRepairService());
-        List<String> tuneUpList = stringCommaParsing(post.getTuneUpService());
-        PostDetailDto postDetailDto = PostDetailDto.fromEntity(post, repairList, tuneUpList);
+        PostDetailDto postDetailDto = PostDetailDto.fromEntity(post);
         // 3. 경매가 완료되었거나 글 작성자의 접근일 경우
         if(post.isDone() || (member!=null && post.getMember().equals(member))) {
-            List<Offer> offerList = offerRepository.findByPost_PostId(postId);
+            List<Offer> offerList = post.getOffers();
             List<OfferDetailDto> offerDetailDtos = new ArrayList<>(
                     offerList.stream().map(offer -> {
                         Double score = reviewRepository.findAvgScoreByCenterId(offer.getCenter().getMemberId()).orElse(0.0);
-                        String profile = offer.getCenter().getImage().getLink();
-                        return OfferDetailDto.fromEntity(offer, score, profile);
+                        return OfferDetailDto.fromEntity(offer, score);
                     }).toList());
             Collections.sort(offerDetailDtos);
             return new PostWithOffersDto(postDetailDto, offerDetailDtos);
@@ -149,8 +146,7 @@ public class PostService {
             return null;
         }
         Double score = reviewRepository.findAvgScoreByCenterId(offer.get().getCenter().getMemberId()).orElse(0.0);
-        String profile = offer.get().getCenter().getImage().getLink();
-        return OfferDetailDto.fromEntity(offer.get(), score, profile);
+        return OfferDetailDto.fromEntity(offer.get(), score);
     }
 
     private Region getRegion(String location) {

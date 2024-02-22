@@ -106,15 +106,15 @@ public class ChatService {
     }
 
     private void sendDirectToReceiver(ChatMessage savedChatMessage, ChatRoom chatRoom, Member sender, Member receiver) {
-//        AllChatRoomDto chatDto = getChatDto(chatRoom, receiver.getLoginId(), sender); //sender 한테 전송할 목록
-//        webSocketService.sendAllChatData2Client(sender.getMemberId(), chatDto);  //목록 실시간 전송
+        AllChatRoomDto chatDto = getChatDto(chatRoom, receiver.getLoginId(), sender); //sender 한테 전송할 목록
+        webSocketService.sendAllChatData2Client(sender.getMemberId(), chatDto);  //목록 실시간 전송
 
         savedChatMessage.setReadDoneTrue();   //읽음 처리
 
         //receiver 에게 전송
         ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.create(savedChatMessage);
-//        chatDto = getChatDto(chatRoom, sender.getLoginId(), receiver);     //전송할 목록 생성
-//        webSocketService.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //목록 실시간 전송
+        chatDto = getChatDto(chatRoom, sender.getLoginId(), receiver);     //전송할 목록 생성
+        webSocketService.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //목록 실시간 전송
         webSocketService.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);   //채팅 내용 실시간 전송
     }
 

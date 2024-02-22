@@ -48,8 +48,7 @@ public class OfferService {
         // 2. 해당 댓글 가져오기
         Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
         Double score = reviewRepository.findAvgScoreByCenterId(offer.getCenter().getMemberId()).orElse(0.0);
-        String profile = offer.getCenter().getImage().getLink();
-        return OfferDetailDto.fromEntity(offer, score, profile);
+        return OfferDetailDto.fromEntity(offer, score);
     }
 
     // 견적 제시 댓글 생성
