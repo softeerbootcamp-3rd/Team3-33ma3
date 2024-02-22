@@ -157,6 +157,8 @@ public class OfferService {
         AvgPriceDto avgPriceDto = new AvgPriceDto(Math.round( avgPrice * 10 ) / 10.0);
         // 해당 화면을 보고 있는 유저 명단 가져오기
         Set<Long> memberList = webSocketService.findAllMemberInPost(postId);
+        if(memberList == null)
+            return;
         memberList.forEach(memberId -> {
             if(!memberId.equals(writerId)) {
                 webSocketService.sendData2Client(memberId, avgPriceDto);
@@ -173,11 +175,12 @@ public class OfferService {
         webSocketService.sendData2Client(selectedMemberId, selectSuccess);
         // 현재 관전자들
         Set<Long> memberIdsInPost = webSocketService.findAllMemberInPost(postId);
+        if(memberIdsInPost == null)
+            return;
         memberIdsInPost.remove(writerId);
         memberIdsInPost.remove(selectedMemberId);
         // 경매에 참여한 서비스 센터들
         List<Long> participants = offerRepository.findCenterMemberIdsByPost_PostId(postId);
-
         memberIdsInPost.forEach(memberId -> {
             if(participants.contains(memberId)) {
                 webSocketService.sendData2Client(memberId, selectFail);
