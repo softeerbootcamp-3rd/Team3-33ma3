@@ -49,6 +49,7 @@ function ChatList(props) {
     };
 
     ws.onmessage = (event) => {
+      console.log(event);
       const data = JSON.parse(event.data);
       console.log("메시지 수신:", data);
 
@@ -105,7 +106,9 @@ function ChatList(props) {
         </ChatBody>
       </ChatBodyContainer>
       <ChatInput
+        webSocket={webSocket}
         roomId={props.roomId}
+        senderId={props.memberId}
         receiverId={props.receiverId}
         updateChat={setChatHistory}
       />
