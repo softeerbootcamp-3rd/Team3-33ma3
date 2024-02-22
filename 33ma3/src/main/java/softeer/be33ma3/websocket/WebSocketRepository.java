@@ -12,10 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @Repository
 @Slf4j
 public class WebSocketRepository {
-    private final Map<Long, Set<Long>> postRoom = new ConcurrentHashMap<>();    // postId : set of memberId
-    private final Map<Long, Set<Long>> chatRoom = new ConcurrentHashMap<>();    // roomId : set of memberId
-    private final Map<Long, WebSocketSession> sessions = new ConcurrentHashMap<>();     // memberId : WebSocketSession
-    private final Map<Long, WebSocketSession> allChatRoomSessions = new ConcurrentHashMap<>();      //memberId: WebSocketSession
+    private static final Map<Long, Set<Long>> postRoom = new ConcurrentHashMap<>();    // postId : set of memberId
+    private static final Map<Long, Set<Long>> chatRoom = new ConcurrentHashMap<>();    // roomId : set of memberId
+    private static final Map<Long, WebSocketSession> sessions = new ConcurrentHashMap<>();     // memberId : WebSocketSession
+    private static final Map<Long, WebSocketSession> allChatRoomSessions = new ConcurrentHashMap<>();      //memberId: WebSocketSession
 
     public Set<Long> findAllMemberInPost(Long postId) {
         return postRoom.get(postId);
@@ -37,35 +37,39 @@ public class WebSocketRepository {
         return allChatRoomSessions.get(memberId);
     }
     public void saveMemberInPost(Long postId, Long memberId) {
-        Set<Long> members = new HashSet<>();
-        if (postRoom.containsKey(postId)) {
-            members = postRoom.get(postId);
-        }
+        Set<Long> members = (postRoom.containsKey(postId)) ? postRoom.get(postId) : new HashSet<>();
         members.add(memberId);
         postRoom.put(postId, members);
         log.info("{}번 게시글에 {}번 유저 입장", postId, memberId);
-        log.info("{}번 게시글에 들어와있는 유저: {}명", postId, postRoom.get(postId).size());
+        log.info("{}번 게시글에 들어와 있는 유저: {}명", postId, postRoom.get(postId).size());
     }
 
     public void saveMemberInChat(Long roomId, Long memberId) {
-        Set<Long> members = new HashSet<>();
-        if(chatRoom.containsKey(roomId)){
-            members = chatRoom.get(roomId);
-        }
+        Set<Long> members = (chatRoom.containsKey(roomId)) ? chatRoom.get(roomId) : new HashSet<>();
         members.add(memberId);
         chatRoom.put(roomId, members);
         log.info("{}번 채팅방에 {}번 유저 입장",  roomId, memberId);
     }
 
     public void saveSessionWithMemberId(Long memberId, WebSocketSession webSocketSession) {
-        sessions.put(memberId, webSocketSession);
-        log.info("{}번 유저 웹소켓 세션 저장 성공", memberId);
-        log.info("웹소켓 세션 저장소 크기: {}" , sessions.size());
+        if(sessions.get(memberId) == null || !sessions.get(memberId).isOpen()) {
+            sessions.put(memberId, webSocketSession);
+            log.info("{}번 유저 웹소켓 세션 저장 성공", memberId);
+            log.info("웹소켓 세션 저장소 크기: {}" , sessions.size());
+        }
+        else {
+            log.info("{}번 유저는 이미 웹소켓 세션이 존재합니다.", memberId);
+        }
     }
 
     public void saveAllChatRoomSessionWithMemberId(Long memberId, WebSocketSession session) {
-        allChatRoomSessions.put(memberId, session);
-        log.info("{}번 유저 웹소켓 세션 저장 성공 - 목록", memberId);
+        if(allChatRoomSessions.get(memberId) == null || !allChatRoomSessions.get(memberId).isOpen()) {
+            allChatRoomSessions.put(memberId, session);
+            log.info("{}번 유저 웹소켓 세션 저장 성공 - 목록", memberId);
+        }
+        else {
+            log.info("{}번 유저는 이미 채팅 목록에 대한 웹소켓 세션이 존재합니다.", memberId);
+        }
     }
 
     public void deleteMemberInPost(Long postId, Long memberId) {

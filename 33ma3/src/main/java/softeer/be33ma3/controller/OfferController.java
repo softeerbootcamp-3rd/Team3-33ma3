@@ -55,7 +55,6 @@ public class OfferController {
                                          @RequestBody @Valid OfferCreateDto offerCreateDto,
                                          @Schema(hidden = true) @CurrentUser Member member) {
         Long offerId = offerService.createOffer(postId, offerCreateDto, member);
-        offerService.sendAboutOfferUpdate(postId);
         return ResponseEntity.ok(DataResponse.success("입찰 성공", offerId));
     }
 
@@ -74,7 +73,6 @@ public class OfferController {
                                          @RequestBody @Valid OfferCreateDto offerCreateDto,
                                          @Schema(hidden = true) @CurrentUser Member member) {
         offerService.updateOffer(postId, offerId, offerCreateDto, member);
-        offerService.sendAboutOfferUpdate(postId);
         return ResponseEntity.ok(DataResponse.success("댓글 수정 성공", offerId));
     }
 
@@ -92,7 +90,6 @@ public class OfferController {
                                          @PathVariable("offer_id") Long offerId,
                                          @Schema(hidden = true) @CurrentUser Member member) {
         offerService.deleteOffer(postId, offerId, member);
-        offerService.sendAboutOfferUpdate(postId);
         return ResponseEntity.ok(DataResponse.success("댓글 삭제 성공", offerId));
     }
 

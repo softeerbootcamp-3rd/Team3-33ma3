@@ -133,7 +133,8 @@ public class PostService {
             List<OfferDetailDto> offerDetailDtos = new ArrayList<>(
                     offerList.stream().map(offer -> {
                         Double score = reviewRepository.findAvgScoreByCenterId(offer.getCenter().getMemberId()).orElse(0.0);
-                        return OfferDetailDto.fromEntity(offer, score);
+                        String profile = offer.getCenter().getImage().getLink();
+                        return OfferDetailDto.fromEntity(offer, score, profile);
                     }).toList());
             Collections.sort(offerDetailDtos);
             return new PostWithOffersDto(postDetailDto, offerDetailDtos);
@@ -158,7 +159,8 @@ public class PostService {
             return null;
         }
         Double score = reviewRepository.findAvgScoreByCenterId(offer.get().getCenter().getMemberId()).orElse(0.0);
-        return OfferDetailDto.fromEntity(offer.get(), score);
+        String profile = offer.get().getCenter().getImage().getLink();
+        return OfferDetailDto.fromEntity(offer.get(), score, profile);
     }
 
     private Region getRegion(String location) {

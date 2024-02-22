@@ -34,8 +34,11 @@ public class OfferDetailDto implements Comparable<OfferDetailDto> {
     @Schema(description = "해당 센터의 별점", example = "4.5")
     private Double score;
 
+    @Schema(description = "해당 센터의 프로필 사진 링크", example = "profile.png")
+    private String profile;
+
     // Offer Entity -> OfferDetailDto 변환
-    public static OfferDetailDto fromEntity(Offer offer, Double score) {
+    public static OfferDetailDto fromEntity(Offer offer, Double score, String profile) {
         return OfferDetailDto.builder()
                 .offerId(offer.getOfferId())
                 .memberId(offer.getCenter().getMemberId())
@@ -43,7 +46,8 @@ public class OfferDetailDto implements Comparable<OfferDetailDto> {
                 .price(offer.getPrice())
                 .contents(offer.getContents())
                 .selected(offer.isSelected())
-                .score(score).build();
+                .score(score)
+                .profile(profile).build();
     }
 
     // 제시 가격 저렴한 순 -> 별점 높은 순 정렬

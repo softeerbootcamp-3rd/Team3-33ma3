@@ -43,22 +43,23 @@ public class WebSocketService {
 
     // 서버 -> 클라이언트 데이터 전송
     public void sendData2Client(Long memberId, Object data){
-        try{
-            if(memberId == null || data == null){
-                return;
+        if(memberId == null || data == null)
+            return;
+        // 클라이언트에 해당하는 세션 가져오기
+        WebSocketSession session = webSocketRepository.findSessionByMemberId(memberId);
+        if(session == null || !session.isOpen()) {
+            log.info("웹 소켓 연결이 되어있지 않음");
+            return;
+        }
+        // data 직렬화
+        String jsonString = objectMapper.writeValueAsString(data);
+        synchronized (session) {        // 세션 동기화
+            if (session.isOpen()) {
+                // 데이터 전송
+                session.sendMessage(new TextMessage(jsonString));
+            } else {
+                log.info("웹 소켓 세션이 이미 닫혔습니다.");
             }
-            // 클라이언트에 해당하는 세션 가져오기
-            WebSocketSession session = webSocketRepository.findSessionByMemberId(memberId);
-            if(session == null || !session.isOpen()) {
-                log.info("웹 소켓 연결이 되어있지 않음");
-                return;
-            }
-            // data 직렬화
-            String jsonString = objectMapper.writeValueAsString(data);
-            // 데이터 전송
-            session.sendMessage(new TextMessage(jsonString));
-        }catch (IOException e){
-            log.error("실시간 데이터 전송 에러");
         }
     }
 
