@@ -15,6 +15,7 @@ function removeAuthToken() {
   localStorage.removeItem("refreshToken");
   localStorage.removeItem("memberId");
   localStorage.removeItem("memberType");
+  localStorage.removeItem("opponentName");
 }
 
 function getMemberId() {
@@ -31,6 +32,14 @@ function getMemberType() {
     return null;
   }
   return memberType;
+}
+
+function getOpponentName() {
+  const opponenName = localStorage.getItem("opponentName");
+  if (!opponenName) {
+    return null;
+  }
+  return opponenName;
 }
 
 function tokenLoader() {
@@ -53,4 +62,11 @@ function checkAuthLoader() {
   }
 }
 
-export { removeAuthToken, getMemberId, tokenLoader, checkAuthLoader };
+export {
+  removeAuthToken,
+  getMemberId,
+  getMemberType,
+  getOpponentName,
+  tokenLoader,
+  checkAuthLoader,
+};

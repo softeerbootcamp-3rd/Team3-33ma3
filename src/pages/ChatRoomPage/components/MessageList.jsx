@@ -59,7 +59,6 @@ function MessageList(props) {
         const newDataArray = prev.filter(
           (item) => item.roomId !== newData.roomId
         );
-        console.log(newData, newDataArray);
         return [newData, ...newDataArray];
       });
     };

@@ -73,8 +73,9 @@ const NameTimeWrapper = styled.div`
 function Message(props) {
   const navigate = useNavigate();
   function handleOnClick() {
+    localStorage.setItem("opponentName", props.info.memberName);
     navigate(
-      `?mode=chat&client-id=${props.info.clientId}&center-id=${props.info.centerId}&room-id=${props.info.roomId}&center-name=${props.info.memberName}`
+      `?mode=chat&client-id=${props.info.clientId}&center-id=${props.info.centerId}&room-id=${props.info.roomId}`
     );
   }
 

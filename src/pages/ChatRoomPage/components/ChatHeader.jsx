@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import CenterLogo from "/src/assets/33MA3_logo.png";
 import SubmitButton from "../../../components/button/SubmitButton";
+import { getOpponentName } from "../../../utils/auth";
 
 const Header = styled.div`
   display: flex;
@@ -44,12 +45,14 @@ const CenterStatus = styled.div`
 `;
 
 function ChatHeader(props) {
+  const opponentName = getOpponentName();
+  const roomName = opponentName ? opponentName : props.roomName;
   return (
     <Header>
       <CenterContainer>
         <Logo src={CenterLogo} />
         <CenterInfo>
-          <CenterName>aaa{props.centerName}</CenterName>
+          <CenterName>{roomName}</CenterName>
           <CenterStatus>부재중</CenterStatus>
         </CenterInfo>
       </CenterContainer>
