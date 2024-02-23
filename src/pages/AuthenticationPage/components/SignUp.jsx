@@ -57,7 +57,6 @@ function SignUp() {
 
     const fd = new FormData();
     imageFiles.current.forEach((file) => {
-      console.log(file);
       fd.append("profile", file);
     });
     fd.append(

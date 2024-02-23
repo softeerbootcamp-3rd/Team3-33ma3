@@ -31,6 +31,15 @@ const AddressContainer = styled.div`
   font-weight: 500;
 `;
 
+function initCircle(map) {
+  const circleOptions = {
+    map: map,
+    center: center,
+    radius: KM_TO_M_CONVERSION_FACTOR,
+  };
+  return new naver.maps.Circle(circleOptions);
+}
+
 // 반경 내의 marker 출력, 그 외는 제외하는 함수
 async function updateMarkers(map, circle, markers) {
   const response = await fetch(
@@ -110,7 +119,6 @@ function MapModal(props) {
   const updateData = {
     updateMap: setNewMap,
     updateMarker: setNewMarker,
-    updateCircle: setNewCircle,
     updateAddress: setNewAddress,
   };
 
@@ -137,6 +145,7 @@ function MapModal(props) {
 
             return { centerId: element.centerId, marker: marker };
           });
+          setNewCircle(initCircle(newMap));
           naver.maps.Event.addListener(newMap, "drag", (e) => {
             const currentCoords = newMap.getCenter();
             newMarker.setPosition(currentCoords);

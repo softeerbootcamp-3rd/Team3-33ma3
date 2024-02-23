@@ -40,14 +40,7 @@ function initMap(latitude, longitude, mapElement, setNewAddress) {
   };
   const marker = new naver.maps.Marker(markerOptions);
 
-  const circleOptions = {
-    map: map,
-    center: center,
-    radius: KM_TO_M_CONVERSION_FACTOR,
-  };
-  const circle = new naver.maps.Circle(circleOptions);
-
-  return { map, marker, circle };
+  return { map, marker };
 }
 
 // Modal의 지도 컴포넌트
@@ -59,7 +52,7 @@ export default function ViewCurrentLocation(props) {
     async function fetchAndSetLocation() {
       try {
         // const currentLocation = await getCurrentLocation();
-        const { map, marker, circle } = initMap(
+        const { map, marker } = initMap(
           DEFAULT_LATITUDE,
           DEFAULT_LONGITUDE,
           mapElement.current,
@@ -67,7 +60,6 @@ export default function ViewCurrentLocation(props) {
         );
         props.updateData.updateMap(map);
         props.updateData.updateMarker(marker);
-        props.updateData.updateCircle(circle);
       } catch (error) {
         console.error("Failed to fetch current location:", error);
       }
