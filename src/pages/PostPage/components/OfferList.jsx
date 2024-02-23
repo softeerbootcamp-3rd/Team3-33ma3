@@ -16,7 +16,7 @@ function OfferList({ offerList, recentOffer, disabled }) {
 
   // 포커스 하고 있지 않을 시 가장 최근에 바뀐 견적 제시로 포커스
   useEffect(() => {
-    if (recentOffer.current) {
+    if (recentOffer && recentOffer.current) {
       recentOffer.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [recentOffer]);
