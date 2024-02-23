@@ -16,8 +16,8 @@ import {
 } from "../../constants/options";
 
 import { BASE_URL } from "../../constants/url";
-import LocationModal from "../../components/LocationModal";
 import { useNavigate, useRouteLoaderData } from "react-router-dom";
+import MapModal from "./components/MapModal";
 
 const Form = styled.form`
   width: 100%;
@@ -57,6 +57,7 @@ function PostCreatePage() {
   const imageFiles = useRef([]);
   const modal = useRef();
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [address, setAddress] = useState("");
@@ -169,9 +170,6 @@ function PostCreatePage() {
       state.current = [...state.current, value];
     }
   }
-  function handleModal() {
-    modal.current.open();
-  }
 
   function handleSaveAddress(address) {
     setAddress(address);
@@ -187,12 +185,14 @@ function PostCreatePage() {
 
   return (
     <>
-      <LocationModal
-        ref={modal}
-        onSave={handleSaveAddress}
-        onSaveList={handleSaveCenterList}
-        onSaveRadius={handleSaveRadius}
-      />
+      {isModalOpen && (
+        <MapModal
+          onSave={handleSaveAddress}
+          onSaveList={handleSaveCenterList}
+          onSaveRadius={handleSaveRadius}
+          handleClose={() => setIsModalOpen(false)}
+        />
+      )}
       <Page title={"게시글 작성"}>
         <Form onSubmit={onSubmit}>
           <PostRegister>
@@ -210,7 +210,7 @@ function PostCreatePage() {
                   <InputRange name={"deadline"} />
                 </OptionItem>
                 <OptionItem title={"지역"}>
-                  <Button type="button" onClick={handleModal}>
+                  <Button type="button" onClick={() => setIsModalOpen(true)}>
                     <p>{address ? address : "지역과 반경을 선택해주세요."}</p>
                     <p>{radius !== 0 && `반경 ${radius / 1000}km 이내`}</p>
                   </Button>

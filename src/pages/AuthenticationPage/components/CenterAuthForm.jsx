@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { searchAddressToCoordinate } from "../../../utils/locationUtils";
 import InputText from "../../../components/input/InputText";
-import { generateKeyBasedOnCurrentTime } from "../../../components/LocationModal";
+import generateKeyBasedOnCurrentTime from "../../../utils/generateKeyBasedOnCurrentTime";
 
 function CenterAuthForm() {
   const [coords, setCoords] = useState({});

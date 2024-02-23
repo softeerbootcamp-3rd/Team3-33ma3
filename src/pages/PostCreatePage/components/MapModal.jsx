@@ -1,82 +1,35 @@
-import {
-  forwardRef,
-  useRef,
-  useState,
-  useEffect,
-  useImperativeHandle,
-} from "react";
-import { createPortal } from "react-dom";
 import styled from "styled-components";
-import ViewCurrentLocation from "./ViewCurrentLocation";
-import InputText from "./input/InputText";
-import SubmitButton from "./button/SubmitButton";
-import { BASE_URL } from "../constants/url";
+import InputRadius from "./InputRadius";
+import { useRef, useState, useEffect } from "react";
 import {
   searchAddressToCoordinate,
   searchCoordinateToAddress,
-} from "../utils/locationUtils";
+} from "../../../utils/locationUtils";
+import ModalPortal from "../../../components/modal/ModalPortal";
+import ViewCurrentLocation from "../../../components/ViewCurrentLocation";
+import InputText from "../../../components/input/InputText";
+import { BASE_URL } from "../../../constants/url";
 import {
-  KM_TO_M_CONVERSION_FACTOR,
-  MAX_RADIUS,
-  MIN_RADIUS,
   DROP,
-} from "../constants/mapConstants";
+  KM_TO_M_CONVERSION_FACTOR,
+} from "../../../constants/mapConstants";
+import SubmitButton from "../../../components/button/SubmitButton";
+import generateKeyBasedOnCurrentTime from "../../../utils/generateKeyBasedOnCurrentTime";
 
-const Dialog = styled.dialog`
-  padding: 30px;
-  border-radius: ${(props) => props.theme.radiuses.radius_m};
-  box-shadow: ${(props) => props.theme.boxShadow.floating};
-`;
-
-const Title = styled.p`
-  color: ${(props) => props.theme.colors.surface_black};
-  font-size: ${(props) => props.theme.fontSize.medium};
-  font-weight: 700;
-`;
-
-const CloseButton = styled.button`
-  width: 35px;
-  height: 35px;
-`;
-
-const TopContainer = styled.div`
-  display: flex;
-
-  align-items: center;
-  gap: 30px;
-  width: 100%;
-  justify-content: space-between;
-`;
-
-const BottomContainer = styled.div`
-  color: ${(props) => props.theme.colors.text_strong};
-  font-size: ${(props) => props.theme.fontSize.medium};
-  font-weight: 700;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  align-self: stretch;
-`;
-
-const RadiusContainer = styled.div`
-  display: flex;
-  gap: 10px;
-  align-items: center;
-`;
-
-const Wrapper = styled.div`
+const MapContainer = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 10px;
   flex-direction: column;
 `;
 
-// 날짜 기반 임의 키 생성 함수
-export function generateKeyBasedOnCurrentTime() {
-  const currentTime = new Date().getTime();
-  const key = `key_${currentTime}`;
-  return key;
-}
+const AddressContainer = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 10px;
+  font-weight: 500;
+`;
 
 // 반경 내의 marker 출력, 그 외는 제외하는 함수
 async function updateMarkers(map, circle, markers) {
@@ -117,22 +70,14 @@ function hideMarker(map, marker) {
 }
 
 // Modal 최상위 컴포넌트
-const LocationModal = forwardRef(function LocationModal(
-  { onSave, onSaveList, onSaveRadius },
-  ref
-) {
+function MapModal(props) {
   const [newMap, setNewMap] = useState();
   const [newMarker, setNewMarker] = useState();
-  const [newAddress, setNewAddress] = useState();
   const [newCircle, setNewCircle] = useState();
+  const [newAddress, setNewAddress] = useState();
   const [markerList, setMarkerList] = useState([]);
 
-  const dialog = useRef();
   const inputAddress = useRef();
-
-  function handleCloseModal() {
-    dialog.current.close();
-  }
 
   function handleInputAddressChange(e) {
     const address = e.target.value;
@@ -147,47 +92,33 @@ const LocationModal = forwardRef(function LocationModal(
       .catch((error) => console.log(error));
   }
 
-  function handleInputRadiusChange(e) {
-    const inputRadius = e.target.value;
-
-    if (inputRadius < MIN_RADIUS || inputRadius > MAX_RADIUS) {
-      alert("반경은 1이상 10이하까지 입력해주세요.");
-      e.target.value = 0;
-      return;
-    }
-
-    newCircle.setRadius(inputRadius * KM_TO_M_CONVERSION_FACTOR);
-
+  function updateRadiusRangeChange(data) {
+    newCircle.setRadius(data * KM_TO_M_CONVERSION_FACTOR);
     updateMarkers(newMap, newCircle, markerList);
   }
 
   function handleSubmitOnClick() {
     const userInputAddress = inputAddress.current.value;
     const centerList = markerList.filter((data) => data.marker.getMap());
-    onSave(userInputAddress);
-    onSaveList(centerList);
-    onSaveRadius(newCircle.getRadius());
+    props.onSave(userInputAddress);
+    props.onSaveList(centerList);
+    props.onSaveRadius(newCircle.getRadius());
+    props.handleClose();
     setNewAddress(userInputAddress);
-    dialog.current.close();
   }
 
-  useImperativeHandle(ref, () => {
-    return {
-      open() {
-        dialog.current.showModal();
-      },
-    };
-  });
+  const updateData = {
+    updateMap: setNewMap,
+    updateMarker: setNewMarker,
+    updateCircle: setNewCircle,
+    updateAddress: setNewAddress,
+  };
 
   useEffect(() => {
     if (newMap) {
       fetch(`${BASE_URL}center/all`)
-        .then((res) => {
-          console.log(res);
-          return res.json();
-        })
+        .then((res) => res.json())
         .then((data) => {
-          console.log(data);
           const repairCenterList = data.data;
           const markers = repairCenterList.map((element) => {
             const position = new naver.maps.LatLng(
@@ -223,7 +154,7 @@ const LocationModal = forwardRef(function LocationModal(
               .catch((error) => console.log(error));
           });
 
-          setMarkerList(() => markers);
+          setMarkerList(markers);
         })
         .catch((error) => {
           console.log(error);
@@ -231,40 +162,29 @@ const LocationModal = forwardRef(function LocationModal(
     }
   }, [newMap]);
 
-  return createPortal(
-    <>
-      <Dialog ref={dialog} className="location-modal">
-        <Wrapper>
-          <TopContainer>
-            <Title>위치선택</Title>
-            <CloseButton onClick={handleCloseModal}>X</CloseButton>
-          </TopContainer>
-          <ViewCurrentLocation
-            setMap={setNewMap}
-            setMarker={setNewMarker}
-            setAddress={setNewAddress}
-            setCircle={setNewCircle}
-          />
+  return (
+    <ModalPortal
+      title={"위치입력"}
+      width={"500px"}
+      handleClose={props.handleClose}
+    >
+      <MapContainer>
+        <ViewCurrentLocation updateData={updateData} />
+        <AddressContainer>
+          {"주소"}
           <InputText
             ref={inputAddress}
             key={generateKeyBasedOnCurrentTime()}
             defaultValue={newAddress}
-            size={"small"}
             onChange={handleInputAddressChange}
+            size="small"
           />
-          <BottomContainer>
-            반경
-            <RadiusContainer>
-              <InputText placeholder={0} onChange={handleInputRadiusChange} />
-              Km
-            </RadiusContainer>
-          </BottomContainer>
-          <SubmitButton children={"저장"} onClick={handleSubmitOnClick} />
-        </Wrapper>
-      </Dialog>
-    </>,
-    document.getElementById("modal")
+        </AddressContainer>
+        <InputRadius updateRadius={updateRadiusRangeChange} name={"deadline"} />
+        <SubmitButton children={"저장"} onClick={handleSubmitOnClick} />
+      </MapContainer>
+    </ModalPortal>
   );
-});
+}
 
-export default LocationModal;
+export default MapModal;
