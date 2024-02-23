@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import CenterLogo from "/src/assets/33MA3_logo.png";
 import { useNavigate } from "react-router-dom";
-import { getCurrentTimeFormatted } from "../../../utils/dateTimeHelper";
 
 const Logo = styled.img`
   width: 45px;

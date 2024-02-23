@@ -55,7 +55,7 @@ function ChatMessage({ info }) {
       <ChatWrapper mode={isSender.toString()}>
         {isSender && (
           <StatusContainer>
-            {info.readDone && (
+            {!info.readDone && (
               <ReadContainer mode={isSender.toString()}>1</ReadContainer>
             )}
             <TimeContainer>{info.createTime}</TimeContainer>
@@ -64,7 +64,7 @@ function ChatMessage({ info }) {
         <Message mode={isSender.toString()}>{info.contents}</Message>
         {!isSender && (
           <StatusContainer>
-            {info.readDone && (
+            {!info.readDone && (
               <ReadContainer mode={isSender.toString()}>1</ReadContainer>
             )}
             <TimeContainer>{info.createTime}</TimeContainer>
