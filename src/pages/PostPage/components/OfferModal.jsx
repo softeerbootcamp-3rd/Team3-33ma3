@@ -158,7 +158,7 @@ function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
       errors.price = "1~1000 사이의 금액을 입력해주세요.";
     }
 
-    if (offerDetail && offer.price > offerDetail.price) {
+    if (offerDetail && Number(offer.price) > Number(offerDetail.price)) {
       errors.price = `기존 금액보다 낮은 금액만 입력 가능합니다. ${offerDetail.price}보다 낮은 금액을 입력해주세요.`;
     }
 
