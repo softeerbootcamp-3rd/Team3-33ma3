@@ -35,6 +35,8 @@ function initMap(latitude, longitude, mapElement, setNewAddress) {
     map: map,
     icon: {
       url: "/src/assets/center_marker.png",
+      origin: 0,
+      anchor: 0,
       scaledSize: new naver.maps.Size(10, 10),
     },
   };
