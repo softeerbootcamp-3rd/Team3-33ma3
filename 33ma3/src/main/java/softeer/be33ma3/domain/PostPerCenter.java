@@ -13,11 +13,11 @@ public class PostPerCenter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postPerCenterId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "center_id")
     private Center center;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
 

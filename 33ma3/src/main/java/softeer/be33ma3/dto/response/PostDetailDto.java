@@ -10,6 +10,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static softeer.be33ma3.utils.StringParser.stringCommaParsing;
+
 @Builder
 @Getter
 @Schema(description = "게시글 상세보기 응답 DTO")
@@ -48,7 +50,7 @@ public class PostDetailDto {
     private List<String> imageList;
 
     // Post Entity -> PostDetailDto 변환
-    public static PostDetailDto fromEntity(Post post, List<String> repairList, List<String> tuneUpList) {
+    public static PostDetailDto fromEntity(Post post) {
         List<String> imageList = post.getImages().stream().map(Image::getLink).toList();
         Duration duration = calculateDuration(post);
         int dDay = -1;
@@ -67,8 +69,8 @@ public class PostDetailDto {
                 .remainTime(remainTime)
                 .regionName(post.getRegion().getRegionName())
                 .contents(post.getContents())
-                .repairList(repairList)
-                .tuneUpList(tuneUpList)
+                .repairList(stringCommaParsing(post.getRepairService()))
+                .tuneUpList(stringCommaParsing(post.getTuneUpService()))
                 .imageList(imageList).build();
     }
 

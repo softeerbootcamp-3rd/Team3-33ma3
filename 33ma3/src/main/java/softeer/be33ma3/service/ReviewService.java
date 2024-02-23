@@ -14,7 +14,6 @@ import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.MemberRepository;
 import softeer.be33ma3.repository.OfferRepository;
 import softeer.be33ma3.repository.post.PostRepository;
-import softeer.be33ma3.repository.review.ReviewCustomRepository;
 import softeer.be33ma3.repository.review.ReviewRepository;
 
 import java.util.ArrayList;
@@ -30,7 +29,6 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final PostRepository postRepository;
     private final OfferRepository offerRepository;
-    private final ReviewCustomRepository reviewCustomRepository;
     private final MemberRepository memberRepository;
 
     // 리뷰 생성하기
@@ -69,14 +67,14 @@ public class ReviewService {
     }
 
     public List<ShowAllReviewDto> showAllReview() {    //전체 리뷰 조회
-        return reviewCustomRepository.findReviewGroupByCenter();
+        return reviewRepository.findReviewGroupByCenter();
     }
 
     public ShowCenterReviewsDto showOneCenterReviews(Long centerId) {   //특정 센터 리뷰 조회
         List<OneReviewDto> oneReviewDtos = new ArrayList<>();
         double totalScore = 0.0;
         Member center = memberRepository.findById(centerId).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
-        List<Review> reviews = reviewRepository.findReviewsByCenterIdOrderByScore(center.getMemberId());
+        List<Review> reviews = reviewRepository.findReviewsByCenterIdOrderByScore(centerId);
 
         for (Review review : reviews) {
             totalScore += review.getScore();

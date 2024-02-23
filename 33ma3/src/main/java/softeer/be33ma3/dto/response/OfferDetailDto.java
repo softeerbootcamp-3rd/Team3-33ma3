@@ -34,7 +34,7 @@ public class OfferDetailDto implements Comparable<OfferDetailDto> {
     private String profile;
 
     // Offer Entity -> OfferDetailDto 변환
-    public static OfferDetailDto fromEntity(Offer offer, Double score, String profile) {
+    public static OfferDetailDto fromEntity(Offer offer, Double score) {
         return OfferDetailDto.builder()
                 .offerId(offer.getOfferId())
                 .memberId(offer.getCenter().getMemberId())
@@ -43,7 +43,7 @@ public class OfferDetailDto implements Comparable<OfferDetailDto> {
                 .contents(offer.getContents())
                 .selected(offer.isSelected())
                 .score(score)
-                .profile(profile).build();
+                .profile(offer.getCenter().getImage().getLink()).build();
     }
 
     // 제시 가격 저렴한 순 -> 별점 높은 순 정렬

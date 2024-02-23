@@ -25,9 +25,6 @@ import static softeer.be33ma3.exception.ErrorCode.*;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MemberService {
-    public static final int CLIENT_TYPE = 1;
-    public static final int CENTER_TYPE = 2;
-
     private final MemberRepository memberRepository;
     private final CenterRepository centerRepository;
     private final JwtService jwtService;
@@ -41,7 +38,7 @@ public class MemberService {
             throw new BusinessException(DUPLICATE_ID);
         }
 
-        Member member = Member.createMember(CLIENT_TYPE, clientSignUpDto.getLoginId(), clientSignUpDto.getPassword());
+        Member member = Member.createClient(clientSignUpDto.getLoginId(), clientSignUpDto.getPassword());
         // 프로필 이미지 저장
         member.setProfile(saveProfile(profile));
         memberRepository.save(member);
@@ -53,9 +50,11 @@ public class MemberService {
             throw new BusinessException(DUPLICATE_ID);
         }
 
-        Member member = Member.createMember(CENTER_TYPE, centerSignUpDto.getLoginId(), centerSignUpDto.getPassword());
+        Member member = Member.createCenter(centerSignUpDto.getLoginId(), centerSignUpDto.getPassword());
+
         // 프로필 이미지 저장
         member.setProfile(saveProfile(profile));
+
         Member savedMember = memberRepository.save(member);
         Center center = Center.createCenter(centerSignUpDto.getLatitude(), centerSignUpDto.getLongitude(), savedMember);
         centerRepository.save(center);

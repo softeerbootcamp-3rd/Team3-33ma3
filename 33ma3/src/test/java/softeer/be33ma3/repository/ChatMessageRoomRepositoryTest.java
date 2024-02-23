@@ -8,15 +8,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import softeer.be33ma3.domain.ChatRoom;
 import softeer.be33ma3.domain.Member;
+import softeer.be33ma3.repository.Chat.ChatMessageRoomRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 @SpringBootTest
 @ActiveProfiles("test")
-class ChatRoomRepositoryTest {
+class ChatMessageRoomRepositoryTest {
     @Autowired private MemberRepository memberRepository;
-    @Autowired private ChatRoomRepository chatRoomRepository;
+    @Autowired private ChatMessageRoomRepository chatRoomRepository;
 
     @AfterEach
     void tearDown() {

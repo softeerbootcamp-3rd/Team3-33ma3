@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import static softeer.be33ma3.utils.StringParser.stringCommaParsing;
+
 @Getter
 @Builder
 @Schema(description = "게시글 목록 미리보기 응답 DTO")
@@ -43,7 +45,7 @@ public class PostThumbnailDto {
     private int offerCount;
 
     // Post Entity -> PostThumbnailDto 변환
-    public static PostThumbnailDto fromEntity(Post post, List<String> repairList, List<String> tuneUpList, int offerCount) {
+    public static PostThumbnailDto fromEntity(Post post) {
         List<String> imageList = post.getImages().stream().map(Image::getLink).toList();
         Duration duration = PostDetailDto.calculateDuration(post);
         int dDay = -1;
@@ -56,10 +58,10 @@ public class PostThumbnailDto {
                 .modelName(post.getModelName())
                 .createTime(createTimeFormatting(post.getCreateTime()))
                 .dDay(dDay)
-                .repairList(repairList)
-                .tuneUpList(tuneUpList)
+                .repairList(stringCommaParsing(post.getRepairService()))
+                .tuneUpList(stringCommaParsing(post.getTuneUpService()))
                 .imageList(imageList)
-                .offerCount(offerCount).build();
+                .offerCount(post.getOffers().size()).build();
     }
 
     private static String createTimeFormatting(LocalDateTime rawCreateTime) {

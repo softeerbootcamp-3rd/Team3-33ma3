@@ -20,11 +20,11 @@ public class Offer {
 
     private boolean selected;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "center_id")
     private Member center;
 
@@ -44,5 +44,10 @@ public class Offer {
     }
     public void setSelected() {
         selected = true;
+    }
+
+    public void setPost(Post post){
+        this.post = post;
+        post.getOffers().add(this);
     }
 }

@@ -20,7 +20,7 @@ public class Center {
 
     private double longitude;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
