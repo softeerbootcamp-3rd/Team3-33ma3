@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import CenterLogo from "/src/assets/33MA3_logo.png";
 import { useNavigate } from "react-router-dom";
+import { MAX_MESSAGE_LENGTH } from "../../../constants/options";
 
 const Logo = styled.img`
   width: 45px;
@@ -69,6 +70,15 @@ const NameTimeWrapper = styled.div`
   justify-content: space-between;
 `;
 
+function TruncatedText(text, maxLength) {
+  const displayText =
+    text.length > maxLength
+      ? `${text.substring(0, maxLength - 3)} . . .`
+      : text;
+
+  return displayText;
+}
+
 function Message(props) {
   const navigate = useNavigate();
   function handleOnClick() {
@@ -92,7 +102,9 @@ function Message(props) {
               <OpponentName>{props.info.memberName}</OpponentName>
               <TimeContainer>{props.info.createTime}</TimeContainer>
             </NameTimeWrapper>
-            <OpponentMessage>{props.info.lastMessage}</OpponentMessage>
+            <OpponentMessage>
+              {TruncatedText(props.info.lastMessage, MAX_MESSAGE_LENGTH)}
+            </OpponentMessage>
           </OpponentInfo>
         </KeyContent>
         {props.info.noReadCount !== 0 && (
