@@ -9,6 +9,7 @@ import {
   DEFAULT_MAX_ZOOM,
   DEFAULT_MIN_ZOOM,
   DEFAULT_ZOOM_SCALE,
+  KM_TO_M_CONVERSION_FACTOR,
 } from "../constants/mapConstants";
 
 // 현재 위치 좌표 기반 map, marker, circle 객체 생성 및 주소 상태 업데이트 함수
@@ -42,6 +43,7 @@ function initMap(latitude, longitude, mapElement, setNewAddress) {
   const circleOptions = {
     map: map,
     center: center,
+    radius: KM_TO_M_CONVERSION_FACTOR,
   };
   const circle = new naver.maps.Circle(circleOptions);
 
