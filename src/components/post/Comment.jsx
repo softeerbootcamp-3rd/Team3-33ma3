@@ -19,6 +19,69 @@ const CommentContainer = styled.div`
   border-radius: ${(props) => props.theme.radiuses.radius_s};
   box-shadow: ${(props) => props.theme.boxShadow.up};
   box-sizing: border-box;
+
+  &.pullDown {
+    animation-name: pullDown;
+    -webkit-animation-name: pullDown;
+
+    animation-duration: 0.9s;
+    -webkit-animation-duration: 0.9s;
+
+    animation-timing-function: ease-out;
+    -webkit-animation-timing-function: ease-out;
+
+    transform-origin: 50% 0%;
+    -ms-transform-origin: 50% 0%;
+    -webkit-transform-origin: 50% 0%;
+  }
+
+  @keyframes pullDown {
+    0% {
+      transform: scaleY(0.1);
+    }
+    40% {
+      transform: scaleY(1.02);
+    }
+    60% {
+      transform: scaleY(0.98);
+    }
+    80% {
+      transform: scaleY(1.01);
+    }
+    100% {
+      transform: scaleY(0.98);
+    }
+    80% {
+      transform: scaleY(1.01);
+    }
+    100% {
+      transform: scaleY(1);
+    }
+  }
+
+  @-webkit-keyframes pullDown {
+    0% {
+      -webkit-transform: scaleY(0.1);
+    }
+    40% {
+      -webkit-transform: scaleY(1.02);
+    }
+    60% {
+      -webkit-transform: scaleY(0.98);
+    }
+    80% {
+      -webkit-transform: scaleY(1.01);
+    }
+    100% {
+      -webkit-transform: scaleY(0.98);
+    }
+    80% {
+      -webkit-transform: scaleY(1.01);
+    }
+    100% {
+      -webkit-transform: scaleY(1);
+    }
+  }
 `;
 
 const WriterContainer = styled.div`
@@ -91,7 +154,7 @@ function Comment({ offerInfo, disabled }) {
   }
 
   return (
-    <CommentContainer>
+    <CommentContainer className="pullDown">
       {isModalOpen && (
         <OfferSelectModal
           handleClose={() => setIsModalOpen(false)}

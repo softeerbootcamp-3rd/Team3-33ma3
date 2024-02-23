@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Comment from "../../../components/post/Comment";
 import AuctionPrice from "../../../components/post/AuctionPrice";
@@ -11,8 +11,15 @@ const AuctionList = styled.div`
   align-items: center;
 `;
 
-function OfferList({ offerList, disabled }) {
+function OfferList({ offerList, recentOffer, disabled }) {
   const [focusOffer, setFocusOffer] = useState(null);
+
+  // 포커스 하고 있지 않을 시 가장 최근에 바뀐 견적 제시로 포커스
+  useEffect(() => {
+    if (recentOffer.current) {
+      recentOffer.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [recentOffer]);
 
   function clickOffer(index) {
     setFocusOffer((prevState) => {
