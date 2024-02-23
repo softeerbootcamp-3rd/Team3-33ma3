@@ -25,7 +25,7 @@ const RangeUnit = styled.div`
 `;
 
 function InputRange({ name }) {
-  const [value, setValue] = useState(1);
+  const [value, setValue] = useState(0);
 
   function onChange(e) {
     setValue(e.target.value);
@@ -37,7 +37,7 @@ function InputRange({ name }) {
       <div>
         <Range
           type="range"
-          min={1}
+          min={0}
           max={10}
           onChange={onChange}
           value={value}
