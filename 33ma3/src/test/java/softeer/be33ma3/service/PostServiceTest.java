@@ -5,17 +5,25 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.multipart.MultipartFile;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.domain.Region;
 import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.exception.BusinessException;
+import softeer.be33ma3.repository.ImageRepository;
 import softeer.be33ma3.repository.MemberRepository;
 import softeer.be33ma3.repository.post.PostRepository;
 import softeer.be33ma3.repository.RegionRepository;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,12 +31,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 @ActiveProfiles("test")
 class PostServiceTest {
+    @Autowired private MockMvc mockMvc;
     @Autowired private PostService postService;
     @Autowired private PostRepository postRepository;
     @Autowired private MemberRepository memberRepository;
     @Autowired private RegionRepository regionRepository;
+    @Autowired private ImageRepository imageRepository;
 
     @BeforeEach
     void setUp(){
@@ -41,9 +52,42 @@ class PostServiceTest {
 
     @AfterEach
     void tearDown(){
+        imageRepository.deleteAllInBatch();
         postRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();
         regionRepository.deleteAllInBatch();
+    }
+
+    @DisplayName("게시글을 생성할 수 있다.")
+    @Test
+    void createPostWithImage() throws IOException {
+        //given
+        List<MultipartFile> multipartFiles = createMultipartFile();
+
+        Member member = memberRepository.findMemberByLoginId("client1").get();
+        PostCreateDto postCreateDto = new PostCreateDto("승용차", "제네시스", 3, "서울시 강남구", "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 생성 이미지 포함");
+
+        //when
+        Long postId = postService.createPost(member, postCreateDto, multipartFiles);
+
+        //then
+        Post post = postRepository.findById(postId).get();
+        assertThat(post.getContents()).isEqualTo("게시글 생성 이미지 포함");
+    }
+
+    @DisplayName("이미지 없이 게시글을 생성할 수 있다.")
+    @Test
+    void createPostWithoutImage(){
+        //given
+        Member member = memberRepository.findMemberByLoginId("client1").get();
+        PostCreateDto postCreateDto = new PostCreateDto("승용차", "제네시스", 3, "서울시 강남구", "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 생성 이미지 미포함");
+
+        //when
+        Long postId = postService.createPost(member, postCreateDto, null);
+
+        //then
+        Post post = postRepository.findById(postId).get();
+        assertThat(post.getContents()).isEqualTo("게시글 생성 이미지 미포함");
     }
 
     @DisplayName("게시글을 수정할 수 있다.")
@@ -80,6 +124,25 @@ class PostServiceTest {
         //when //then
         assertThatThrownBy(() -> postService.editPost(member2, savedPost.getPostId(), postEditDto))
                 .isInstanceOf(BusinessException.class);
+    }
+
+    private List<MultipartFile> createMultipartFile() throws IOException {
+        String fileName = "testImage"; //파일명
+        String contentType = "jpg"; //파일타입
+        String filePath = "src/test/resources/testImage/"+fileName+"."+contentType;
+
+        FileInputStream fileInputStream = new FileInputStream(filePath);
+        List<MultipartFile> multipartFiles = new ArrayList<>();
+
+        MockMultipartFile multipartFile = new MockMultipartFile(
+                "images",
+                fileName + "." + contentType,
+                contentType,
+                fileInputStream
+        );
+
+        multipartFiles.add(multipartFile);
+        return multipartFiles;
     }
 
     private Post savePost(Region region, Member member1) {
