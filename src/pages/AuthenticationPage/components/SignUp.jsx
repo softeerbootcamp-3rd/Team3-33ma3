@@ -81,7 +81,6 @@ function SignUp() {
       });
   }
 
-  useEffect(() => {}, []);
   return (
     <Form ref={formRef} onSubmit={handleSubmit}>
       <AuthContainer>

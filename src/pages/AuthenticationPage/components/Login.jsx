@@ -72,7 +72,6 @@ function Login() {
       });
   }
 
-  useEffect(() => {}, []);
   return (
     <Form ref={formRef} onSubmit={handleSubmit}>
       <AuthContainer>

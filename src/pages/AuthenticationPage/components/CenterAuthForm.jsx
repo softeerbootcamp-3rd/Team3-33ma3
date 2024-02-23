@@ -18,18 +18,16 @@ const InputAddress = styled.div`
   color: ${(props) => props.theme.colors.text_weak};
 `;
 
-function CenterAuthForm(props) {
+function CenterAuthForm() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [address, setAddress] = useState("위치");
   const [coords, setCoords] = useState({});
-  const [centerAddress, setCenterAddress] = useState("");
-
+  console.log(address, coords);
   function handleSaveAddress(address) {
     setAddress(address);
     searchAddressToCoordinate(address)
       .then((res) => {
         if (res !== null) {
-          setCenterAddress(res.address.roadAddress);
           setCoords((prev) => ({
             ...prev,
             latitude: res.point.y,
@@ -52,14 +50,6 @@ function CenterAuthForm(props) {
       )}
       <input type="hidden" name="latitude" value={coords.latitude} />
       <input type="hidden" name="longitude" value={coords.longitude} />
-      <InputText
-        id="centerName"
-        type="text"
-        name="centerName"
-        placeholder="센터이름"
-        size="small"
-        required
-      />
       <InputAddress onClick={() => setIsModalOpen(true)}>
         {address}
       </InputAddress>
