@@ -11,6 +11,7 @@ function AuctionStatus({ postId, curOfferDetails }) {
   const { memberId } = useRouteLoaderData("root");
 
   useEffect(() => {
+    let timer = null;
     function connectWebSocket() {
       console.log("websocket 연결 시도!");
       webSocket.current = new WebSocket(
@@ -29,7 +30,7 @@ function AuctionStatus({ postId, curOfferDetails }) {
         console.log(event.code);
         if (event.code !== 4000 && event.code !== 1000) {
           console.log("재연결");
-          setTimeout(connectWebSocket, 500);
+          timer = setTimeout(connectWebSocket, 500);
         }
       };
 
@@ -77,6 +78,7 @@ function AuctionStatus({ postId, curOfferDetails }) {
     // clean up 함수
     // unmount 될 때 webSocket 연결 해제
     return () => {
+      clearTimeout(timer);
       if (webSocket.current.readyState === WebSocket.OPEN) {
         const closeMessage = {
           type: "post",

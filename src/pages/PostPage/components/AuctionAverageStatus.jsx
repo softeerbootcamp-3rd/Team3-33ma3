@@ -50,6 +50,7 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
 
   // TODO: 웹 소켓 연결
   useEffect(function () {
+    let timer = null;
     function connectWebSocket() {
       webSocket.current = new WebSocket(
         `wss://${IP}/connect/post/${postId}/${memberId}`
@@ -64,7 +65,7 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
         console.log(event.code);
         if (event.code !== 4000 && event.code !== 1000) {
           console.log("재연결");
-          setTimeout(connectWebSocket, 500);
+          timer = setTimeout(connectWebSocket, 500);
         }
       };
 
@@ -82,6 +83,7 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
     connectWebSocket();
 
     return () => {
+      clearTimeout(timer);
       if (webSocket.current.readyState === WebSocket.OPEN) {
         const closeMessage = {
           type: "post",

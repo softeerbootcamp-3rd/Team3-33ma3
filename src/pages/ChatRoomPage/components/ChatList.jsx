@@ -36,7 +36,7 @@ function scrollToBottom(scroll) {
 
 function ChatList(props) {
   const [chatHistory, setChatHistory] = useState([]);
-  const [webSocket, setWebSocket] = useState(null);
+  const webSocket = useRef();
 
   const scrollRef = useRef();
 
@@ -53,49 +53,61 @@ function ChatList(props) {
   }
 
   useEffect(() => {
-    const ws = new WebSocket(WebSocketServerUrl);
-    setWebSocket(ws);
-    ws.onopen = () => {
-      console.log(`웹소켓 연결 성공`);
-      fetch(`${BASE_URL}chat/history/${props.roomId}`, {
-        headers: {
-          Authorization: props.accessToken,
-          Accept: "application/json",
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setChatHistory(data.data);
+    let timer = null;
+    function connectWebSocket() {
+      webSocket.current = new WebSocket(WebSocketServerUrl);
+      webSocket.current.onopen = () => {
+        console.log(`웹소켓 연결 성공`);
+        fetch(`${BASE_URL}chat/history/${props.roomId}`, {
+          headers: {
+            Authorization: props.accessToken,
+            Accept: "application/json",
+          },
         })
-        .catch((error) => console.log(error));
-    };
+          .then((res) => res.json())
+          .then((data) => {
+            setChatHistory(data.data);
+          })
+          .catch((error) => console.log(error));
+      };
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log(`메시지 수신:`, data);
+      webSocket.current.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log(`메시지 수신:`, data);
 
-      setChatHistory((prev) => [...prev, data]);
-    };
+        setChatHistory((prev) => [...prev, data]);
+      };
 
-    ws.onclose = () => {
-      console.log(`웹소켓 연결 종료`);
-    };
+      webSocket.current.onclose = (event) => {
+        console.log(`웹소켓 연결 종료`);
+        console.log(event.code);
+        if (event.code !== 4000 && event.code !== 1000) {
+          console.log("재연결");
+          timer = setTimeout(connectWebSocket, 500);
+        }
+      };
 
-    ws.onerror = (error) => {
-      console.error("웹소켓 오류 발생:", error);
-    };
+      webSocket.current.onerror = (error) => {
+        console.error("웹소켓 오류 발생:", error);
+      };
+    }
+
+    connectWebSocket();
 
     // 컴포넌트 언마운트 시 웹소켓 연결 종료
     return () => {
-      if (ws.readyState === WebSocket.OPEN) {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      if (webSocket.current.readyState === WebSocket.OPEN) {
         const closeMessage = {
           type: "chat",
           roomId: props.roomId,
           memberId: props.memberId,
         };
         console.log(closeMessage);
-        ws.send(JSON.stringify(closeMessage));
-        ws.close();
+        webSocket.current.send(JSON.stringify(closeMessage));
+        webSocket.current.close(4000, "close");
       }
     };
   }, [props.roomId]);
@@ -116,7 +128,7 @@ function ChatList(props) {
         </ChatBody>
       </ChatBodyContainer>
       <ChatInput
-        webSocket={webSocket}
+        webSocket={webSocket.current}
         roomId={props.roomId}
         senderId={props.memberId}
         receiverId={props.receiverId}

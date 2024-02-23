@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { BASE_URL, IP } from "../../../constants/url";
 import styled from "styled-components";
 import { Message } from "./Message";
@@ -30,57 +30,69 @@ const MessageContainer = styled.div`
 
 function MessageList(props) {
   const [messages, setMessages] = useState([]);
-  const [webSocket, setWebSocket] = useState(null);
+  const webSocket = useRef();
 
   const isChatMode = (props.mode === "chat").toString();
 
   const WebSocketServerUrl = `wss://${IP}/connect/chatRoom/all/${props.memberId}`;
   useEffect(() => {
-    const ws = new WebSocket(WebSocketServerUrl);
-    setWebSocket(ws);
-    ws.onopen = () => {
-      console.log("웹소켓 연결 성공");
-      fetch(`${BASE_URL}chatRoom/all`, {
-        headers: {
-          Authorization: props.accessToken,
-          Accept: "application/json",
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setMessages(data.data);
+    let timer = null;
+    function connectWebSocket() {
+      webSocket.current = new WebSocket(WebSocketServerUrl);
+      webSocket.current.onopen = () => {
+        console.log("웹소켓 연결 성공");
+        fetch(`${BASE_URL}chatRoom/all`, {
+          headers: {
+            Authorization: props.accessToken,
+            Accept: "application/json",
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            setMessages(data.data);
+          });
+      };
+
+      webSocket.current.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log("메시지 수신:", data);
+        setMessages((prev) => {
+          const newData = data;
+          const newDataArray = prev.filter(
+            (item) => item.roomId !== newData.roomId
+          );
+          return [newData, ...newDataArray];
         });
-    };
+      };
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log("메시지 수신:", data);
-      setMessages((prev) => {
-        const newData = data;
-        const newDataArray = prev.filter(
-          (item) => item.roomId !== newData.roomId
-        );
-        return [newData, ...newDataArray];
-      });
-    };
+      webSocket.current.onclose = (event) => {
+        console.log("웹소켓 연결 종료");
+        console.log(event.code);
+        if (event.code !== 4000 && event.code !== 1000) {
+          console.log("재연결");
+          timer = setTimeout(connectWebSocket, 500);
+        }
+      };
 
-    ws.onclose = () => {
-      console.log("웹소켓 연결 종료");
-    };
+      webSocket.current.onerror = (error) => {
+        console.error("웹소켓 오류 발생:", error);
+      };
+    }
 
-    ws.onerror = (error) => {
-      console.error("웹소켓 오류 발생:", error);
-    };
+    connectWebSocket();
 
     // 컴포넌트 언마운트 시 웹소켓 연결 종료
     return () => {
-      if (ws.readyState === WebSocket.OPEN) {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      if (webSocket.current.readyState === WebSocket.OPEN) {
         const closeMessage = {
           type: "chatRoom",
           memberId: props.memberId,
         };
-        ws.send(JSON.stringify(closeMessage));
-        ws.close();
+        webSocket.current.send(JSON.stringify(closeMessage));
+        webSocket.current.close(4000, "close");
       }
     };
   }, []);

@@ -53,7 +53,7 @@ function ChatHeader(props) {
         <Logo src={CenterLogo} />
         <CenterInfo>
           <CenterName>{roomName}</CenterName>
-          <CenterStatus>부재중</CenterStatus>
+          <CenterStatus></CenterStatus>
         </CenterInfo>
       </CenterContainer>
       <SubmitButton size={"small"}>낙찰</SubmitButton>
