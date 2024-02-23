@@ -23,6 +23,8 @@ const OpponentName = styled.p`
 `;
 
 const OpponentMessage = styled.p`
+  display: flex;
+  justify-content: space-between;
   color: ${(props) => props.theme.colors.border_strong};
 `;
 
@@ -104,12 +106,12 @@ function Message(props) {
             </NameTimeWrapper>
             <OpponentMessage>
               {TruncatedText(props.info.lastMessage, MAX_MESSAGE_LENGTH)}
+              {props.info.noReadCount !== 0 && (
+                <MessageCount>{props.info.noReadCount}</MessageCount>
+              )}
             </OpponentMessage>
           </OpponentInfo>
         </KeyContent>
-        {props.info.noReadCount !== 0 && (
-          <MessageCount>{props.info.noReadCount}</MessageCount>
-        )}
       </MessageBox>
     </>
   );
