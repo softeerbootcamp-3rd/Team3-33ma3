@@ -80,37 +80,40 @@ public class ChatService {
     public void sendChatMessage(TextMessage message) throws IOException {
         ChatMessageDto chatMessageDto = getChatMessageDto(message);
 
-        Member sender = memberRepository.findById(chatMessageDto.getSenderId()).orElseThrow(() -> new BusinessException(NOT_FOUND_MEMBER));
-        Member receiver = memberRepository.findById(chatMessageDto.getReceiverId()).orElseThrow(() -> new BusinessException(NOT_FOUND_MEMBER));
-        ChatRoom chatRoom = chatRoomRepository.findById(chatMessageDto.getRoomId()).orElseThrow(() -> new BusinessException(NOT_FOUND_CHAT_ROOM));
-        //메세지 저장
+        Member sender = memberRepository.findById(chatMessageDto.getSenderId()).get();
+        Member receiver = memberRepository.findById(chatMessageDto.getReceiverId()).get();
+        ChatRoom chatRoom = chatRoomRepository.findById(chatMessageDto.getRoomId()).get();
+
         ChatMessage chatMessage = ChatMessage.createChatMessage(sender, chatRoom, chatMessageDto.getMessage());
         ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
 
-        if(webSocketRepository.isMemberInChatRoom(chatRoom.getChatRoomId(), receiver.getMemberId())){   //상대방이 채팅방 소켓에 연결된 경우
-            savedChatMessage.setReadDoneTrue();   //읽음 처리
-            updateAllChatRoom(chatRoom, receiver, sender);    //보낸 사람 목록 - 실시간 업데이트
-            directSendCahtMessage(savedChatMessage, receiver);  //채팅 내용 실시간 전송
+        if(!webSocketRepository.isMemberInChatRoom(chatRoom.getChatRoomId(), receiver.getMemberId())){      //채팅룸에 상대방이 존재하지 않을 경우
+            if(webSocketRepository.findAllChatRoomSessionByMemberId(receiver.getMemberId()) != null){   //목록 세션에 있는 경우
+                AllChatRoomDto chatDto = getChatDto(chatRoom, sender.getLoginId(), receiver);     //업데이트 할 목록 생성
+                webSocketService.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //실시간 전송 - 채팅 목록
+                return;
+            }
+            return;
         }
-        if(webSocketRepository.findAllChatRoomSessionByMemberId(receiver.getMemberId()) != null){   //상대방이 목록 소켓에 연결된 경우
-            //receiver 에게 전송
-            updateAllChatRoom(chatRoom, sender, receiver);    //받는 사람 목록 - 실시간 업데이트
-        }
-    }
-
-    private void directSendCahtMessage(ChatMessage savedChatMessage, Member receiver) {
-        ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.create(savedChatMessage);
-        webSocketService.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);
-    }
-
-    private void updateAllChatRoom(ChatRoom chatRoom, Member receiver, Member sender) {
-        AllChatRoomDto chatDto = getChatDto(chatRoom, receiver.getLoginId(), sender); //전송할 목록 생성
-        webSocketService.sendAllChatData2Client(sender.getMemberId(), chatDto);  //목록 실시간 전송
+        sendDirectToReceiver(savedChatMessage, chatRoom, sender, receiver);     //채팅방에 상대방이 존재하는 경우
     }
 
     private ChatMessageDto getChatMessageDto(TextMessage message) throws JsonProcessingException {
         String payload = message.getPayload();
         return objectMapper.readValue(payload, ChatMessageDto.class);   //payload -> chatMessageDto 로 변환
+    }
+
+    private void sendDirectToReceiver(ChatMessage savedChatMessage, ChatRoom chatRoom, Member sender, Member receiver) {
+        AllChatRoomDto chatDto = getChatDto(chatRoom, receiver.getLoginId(), sender); //sender 한테 전송할 목록
+        webSocketService.sendAllChatData2Client(sender.getMemberId(), chatDto);  //목록 실시간 전송
+
+        savedChatMessage.setReadDoneTrue();   //읽음 처리
+
+        //receiver 에게 전송
+        ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.create(savedChatMessage);
+        chatDto = getChatDto(chatRoom, sender.getLoginId(), receiver);     //전송할 목록 생성
+        webSocketService.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //목록 실시간 전송
+        webSocketService.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);   //채팅 내용 실시간 전송
     }
 
     private AllChatRoomDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
