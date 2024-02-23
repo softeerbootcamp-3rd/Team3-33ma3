@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.LoginDto;
 import softeer.be33ma3.exception.BusinessException;
+import softeer.be33ma3.exception.ErrorCode;
 import softeer.be33ma3.repository.CenterRepository;
 import softeer.be33ma3.repository.MemberRepository;
 
@@ -57,6 +58,7 @@ class MemberServiceTest {
 
         //when //then
         assertThatThrownBy(() -> memberService.login(loginDto))
-                .isInstanceOf(BusinessException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ID_PASSWORD_MISMATCH);
     }
 }

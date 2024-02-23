@@ -17,6 +17,7 @@ import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.domain.Region;
 import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.exception.BusinessException;
+import softeer.be33ma3.exception.ErrorCode;
 import softeer.be33ma3.repository.ImageRepository;
 import softeer.be33ma3.repository.MemberRepository;
 import softeer.be33ma3.repository.post.PostRepository;
@@ -46,7 +47,8 @@ class PostServiceTest {
         //회원 저장
         Member member1 = Member.createClient( "client1", "1234", null);
         Member member2 = Member.createClient( "client2", "1234", null);
-        memberRepository.saveAll(List.of(member1, member2));
+        Member member3 = Member.createCenter( "center1", "1234", null);
+        memberRepository.saveAll(List.of(member1, member2, member3));
         regionRepository.save(new Region(1L, "강남구"));
     }
 
@@ -88,6 +90,19 @@ class PostServiceTest {
         //then
         Post post = postRepository.findById(postId).get();
         assertThat(post.getContents()).isEqualTo("게시글 생성 이미지 미포함");
+    }
+
+    @DisplayName("센터가 글을 작성하려고 하면 예외가 발생한다.")
+    @Test
+    void createPostWithCenter(){
+        //given
+        Member member = memberRepository.findMemberByLoginId("center1").get();
+        PostCreateDto postCreateDto = new PostCreateDto("승용차", "제네시스", 3, "서울시 강남구", "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 생성");
+
+        //when  //then
+        assertThatThrownBy(() -> postService.createPost(member, postCreateDto, null))
+                .isInstanceOf(BusinessException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.POST_CREATION_DISABLED);
     }
 
     @DisplayName("게시글을 수정할 수 있다.")

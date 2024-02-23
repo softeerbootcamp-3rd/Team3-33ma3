@@ -11,6 +11,7 @@ import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.LoginDto;
 import softeer.be33ma3.dto.response.LoginSuccessDto;
 import softeer.be33ma3.exception.BusinessException;
+import softeer.be33ma3.exception.ErrorCode;
 import softeer.be33ma3.repository.MemberRepository;
 import softeer.be33ma3.service.MemberService;
 
@@ -60,6 +61,7 @@ class JwtServiceTest {
 
         //when //then
         assertThatThrownBy(() -> jwtService.reissue(refreshToken))
-                .isInstanceOf(BusinessException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.REFRESH_TOKEN_NOT_VALID);
     }
 }
