@@ -10,6 +10,8 @@ import ViewCurrentLocation from "../../../components/ViewCurrentLocation";
 import InputText from "../../../components/input/InputText";
 import { BASE_URL } from "../../../constants/url";
 import {
+  DEFAULT_LATITUDE,
+  DEFAULT_LONGITUDE,
   DROP,
   KM_TO_M_CONVERSION_FACTOR,
 } from "../../../constants/mapConstants";
@@ -31,7 +33,11 @@ const AddressContainer = styled.div`
   font-weight: 500;
 `;
 
-function initCircle(map) {
+function initCircle(map, currentCoords) {
+  const center = new naver.maps.LatLng(
+    currentCoords.latitude,
+    currentCoords.longitude
+  );
   const circleOptions = {
     map: map,
     center: center,
@@ -145,17 +151,21 @@ function MapModal(props) {
 
             return { centerId: element.centerId, marker: marker };
           });
-          setNewCircle(initCircle(newMap));
+          const circle = initCircle(newMap, {
+            latitude: DEFAULT_LATITUDE,
+            longitude: DEFAULT_LONGITUDE,
+          });
+          setNewCircle(circle);
           naver.maps.Event.addListener(newMap, "drag", (e) => {
             const currentCoords = newMap.getCenter();
             newMarker.setPosition(currentCoords);
-            newCircle.setCenter(currentCoords);
+            circle.setCenter(currentCoords);
           });
 
           naver.maps.Event.addListener(newMap, "dragend", (e) => {
             const currentCoords = newMap.getCenter();
 
-            updateMarkers(newMap, newCircle, markers);
+            updateMarkers(newMap, circle, markers);
             searchCoordinateToAddress(currentCoords)
               .then((res) => {
                 setNewAddress(res);
