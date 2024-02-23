@@ -1,4 +1,5 @@
 package softeer.be33ma3.websocket;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -6,6 +7,7 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import softeer.be33ma3.dto.request.ChatMessageDto;
 import softeer.be33ma3.service.ChatService;
 
 import java.util.Map;
@@ -15,6 +17,7 @@ import java.util.Map;
 @Slf4j
 public class WebSocketHandler extends TextWebSocketHandler {
 
+    private final ObjectMapper objectMapper;
     private final WebSocketService webSocketService;
     private final ChatService chatService;
 
@@ -24,7 +27,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
         try {
             String payload = message.getPayload();
             if (payload.contains("senderId") && payload.contains("receiverId")) {   //채팅인 경우
-                chatService.sendChatMessage(message);
+                ChatMessageDto chatMessageDto = objectMapper.readValue(payload, ChatMessageDto.class);//payload -> chatMessageDto 로 변환
+                chatService.sendChatMessage(chatMessageDto);
             }
             else{
                 webSocketService.receiveExitMsg(session, message);  //나가는 경우

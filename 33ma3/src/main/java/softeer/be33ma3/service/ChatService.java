@@ -46,7 +46,7 @@ public class ChatService {
         Member center = memberRepository.findById(centerId).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
         Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
 
-        if(!post.getMember().equals(client)){   //게시글 작성자만 생성할 수 있음
+        if(!post.getMember().getMemberId().equals(client.getMemberId())){   //게시글 작성자만 생성할 수 있음
             throw new BusinessException(ONLY_POST_AUTHOR_ALLOWED);
         }
         if(chatRoomRepository.findRoomIdByCenterIdAndClientId(centerId, client.getMemberId()).isPresent()){     // 이미 방이 존재하는 경우
@@ -77,13 +77,12 @@ public class ChatService {
     }
 
     @Transactional
-    public void sendChatMessage(TextMessage message) throws IOException {
-        ChatMessageDto chatMessageDto = getChatMessageDto(message);
-
+    public void sendChatMessage(ChatMessageDto chatMessageDto) throws IOException {
         Member sender = memberRepository.findById(chatMessageDto.getSenderId()).get();
         Member receiver = memberRepository.findById(chatMessageDto.getReceiverId()).get();
         ChatRoom chatRoom = chatRoomRepository.findById(chatMessageDto.getRoomId()).get();
 
+        //메세지 저장
         ChatMessage chatMessage = ChatMessage.createChatMessage(sender, chatRoom, chatMessageDto.getMessage());
         ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
 
@@ -96,11 +95,6 @@ public class ChatService {
             return;
         }
         sendDirectToReceiver(savedChatMessage, chatRoom, sender, receiver);     //채팅방에 상대방이 존재하는 경우
-    }
-
-    private ChatMessageDto getChatMessageDto(TextMessage message) throws JsonProcessingException {
-        String payload = message.getPayload();
-        return objectMapper.readValue(payload, ChatMessageDto.class);   //payload -> chatMessageDto 로 변환
     }
 
     private void sendDirectToReceiver(ChatMessage savedChatMessage, ChatRoom chatRoom, Member sender, Member receiver) {
