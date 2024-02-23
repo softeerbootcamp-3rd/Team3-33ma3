@@ -147,6 +147,25 @@ class PostServiceTest {
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.AUTHOR_ONLY_ACCESS);
     }
 
+    @DisplayName("경매가 시작된 후에 게시글을 수정하면 예외가 발생한다.")
+    @Test
+    void editPostAfterOffer(){
+        //given
+        Member client = memberRepository.findMemberByLoginId("client1").get();
+        Member center = memberRepository.findMemberByLoginId("center1").get();
+        Region region = regionRepository.findByRegionName("강남구").get();
+
+        Post savedPost = savePost(region, client);
+        saveOffer(1, "내용", savedPost, center);
+
+        PostCreateDto postEditDto = new PostCreateDto("승용차", "제네시스", 3, "서울시 강남구", "기스, 깨짐", "오일 교체", new ArrayList<>(),"수정후 내용");
+
+        //when //then
+        assertThatThrownBy(() -> postService.editPost(client, savedPost.getPostId(), postEditDto))
+                .isInstanceOf(BusinessException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.PRE_AUCTION_ONLY);
+    }
+
     @DisplayName("게시글을 삭제할 수 있다.")
     @Test
     void deletePost(){
@@ -192,9 +211,9 @@ class PostServiceTest {
         saveOffer(1, "내용", savedPost, center);
 
         //when //then
-        assertThatThrownBy(() -> postService.deletePost(center, savedPost.getPostId()))
+        assertThatThrownBy(() -> postService.deletePost(client, savedPost.getPostId()))
                 .isInstanceOf(BusinessException.class)
-                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.AUTHOR_ONLY_ACCESS);
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.PRE_AUCTION_ONLY);
     }
 
     private List<MultipartFile> createMultipartFile() throws IOException {
@@ -216,9 +235,9 @@ class PostServiceTest {
         return multipartFiles;
     }
 
-    private Post savePost(Region region, Member member1) {
+    private Post savePost(Region region, Member member) {
         PostCreateDto postCreateDto = new PostCreateDto("승용차", "제네시스", 3, "서울시 강남구", "기스, 깨짐", "오일 교체", new ArrayList<>(),"수정전 내용");
-        Post post = Post.createPost(postCreateDto, region, member1);
+        Post post = Post.createPost(postCreateDto, region, member);
         return postRepository.save(post);
     }
 
