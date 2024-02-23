@@ -1,10 +1,20 @@
-import ViewCurrentLocation from "../../../components/ViewCurrentLocation";
-import InputText from "../../../components/input/InputText";
-import ModalPortal from "../../../components/modal/ModalPortal";
 import styled from "styled-components";
 import InputRadius from "./InputRadius";
-import { useRef, useState } from "react";
-import { searchAddressToCoordinate } from "../../../utils/locationUtils";
+import { useRef, useState, useEffect } from "react";
+import {
+  searchAddressToCoordinate,
+  searchCoordinateToAddress,
+} from "../../../utils/locationUtils";
+import ModalPortal from "../../../components/modal/ModalPortal";
+import ViewCurrentLocation from "../../../components/ViewCurrentLocation";
+import InputText from "../../../components/input/InputText";
+import { BASE_URL } from "../../../constants/url";
+import {
+  DROP,
+  KM_TO_M_CONVERSION_FACTOR,
+} from "../../../constants/mapConstants";
+import SubmitButton from "../../../components/button/SubmitButton";
+import { generateKeyBasedOnCurrentTime } from "../../../components/LocationModal";
 
 const MapContainer = styled.div`
   display: inline-flex;
@@ -51,21 +61,114 @@ function hideMarker(map, marker) {
   marker.setMap(null);
 }
 
-function MapModal() {
-  const [viewInfo, setViewInfo] = useState({});
+// Modal 최상위 컴포넌트
+function MapModal({ onSave, onSaveList, onSaveRadius }, ref) {
+  const [newMap, setNewMap] = useState();
+  const [newMarker, setNewMarker] = useState();
+  const [newCircle, setNewCircle] = useState();
+  const [newAddress, setNewAddress] = useState();
   const [markerList, setMarkerList] = useState([]);
+
   const inputAddress = useRef();
+
+  function handleInputAddressChange(e) {
+    const address = e.target.value;
+    searchAddressToCoordinate(address)
+      .then((res) => {
+        const point = res.point;
+        newMap.setCenter(point);
+        newMarker.setPosition(point);
+        newCircle.setCenter(newMap.getCenter());
+        updateMarkers(newMap, newCircle, markerList);
+      })
+      .catch((error) => console.log(error));
+  }
+
+  function updateRadiusRangeChange(data) {
+    newCircle.setRadius(data * KM_TO_M_CONVERSION_FACTOR);
+    updateMarkers(newMap, newCircle, markerList);
+  }
+
+  function handleSubmitOnClick() {
+    const userInputAddress = inputAddress.current.value;
+    const centerList = markerList.filter((data) => data.marker.getMap());
+    onSave(userInputAddress);
+    onSaveList(centerList);
+    onSaveRadius(newCircle.getRadius());
+    setNewAddress(userInputAddress);
+  }
+
+  const updateData = {
+    updateMap: setNewMap,
+    updateMarker: setNewMarker,
+    updateCircle: setNewCircle,
+    updateAddress: setNewAddress,
+  };
+
+  useEffect(() => {
+    if (newMap) {
+      fetch(`${BASE_URL}center/all`)
+        .then((res) => res.json())
+        .then((data) => {
+          const repairCenterList = data.data;
+          const markers = repairCenterList.map((element) => {
+            const position = new naver.maps.LatLng(
+              element.latitude,
+              element.longitude
+            );
+            const markerOptions = {
+              map: newMap,
+              position: position,
+              title: element.centerName,
+              animation: DROP,
+              clickable: true,
+            };
+            const marker = new naver.maps.Marker(markerOptions);
+            marker.setMap(null);
+
+            return { centerId: element.centerId, marker: marker };
+          });
+          naver.maps.Event.addListener(newMap, "drag", (e) => {
+            const currentCoords = newMap.getCenter();
+            newMarker.setPosition(currentCoords);
+            newCircle.setCenter(currentCoords);
+          });
+
+          naver.maps.Event.addListener(newMap, "dragend", (e) => {
+            const currentCoords = newMap.getCenter();
+
+            updateMarkers(newMap, newCircle, markers);
+            searchCoordinateToAddress(currentCoords)
+              .then((res) => {
+                setNewAddress(res);
+              })
+              .catch((error) => console.log(error));
+          });
+
+          setMarkerList(markers);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [newMap]);
 
   return (
     <ModalPortal title={"위치입력"} width={"500px"}>
       <MapContainer>
-        <ViewCurrentLocation />
+        <ViewCurrentLocation updateData={updateData} />
         {"주소"}
-        <InputText size="small" />
-        <InputRadius name={"deadline"} />
+        <InputText
+          key={generateKeyBasedOnCurrentTime()}
+          defaultValue={newAddress}
+          onChange={handleInputAddressChange}
+          size="small"
+        />
+        <InputRadius updateRadius={updateRadiusRangeChange} name={"deadline"} />
+        <SubmitButton children={"저장"} onClick={handleSubmitOnClick} />
       </MapContainer>
     </ModalPortal>
   );
 }
 
-export { MapModal };
+export default MapModal;
