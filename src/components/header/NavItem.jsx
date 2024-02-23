@@ -25,7 +25,7 @@ function NavItem() {
       title: "견적 문의",
       link: "/post/create",
     },
-    accessToken && {
+    accessToken !== null && {
       title: "상담 내역",
       link: "/chat-room?mode=message",
     },
