@@ -86,9 +86,12 @@ public class ChatService {
         ChatMessage chatMessage = ChatMessage.createChatMessage(sender, chatRoom, chatMessageDto.getMessage());
         ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
 
+        AllChatRoomDto chatDto = getChatDto(chatRoom, receiver.getLoginId(), sender); //sender 한테 전송할 목록
+        webSocketService.sendAllChatData2Client(sender.getMemberId(), chatDto);  //목록 실시간 전송
+
         if(!webSocketRepository.isMemberInChatRoom(chatRoom.getChatRoomId(), receiver.getMemberId())){      //채팅룸에 상대방이 존재하지 않을 경우
             if(webSocketRepository.findAllChatRoomSessionByMemberId(receiver.getMemberId()) != null){   //목록 세션에 있는 경우
-                AllChatRoomDto chatDto = getChatDto(chatRoom, sender.getLoginId(), receiver);     //업데이트 할 목록 생성
+                chatDto = getChatDto(chatRoom, sender.getLoginId(), receiver);     //업데이트 할 목록 생성
                 webSocketService.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //실시간 전송 - 채팅 목록
                 return;
             }
@@ -98,14 +101,11 @@ public class ChatService {
     }
 
     private void sendDirectToReceiver(ChatMessage savedChatMessage, ChatRoom chatRoom, Member sender, Member receiver) {
-        AllChatRoomDto chatDto = getChatDto(chatRoom, receiver.getLoginId(), sender); //sender 한테 전송할 목록
-        webSocketService.sendAllChatData2Client(sender.getMemberId(), chatDto);  //목록 실시간 전송
-
         savedChatMessage.setReadDoneTrue();   //읽음 처리
 
         //receiver 에게 전송
         ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.create(savedChatMessage);
-        chatDto = getChatDto(chatRoom, sender.getLoginId(), receiver);     //전송할 목록 생성
+        AllChatRoomDto chatDto = getChatDto(chatRoom, sender.getLoginId(), receiver);     //전송할 목록 생성
         webSocketService.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //목록 실시간 전송
         webSocketService.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);   //채팅 내용 실시간 전송
     }
