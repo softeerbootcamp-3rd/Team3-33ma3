@@ -40,7 +40,7 @@ function ChatList(props) {
 
   const scrollRef = useRef();
 
-  const WebSocketServerUrl = `ws://${IP}/connect/chat/${props.roomId}/${props.memberId}`;
+  const WebSocketServerUrl = `wss://${IP}/connect/chat/${props.roomId}/${props.memberId}`;
 
   function updateChatHistory(newChat) {
     const newChatData = {

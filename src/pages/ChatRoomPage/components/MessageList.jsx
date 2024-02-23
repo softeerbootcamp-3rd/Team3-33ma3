@@ -34,7 +34,7 @@ function MessageList(props) {
 
   const isChatMode = (props.mode === "chat").toString();
 
-  const WebSocketServerUrl = `ws://${IP}/connect/chatRoom/all/${props.memberId}`;
+  const WebSocketServerUrl = `wss://${IP}/connect/chatRoom/all/${props.memberId}`;
   useEffect(() => {
     const ws = new WebSocket(WebSocketServerUrl);
     setWebSocket(ws);
