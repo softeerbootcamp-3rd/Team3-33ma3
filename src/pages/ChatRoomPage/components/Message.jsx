@@ -72,9 +72,13 @@ const NameTimeWrapper = styled.div`
 function Message(props) {
   const navigate = useNavigate();
   function handleOnClick() {
-    localStorage.setItem("opponentName", props.info.memberName);
+    const data = props.info;
+    if (data.noReadCount !== 0) {
+      props.updateData(data);
+    }
+    localStorage.setItem("opponentName", data.memberName);
     navigate(
-      `?mode=chat&client-id=${props.info.clientId}&center-id=${props.info.centerId}&room-id=${props.info.roomId}`
+      `?mode=chat&client-id=${data.clientId}&center-id=${data.centerId}&room-id=${data.roomId}`
     );
   }
 
