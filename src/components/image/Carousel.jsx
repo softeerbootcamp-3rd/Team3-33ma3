@@ -68,7 +68,7 @@ const ThumnailImg = styled.button`
   height: 40px;
   overflow: hidden;
   vertical-align: top;
-  filter: ${({ isFocus }) => !isFocus && "brightness(0.5)"};
+  filter: ${({ $isFocus }) => !$isFocus && "brightness(0.5)"};
 `;
 
 const Image = styled.img`
@@ -82,7 +82,7 @@ const DefaultButton = styled.button`
   height: 7px;
   border-radius: 50%;
   background-color: ${({ theme }) => theme.colors.surface_weak};
-  filter: ${({ isFocus }) => !isFocus && "brightness(0.5)"};
+  filter: ${({ $isFocus }) => !$isFocus && "brightness(0.5)"};
 `;
 
 function Carousel({ imgList, thumbnail, size }) {
@@ -204,13 +204,13 @@ function Carousel({ imgList, thumbnail, size }) {
           thumbnail ? (
             <ThumnailImg
               onClick={() => moveDirect(index + 1)}
-              isFocus={currentIndex === index + 1}
+              $isFocus={currentIndex === index + 1}
               key={index}
             >
               <Image src={item} />
             </ThumnailImg>
           ) : (
-            <DefaultButton isFocus={currentIndex !== index + 1} key={index} />
+            <DefaultButton $isFocus={currentIndex !== index + 1} key={index} />
           )
         )}
       </ThumnailList>
