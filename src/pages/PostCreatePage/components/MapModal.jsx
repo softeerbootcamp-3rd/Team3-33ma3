@@ -14,7 +14,7 @@ import {
   KM_TO_M_CONVERSION_FACTOR,
 } from "../../../constants/mapConstants";
 import SubmitButton from "../../../components/button/SubmitButton";
-import { generateKeyBasedOnCurrentTime } from "../../../components/LocationModal";
+import generateKeyBasedOnCurrentTime from "../../../utils/generateKeyBasedOnCurrentTime";
 
 const MapContainer = styled.div`
   display: inline-flex;
