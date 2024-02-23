@@ -74,7 +74,7 @@ function CenterCardItem({ centerInfo }) {
       </ImgContainer>
       <ContentContainer>
         <TextContainer>
-          <h1>{centerInfo.centerId}</h1>
+          <h1>{centerInfo.centerName}</h1>
         </TextContainer>
         <BottomContainer>
           <StarRating score={centerInfo.scoreAvg} />
