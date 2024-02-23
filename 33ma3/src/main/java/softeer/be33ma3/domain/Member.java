@@ -27,18 +27,19 @@ public class Member {
 
     private String refreshToken;
 
-    public Member(int memberType, String loginId, String password) {
+    public Member(int memberType, String loginId, String password, Image image) {
         this.memberType = memberType;
         this.loginId = loginId;
         this.password = password;
+        this.image = image;
     }
 
-    public static Member createClient(String loginId, String password){
-        return new Member(CLIENT_TYPE, loginId, password);
+    public static Member createClient(String loginId, String password, Image image){
+        return new Member(CLIENT_TYPE, loginId, password, image);
     }
 
-    public static Member createCenter(String loginId, String password){
-        return new Member(CENTER_TYPE, loginId, password);
+    public static Member createCenter(String loginId, String password, Image image){
+        return new Member(CENTER_TYPE, loginId, password, image);
     }
 
     public void setRefreshToken(String refreshToken) {

@@ -38,9 +38,8 @@ public class MemberService {
             throw new BusinessException(DUPLICATE_ID);
         }
 
-        Member member = Member.createClient(clientSignUpDto.getLoginId(), clientSignUpDto.getPassword());
-        // 프로필 이미지 저장
-        member.setProfile(saveProfile(profile));
+        Member member = Member.createClient(clientSignUpDto.getLoginId(), clientSignUpDto.getPassword(), saveProfile(profile));
+
         memberRepository.save(member);
     }
 
@@ -50,10 +49,7 @@ public class MemberService {
             throw new BusinessException(DUPLICATE_ID);
         }
 
-        Member member = Member.createCenter(centerSignUpDto.getLoginId(), centerSignUpDto.getPassword());
-
-        // 프로필 이미지 저장
-        member.setProfile(saveProfile(profile));
+        Member member = Member.createCenter(centerSignUpDto.getLoginId(), centerSignUpDto.getPassword(), saveProfile(profile));
 
         Member savedMember = memberRepository.save(member);
         Center center = Center.createCenter(centerSignUpDto.getLatitude(), centerSignUpDto.getLongitude(), savedMember);
