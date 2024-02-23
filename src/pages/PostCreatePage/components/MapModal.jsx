@@ -23,6 +23,14 @@ const MapContainer = styled.div`
   flex-direction: column;
 `;
 
+const AddressContainer = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 10px;
+  font-weight: 500;
+`;
+
 // 반경 내의 marker 출력, 그 외는 제외하는 함수
 async function updateMarkers(map, circle, markers) {
   const response = await fetch(
@@ -62,7 +70,7 @@ function hideMarker(map, marker) {
 }
 
 // Modal 최상위 컴포넌트
-function MapModal({ onSave, onSaveList, onSaveRadius }, ref) {
+function MapModal(props) {
   const [newMap, setNewMap] = useState();
   const [newMarker, setNewMarker] = useState();
   const [newCircle, setNewCircle] = useState();
@@ -92,9 +100,10 @@ function MapModal({ onSave, onSaveList, onSaveRadius }, ref) {
   function handleSubmitOnClick() {
     const userInputAddress = inputAddress.current.value;
     const centerList = markerList.filter((data) => data.marker.getMap());
-    onSave(userInputAddress);
-    onSaveList(centerList);
-    onSaveRadius(newCircle.getRadius());
+    props.onSave(userInputAddress);
+    props.onSaveList(centerList);
+    props.onSaveRadius(newCircle.getRadius());
+    props.handleClose();
     setNewAddress(userInputAddress);
   }
 
@@ -154,16 +163,23 @@ function MapModal({ onSave, onSaveList, onSaveRadius }, ref) {
   }, [newMap]);
 
   return (
-    <ModalPortal title={"위치입력"} width={"500px"}>
+    <ModalPortal
+      title={"위치입력"}
+      width={"500px"}
+      handleClose={props.handleClose}
+    >
       <MapContainer>
         <ViewCurrentLocation updateData={updateData} />
-        {"주소"}
-        <InputText
-          key={generateKeyBasedOnCurrentTime()}
-          defaultValue={newAddress}
-          onChange={handleInputAddressChange}
-          size="small"
-        />
+        <AddressContainer>
+          {"주소"}
+          <InputText
+            ref={inputAddress}
+            key={generateKeyBasedOnCurrentTime()}
+            defaultValue={newAddress}
+            onChange={handleInputAddressChange}
+            size="small"
+          />
+        </AddressContainer>
         <InputRadius updateRadius={updateRadiusRangeChange} name={"deadline"} />
         <SubmitButton children={"저장"} onClick={handleSubmitOnClick} />
       </MapContainer>
