@@ -14,7 +14,7 @@ function AuctionStatus({ postId, curOfferDetails }) {
     function connectWebSocket() {
       console.log("websocket 연결 시도!");
       webSocket.current = new WebSocket(
-        `ws://${IP}/connect/post/${postId}/${memberId}`
+        `wss://${IP}/connect/post/${postId}/${memberId}`
       );
 
       // socket 연결 시 이벤트
