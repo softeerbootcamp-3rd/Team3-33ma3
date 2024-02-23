@@ -210,7 +210,7 @@ function Carousel({ imgList, thumbnail, size }) {
               <Image src={item} />
             </ThumnailImg>
           ) : (
-            <DefaultButton isFocus={currentIndex !== index + 1} />
+            <DefaultButton isFocus={currentIndex !== index + 1} key={index} />
           )
         )}
       </ThumnailList>
