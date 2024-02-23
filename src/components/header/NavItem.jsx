@@ -21,7 +21,10 @@ function NavItem() {
   const { memberType } = useRouteLoaderData("root");
 
   const navItemList = [
-    MEMBER_TYPE === memberType && { title: "견적 문의", link: "/post/create" },
+    MEMBER_TYPE === Number(memberType) && {
+      title: "견적 문의",
+      link: "/post/create",
+    },
     { title: "문의 내역", link: "/chat-room?mode=message" },
     { title: "센터 후기", link: "/center-review/list" },
   ];

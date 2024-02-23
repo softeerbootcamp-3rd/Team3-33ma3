@@ -56,6 +56,7 @@ function ChatInput(props) {
         value={inputValue}
         onChange={handleInputChange}
         placeholder="메시지를 입력하세요"
+        required
       />
       <SubmitText>
         <img

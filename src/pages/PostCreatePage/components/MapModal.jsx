@@ -10,6 +10,8 @@ import ViewCurrentLocation from "../../../components/ViewCurrentLocation";
 import InputText from "../../../components/input/InputText";
 import { BASE_URL } from "../../../constants/url";
 import {
+  DEFAULT_LATITUDE,
+  DEFAULT_LONGITUDE,
   DROP,
   KM_TO_M_CONVERSION_FACTOR,
 } from "../../../constants/mapConstants";
@@ -30,6 +32,19 @@ const AddressContainer = styled.div`
   gap: 10px;
   font-weight: 500;
 `;
+
+function initCircle(map, currentCoords) {
+  const center = new naver.maps.LatLng(
+    currentCoords.latitude,
+    currentCoords.longitude
+  );
+  const circleOptions = {
+    map: map,
+    center: center,
+    radius: KM_TO_M_CONVERSION_FACTOR,
+  };
+  return new naver.maps.Circle(circleOptions);
+}
 
 // 반경 내의 marker 출력, 그 외는 제외하는 함수
 async function updateMarkers(map, circle, markers) {
@@ -110,7 +125,6 @@ function MapModal(props) {
   const updateData = {
     updateMap: setNewMap,
     updateMarker: setNewMarker,
-    updateCircle: setNewCircle,
     updateAddress: setNewAddress,
   };
 
@@ -137,16 +151,21 @@ function MapModal(props) {
 
             return { centerId: element.centerId, marker: marker };
           });
+          const circle = initCircle(newMap, {
+            latitude: DEFAULT_LATITUDE,
+            longitude: DEFAULT_LONGITUDE,
+          });
+          setNewCircle(circle);
           naver.maps.Event.addListener(newMap, "drag", (e) => {
             const currentCoords = newMap.getCenter();
             newMarker.setPosition(currentCoords);
-            newCircle.setCenter(currentCoords);
+            circle.setCenter(currentCoords);
           });
 
           naver.maps.Event.addListener(newMap, "dragend", (e) => {
             const currentCoords = newMap.getCenter();
 
-            updateMarkers(newMap, newCircle, markers);
+            updateMarkers(newMap, circle, markers);
             searchCoordinateToAddress(currentCoords)
               .then((res) => {
                 setNewAddress(res);
