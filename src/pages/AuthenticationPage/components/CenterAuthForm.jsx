@@ -2,20 +2,34 @@ import { useState } from "react";
 import { searchAddressToCoordinate } from "../../../utils/locationUtils";
 import InputText from "../../../components/input/InputText";
 import generateKeyBasedOnCurrentTime from "../../../utils/generateKeyBasedOnCurrentTime";
+import styled from "styled-components";
+import SignUpModal from "./SignUpModal";
 
-function CenterAuthForm() {
+const InputAddress = styled.div`
+  width: 100%;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  box-sizing: border-box;
+  text-align: left;
+  background: #eeeeee;
+  color: ${(props) => props.theme.colors.text_weak};
+`;
+
+function CenterAuthForm(props) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [address, setAddress] = useState("위치");
   const [coords, setCoords] = useState({});
   const [centerAddress, setCenterAddress] = useState("");
-  const [checkAddress, setCheckAddress] = useState(false);
-  const [autoCompleteKey, setAutoCompleteKey] = useState(null);
-  const [autoCompleteAddress, setAutoCompleteAddress] = useState("");
 
-  function handleInputCenterName(e) {
-    searchAddressToCoordinate(e.target.value)
+  function handleSaveAddress(address) {
+    setAddress(address);
+    searchAddressToCoordinate(address)
       .then((res) => {
         if (res !== null) {
           setCenterAddress(res.address.roadAddress);
-          setCheckAddress(true);
           setCoords((prev) => ({
             ...prev,
             latitude: res.point.y,
@@ -28,14 +42,14 @@ function CenterAuthForm() {
       });
   }
 
-  function handleAutoComplete(e) {
-    setAutoCompleteAddress(e.target.innerHTML);
-    setCheckAddress(false);
-    setAutoCompleteKey(generateKeyBasedOnCurrentTime());
-  }
-
   return (
     <>
+      {isModalOpen && (
+        <SignUpModal
+          onSave={handleSaveAddress}
+          handleClose={() => setIsModalOpen(false)}
+        />
+      )}
       <input type="hidden" name="latitude" value={coords.latitude} />
       <input type="hidden" name="longitude" value={coords.longitude} />
       <InputText
@@ -46,18 +60,9 @@ function CenterAuthForm() {
         size="small"
         required
       />
-      <InputText
-        id="address"
-        type="text"
-        name="address"
-        onChange={handleInputCenterName}
-        placeholder="위치"
-        size="small"
-        key={autoCompleteKey}
-        defaultValue={autoCompleteAddress}
-        required
-      />
-      {checkAddress && <div onClick={handleAutoComplete}>{centerAddress}</div>}
+      <InputAddress onClick={() => setIsModalOpen(true)}>
+        {address}
+      </InputAddress>
     </>
   );
 }
