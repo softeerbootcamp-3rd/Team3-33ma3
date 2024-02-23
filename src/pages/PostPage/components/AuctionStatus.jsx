@@ -118,7 +118,7 @@ function AuctionStatus({ postId, curOfferDetails }) {
 
   // 댓글 정렬
   function sortOffer(list) {
-    return list.sort((o1, o2) => {
+    return [...list].sort((o1, o2) => {
       if (o1.price !== o2.price) {
         return o1.price - o2.price;
       }
