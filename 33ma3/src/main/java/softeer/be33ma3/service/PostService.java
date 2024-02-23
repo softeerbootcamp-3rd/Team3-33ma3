@@ -175,7 +175,7 @@ public class PostService {
         if (!post.getMember().getMemberId().equals(member.getMemberId())) {
             throw new BusinessException(AUTHOR_ONLY_ACCESS);
         }
-        if (!offerRepository.findByPost_PostId(postId).isEmpty()) { //댓글이 있는 경우(경매 시작 후)
+        if (!post.getOffers().isEmpty()) { //댓글이 있는 경우(경매 시작 후)
             throw new BusinessException(PRE_AUCTION_ONLY);
         }
         return post;
