@@ -33,8 +33,8 @@ class PostServiceTest {
     @BeforeEach
     void setUp(){
         //회원 저장
-        Member member1 = Member.createMember(1, "client1", "1234");
-        Member member2 = Member.createMember(1, "client2", "1234");
+        Member member1 = Member.createClient( "client1", "1234", null);
+        Member member2 = Member.createClient( "client2", "1234", null);
         memberRepository.saveAll(List.of(member1, member2));
         regionRepository.save(new Region(1L, "강남구"));
     }
