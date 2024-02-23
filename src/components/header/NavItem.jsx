@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { Link, useRouteLoaderData } from "react-router-dom";
+import { MEMBER_TYPE } from "../../constants/options";
 
 const NavList = styled.div`
   display: flex;
@@ -20,7 +21,7 @@ function NavItem() {
   const { memberType } = useRouteLoaderData("root");
 
   const navItemList = [
-    memberType === 1 && { title: "견적 문의", link: "/post/create" },
+    MEMBER_TYPE === memberType && { title: "견적 문의", link: "/post/create" },
     { title: "문의 내역", link: "/chat-room?mode=message" },
     { title: "센터 후기", link: "/center-review/list" },
   ];
