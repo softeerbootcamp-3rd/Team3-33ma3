@@ -88,12 +88,12 @@ public class ChatService {
         ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
 
         if(webSocketRepository.isMemberInChatRoom(chatRoom.getChatRoomId(), receiver.getMemberId())){   //상대방이 채팅방 소켓에 연결된 경우
+            savedChatMessage.setReadDoneTrue();   //읽음 처리
             updateAllChatRoom(chatRoom, receiver, sender);    //보낸 사람 목록 - 실시간 업데이트
             directSendCahtMessage(savedChatMessage, receiver);  //채팅 내용 실시간 전송
         }
         if(webSocketRepository.findAllChatRoomSessionByMemberId(receiver.getMemberId()) != null){   //상대방이 목록 소켓에 연결된 경우
             //receiver 에게 전송
-            savedChatMessage.setReadDoneFalse();   //읽음 처리
             updateAllChatRoom(chatRoom, sender, receiver);    //받는 사람 목록 - 실시간 업데이트
         }
     }
