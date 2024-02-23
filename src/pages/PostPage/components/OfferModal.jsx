@@ -179,6 +179,8 @@ function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
               placeholder={"1~1000"}
               name="price"
               type="number"
+              min="1"
+              max="1000"
               defaultValue={offerDetail && offerDetail.price}
             />
             <p>만원</p>

@@ -7,7 +7,7 @@ import { useRouteLoaderData } from "react-router-dom";
 function AuctionStatus({ postId, curOfferDetails }) {
   const webSocket = useRef(null);
   const [offerList, setOfferList] = useState(curOfferDetails);
-  const [offerState, setOfferState] = useState({ state: "", offerId: 0 });
+  const recentOffer = useRef();
   const { memberId } = useRouteLoaderData("root");
 
   useEffect(() => {
@@ -37,16 +37,14 @@ function AuctionStatus({ postId, curOfferDetails }) {
       webSocket.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log(data);
-        setOfferState({
-          state: data.message,
-          offerId: data.data.offerId ? data.data.offerId : data.data,
-        });
 
         switch (data.message) {
           case "CREATE":
+            recentOffer.current = data.data.offerId;
             createOffer(data.data);
             return;
           case "UPDATE":
+            recentOffer.current = data.data.offerId;
             updateOffer(data.data);
             return;
           case "DELETE":
@@ -93,7 +91,9 @@ function AuctionStatus({ postId, curOfferDetails }) {
 
   // 댓글 생성
   function createOffer(data) {
-    setOfferList((prevState) => sortOffer([...prevState, data]));
+    setOfferList((prevState) =>
+      sortOffer([...prevState, { ...data, animation: "CREATE" }])
+    );
   }
 
   // 댓글 수정
@@ -103,7 +103,7 @@ function AuctionStatus({ postId, curOfferDetails }) {
       const prevList = prevState.filter(
         (offer) => offer.offerId != data.offerId
       );
-      return sortOffer([...prevList, data]);
+      return sortOffer([...prevList, { ...data, animation: "UPDATE" }]);
     });
   }
 
@@ -128,7 +128,7 @@ function AuctionStatus({ postId, curOfferDetails }) {
 
   return (
     <OptionType title={"경매 현황"}>
-      <OfferList offerList={offerList} offerState={offerState} />
+      <OfferList offerList={offerList} recentOffer={recentOffer} />
     </OptionType>
   );
 }

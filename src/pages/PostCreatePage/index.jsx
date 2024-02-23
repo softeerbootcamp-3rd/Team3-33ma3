@@ -62,7 +62,7 @@ function PostCreatePage() {
   const [address, setAddress] = useState("");
   const [centerList, setCenterList] = useState([]);
   const [radius, setRadius] = useState(0);
-  const { accessToken } = useRouteLoaderData("root");
+  const { accessToken, memberId } = useRouteLoaderData("root");
   const navigate = useNavigate();
 
   // Form 제출 버튼 클릭 시 실행
@@ -73,9 +73,11 @@ function PostCreatePage() {
     // TODO: API 전송
     // 동작 되는지 확인용으로 작성 -> 추후 변경
     const fd = new FormData();
-    imageFiles.current.forEach((file) => {
-      fd.append("images", file);
-    });
+    if (imageFiles.current.length > 0) {
+      imageFiles.current.forEach((file) => {
+        fd.append("images", file);
+      });
+    }
 
     const formData = new FormData(e.target);
     const newPost = {
@@ -83,11 +85,11 @@ function PostCreatePage() {
       repairService: repairService.current.join(","),
       tuneUpService: tuneUpService.current.join(","),
       centers: centerList.map((item) => item.centerId),
-      memberId: 1,
       location: address,
     };
 
     console.log(newPost);
+    console.log(fd.get("images"));
 
     // TODO: 에러처리 필요
     if (!validateOptions(newPost)) {
@@ -110,7 +112,7 @@ function PostCreatePage() {
       body: fd,
     })
       .then((response) => {
-        if (response.status === 200) {
+        if (response.ok) {
           console.log("success!");
         } else {
           console.log("error");

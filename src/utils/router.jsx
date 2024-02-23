@@ -43,19 +43,23 @@ const router = createBrowserRouter([
       },
       {
         path: "post/create",
+        element: <PostCreatePage />,
+      },
+      {
+        path: "inquiry-history",
         element: (
           <RequireAuth>
-            <PostCreatePage />
+            <InquiryHistoryPage />
           </RequireAuth>
         ),
       },
       {
-        path: "inquiry-history",
-        element: <InquiryHistoryPage />,
-      },
-      {
         path: "chat-room",
-        element: <ChatRoomPage />,
+        element: (
+          <RequireAuth>
+            <ChatRoomPage />
+          </RequireAuth>
+        ),
         loader: tokenLoader,
       },
       {
@@ -71,9 +75,9 @@ const router = createBrowserRouter([
 ]);
 
 function RequireAuth({ children }) {
-  const { accessToken, memberType } = useRouteLoaderData("root");
+  const { accessToken } = useRouteLoaderData("root");
 
-  if (!accessToken || Number(memberType) === CENTER_TYPE) {
+  if (!accessToken) {
     alert("로그인이 필요한 페이지입니다.");
     return <Navigate to={"/auth?mode=login"} />;
   }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Comment from "../../../components/post/Comment";
 import AuctionPrice from "../../../components/post/AuctionPrice";
@@ -11,11 +11,23 @@ const AuctionList = styled.div`
   align-items: center;
 `;
 
-function OfferList({ offerList, offerState, disabled }) {
-  const [focusOffer, setFocusOffer] = useState();
+function OfferList({ offerList, recentOffer, disabled }) {
+  const [focusOffer, setFocusOffer] = useState(null);
+
+  // 포커스 하고 있지 않을 시 가장 최근에 바뀐 견적 제시로 포커스
+  useEffect(() => {
+    if (recentOffer.current) {
+      recentOffer.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [recentOffer]);
 
   function clickOffer(index) {
-    setFocusOffer(index);
+    setFocusOffer((prevState) => {
+      if (prevState === index) {
+        return null;
+      }
+      return index;
+    });
   }
 
   // 기존에도 존재했던 offerId라면 hetch 애니메이션 실행
@@ -29,16 +41,14 @@ function OfferList({ offerList, offerState, disabled }) {
       isEdited={false}
       isEnd={disabled}
       isSelected={offer.selected}
-      animation={
-        offerState && offer.offerId === offerState.offerId && offerState.state
-      }
+      animation={offer.animation}
     />
   ));
 
   return (
     <>
       <AuctionList>{offers}</AuctionList>
-      {focusOffer !== undefined && (
+      {focusOffer !== null && (
         <Comment offerInfo={offerList[focusOffer]} disabled={disabled} />
       )}
     </>
