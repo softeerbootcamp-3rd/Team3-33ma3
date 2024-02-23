@@ -32,6 +32,10 @@ function initMap(latitude, longitude, mapElement, setNewAddress) {
   const markerOptions = {
     position: map.getCenter(),
     map: map,
+    icon: {
+      url: "/src/assets/center_marker.png",
+      scaledSize: new naver.maps.Size(10, 10),
+    },
   };
   const marker = new naver.maps.Marker(markerOptions);
 
@@ -45,12 +49,7 @@ function initMap(latitude, longitude, mapElement, setNewAddress) {
 }
 
 // Modal의 지도 컴포넌트
-export default function ViewCurrentLocation({
-  setMap,
-  setMarker,
-  setAddress,
-  setCircle,
-}) {
+export default function ViewCurrentLocation(props) {
   const mapElement = useRef();
 
   useEffect(() => {
@@ -62,11 +61,11 @@ export default function ViewCurrentLocation({
           DEFAULT_LATITUDE,
           DEFAULT_LONGITUDE,
           mapElement.current,
-          setAddress
+          props.updateData.updateAddress
         );
-        setMap(map);
-        setMarker(marker);
-        setCircle(circle);
+        props.updateData.updateMap(map);
+        props.updateData.updateMarker(marker);
+        props.updateData.updateCircle(circle);
       } catch (error) {
         console.error("Failed to fetch current location:", error);
       }
