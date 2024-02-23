@@ -126,7 +126,7 @@ function ReviewComment({ reviewInfo }) {
       </HeaderContainer>
       <Contents>{reviewInfo.contents}</Contents>
       <BottomContainer>
-        <StarRating score={3} />
+        <StarRating score={reviewInfo.score} />
         <ServiceList>{services}</ServiceList>
       </BottomContainer>
     </CommentContainer>
