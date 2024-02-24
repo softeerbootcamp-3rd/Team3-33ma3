@@ -53,10 +53,10 @@ export default function ViewCurrentLocation(props) {
     // 현재 좌표 값 기반 비동기 처리 함수
     async function fetchAndSetLocation() {
       try {
-        // const currentLocation = await getCurrentLocation();
+        const currentLocation = await getCurrentLocation();
         const { map, marker } = initMap(
-          DEFAULT_LATITUDE,
-          DEFAULT_LONGITUDE,
+          currentLocation.latitude,
+          currentLocation.longitude,
           mapElement.current,
           props.updateData.updateAddress
         );
