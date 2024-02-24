@@ -107,6 +107,7 @@ public class ChatService {
         webSocketService.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //목록 실시간 전송
         webSocketService.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);   //채팅 내용 실시간 전송
     }
+
     private AllChatRoomDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
         LastMessageDto lastMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());//마지막 메세지
         if(lastMessage == null){    //방이 만들어지고 메세지를 보내지 않은 경우
