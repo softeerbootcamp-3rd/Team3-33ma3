@@ -140,11 +140,11 @@ public class ChatService {
     }
 
     private void isValidRoomMember(Member member, ChatRoom chatRoom) {
-        if (member.isClient() && !chatRoom.getClient().equals(member)) {
+        if (member.isClient() && !chatRoom.getClient().getMemberId().equals(member.getMemberId())) {
             throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
         }
 
-        if (member.isCenter() && !chatRoom.getCenter().equals(member)) {
+        if (member.isCenter() && !chatRoom.getCenter().getMemberId().equals(member.getMemberId())) {
             throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
         }
     }

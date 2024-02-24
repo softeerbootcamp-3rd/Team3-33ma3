@@ -62,7 +62,7 @@ class ChatMessageRepositoryTest {
         ChatRoom chatRoom = ChatRoom.createChatRoom(client, center);
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
 
-        ChatMessage chatMessage1 = ChatMessage.createChatMessage(client, savedChatRoom, "첫번재 메세지");
+        ChatMessage chatMessage1 = ChatMessage.createChatMessage(client, savedChatRoom, "첫번째 메세지");
         ChatMessage chatMessage2 = ChatMessage.createChatMessage(center, savedChatRoom, "마지막 메세지");
 
         chatMessageRepository.saveAll(List.of(chatMessage1, chatMessage2));
