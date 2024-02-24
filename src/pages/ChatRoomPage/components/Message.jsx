@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import CenterLogo from "/src/assets/33MA3_logo.png";
 import { useNavigate } from "react-router-dom";
+import { MAX_MESSAGE_LENGTH } from "../../../constants/options";
 
 const Logo = styled.img`
   width: 45px;
@@ -21,8 +22,13 @@ const OpponentName = styled.p`
   font-weight: 700;
 `;
 
-const OpponentMessage = styled.p`
+const OpponentMessage = styled.div`
+  display: flex;
+  justify-content: space-between;
   color: ${(props) => props.theme.colors.border_strong};
+  font-size: 15px;
+  height: 20px;
+  align-items: center;
 `;
 
 const MessageCount = styled.div`
@@ -30,8 +36,8 @@ const MessageCount = styled.div`
   color: white;
   background: red;
   border-radius: 100%;
-  width: 25px;
-  height: 25px;
+  width: 20px;
+  height: 20px;
   align-items: center;
   justify-content: center;
 `;
@@ -69,12 +75,25 @@ const NameTimeWrapper = styled.div`
   justify-content: space-between;
 `;
 
+function TruncatedText(text, maxLength) {
+  const displayText =
+    text.length > maxLength
+      ? `${text.substring(0, maxLength - 3)} . . .`
+      : text;
+
+  return displayText;
+}
+
 function Message(props) {
   const navigate = useNavigate();
   function handleOnClick() {
-    localStorage.setItem("opponentName", props.info.memberName);
+    const data = props.info;
+    if (data.noReadCount !== 0) {
+      props.updateData(data);
+    }
+    localStorage.setItem("opponentName", data.memberName);
     navigate(
-      `?mode=chat&client-id=${props.info.clientId}&center-id=${props.info.centerId}&room-id=${props.info.roomId}`
+      `?mode=chat&client-id=${data.clientId}&center-id=${data.centerId}&room-id=${data.roomId}`
     );
   }
 
@@ -88,12 +107,14 @@ function Message(props) {
               <OpponentName>{props.info.memberName}</OpponentName>
               <TimeContainer>{props.info.createTime}</TimeContainer>
             </NameTimeWrapper>
-            <OpponentMessage>{props.info.lastMessage}</OpponentMessage>
+            <OpponentMessage>
+              {TruncatedText(props.info.lastMessage, MAX_MESSAGE_LENGTH)}
+              {props.info.noReadCount !== 0 && (
+                <MessageCount>{props.info.noReadCount}</MessageCount>
+              )}
+            </OpponentMessage>
           </OpponentInfo>
         </KeyContent>
-        {props.info.noReadCount !== 0 && (
-          <MessageCount>{props.info.noReadCount}</MessageCount>
-        )}
       </MessageBox>
     </>
   );

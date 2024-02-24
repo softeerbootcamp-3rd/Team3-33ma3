@@ -4,12 +4,9 @@ import {
   searchCoordinateToAddress,
 } from "../utils/locationUtils";
 import {
-  DEFAULT_LATITUDE,
-  DEFAULT_LONGITUDE,
   DEFAULT_MAX_ZOOM,
   DEFAULT_MIN_ZOOM,
   DEFAULT_ZOOM_SCALE,
-  KM_TO_M_CONVERSION_FACTOR,
 } from "../constants/mapConstants";
 
 // 현재 위치 좌표 기반 map, marker, circle 객체 생성 및 주소 상태 업데이트 함수
@@ -53,10 +50,10 @@ export default function ViewCurrentLocation(props) {
     // 현재 좌표 값 기반 비동기 처리 함수
     async function fetchAndSetLocation() {
       try {
-        const currentLocation = await getCurrentLocation();
+        const currentCoords = await getCurrentLocation();
         const { map, marker } = initMap(
-          currentLocation.latitude,
-          currentLocation.longitude,
+          currentCoords.latitude,
+          currentCoords.longitude,
           mapElement.current,
           props.updateData.updateAddress
         );

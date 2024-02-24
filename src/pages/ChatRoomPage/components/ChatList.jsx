@@ -58,24 +58,18 @@ function ChatList(props) {
       webSocket.current = new WebSocket(WebSocketServerUrl);
       webSocket.current.onopen = () => {
         console.log(`웹소켓 연결 성공`);
-        fetch(`${BASE_URL}chat/history/${props.roomId}`, {
-          headers: {
-            Authorization: props.accessToken,
-            Accept: "application/json",
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            setChatHistory(data.data);
-          })
-          .catch((error) => console.log(error));
       };
 
       webSocket.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log(`메시지 수신:`, data);
-
-        setChatHistory((prev) => [...prev, data]);
+        const newData = {
+          senderId: Number(props.receiverId),
+          contents: data.contents,
+          createTime: data.createTime,
+          readDone: true,
+        };
+        setChatHistory((prev) => [...prev, newData]);
       };
 
       webSocket.current.onclose = (event) => {
@@ -93,6 +87,19 @@ function ChatList(props) {
     }
 
     connectWebSocket();
+
+    fetch(`${BASE_URL}chat/history/${props.roomId}`, {
+      headers: {
+        Authorization: props.accessToken,
+        Accept: "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const newData = data.data;
+        setChatHistory((prev) => newData);
+      })
+      .catch((error) => console.log(error));
 
     // 컴포넌트 언마운트 시 웹소켓 연결 종료
     return () => {

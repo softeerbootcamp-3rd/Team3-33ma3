@@ -54,3 +54,5 @@ export const DISTRICTS = [
 
 export const MEMBER_TYPE = 1;
 export const CENTER_TYPE = 2;
+
+export const MAX_MESSAGE_LENGTH = 15;

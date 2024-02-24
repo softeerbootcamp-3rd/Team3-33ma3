@@ -35,22 +35,23 @@ function MessageList(props) {
   const isChatMode = (props.mode === "chat").toString();
 
   const WebSocketServerUrl = `wss://${IP}/connect/chatRoom/all/${props.memberId}`;
+
+  function updateMessages(newData) {
+    setMessages((prev) => {
+      const newDataArray = prev.filter(
+        (item) => item.roomId !== newData.roomId
+      );
+      newData.noReadCount = 0;
+
+      return [newData, ...newDataArray];
+    });
+  }
   useEffect(() => {
     let timer = null;
     function connectWebSocket() {
       webSocket.current = new WebSocket(WebSocketServerUrl);
       webSocket.current.onopen = () => {
         console.log("웹소켓 연결 성공");
-        fetch(`${BASE_URL}chatRoom/all`, {
-          headers: {
-            Authorization: props.accessToken,
-            Accept: "application/json",
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            setMessages(data.data);
-          });
       };
 
       webSocket.current.onmessage = (event) => {
@@ -97,13 +98,28 @@ function MessageList(props) {
     };
   }, []);
 
+  useEffect(() => {
+    fetch(`${BASE_URL}chatRoom/all`, {
+      headers: {
+        Authorization: props.accessToken,
+        Accept: "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setMessages(data.data);
+      });
+  }, []);
+
   return (
     <MessageContainer chatmode={isChatMode}>
       <MessageHeader chatmode={isChatMode} />
       <MessageBodyContainer>
         <MessageBody chatmode={isChatMode}>
           {messages.map((item, index) => {
-            return <Message key={index} info={item} />;
+            return (
+              <Message key={index} info={item} updateData={updateMessages} />
+            );
           })}
         </MessageBody>
       </MessageBodyContainer>
