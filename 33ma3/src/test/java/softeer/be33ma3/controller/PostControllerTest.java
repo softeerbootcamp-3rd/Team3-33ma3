@@ -20,7 +20,6 @@ import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.jwt.JwtProvider;
 import softeer.be33ma3.repository.MemberRepository;
-import softeer.be33ma3.repository.post.PostRepository;
 import softeer.be33ma3.service.PostService;
 
 import java.io.FileInputStream;
