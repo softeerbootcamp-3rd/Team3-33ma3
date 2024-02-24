@@ -8,8 +8,7 @@ import Alarm from "../../assets/alarm.png";
 const HeaderContainer = styled.header`
   display: flex;
   width: 100%;
-  height: 90px;
-  padding: 0px 30px;
+  padding: 8px 30px;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
