@@ -7,6 +7,7 @@ import SubmitButton from "../../../components/button/SubmitButton";
 import OfferModal from "./OfferModal";
 import ResultModal from "./ResultModal";
 import { CENTER_TYPE, MEMBER_TYPE } from "../../../constants/options";
+import useWebSocket from "../../../hooks/useWebSocket";
 
 const AverageContainer = styled.div`
   display: flex;
@@ -40,61 +41,25 @@ const Text = styled.div`
 
 function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
   const webSocket = useRef();
-  const selectedMine = useRef();
   const [avgPrice, setAvgPrice] = useState(curAvgPrice);
   const [offerDetail, setOfferDetail] = useState(curOfferDetail);
   const { memberId, memberType } = useRouteLoaderData("root");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [endMessage, setEndMessage] = useState();
-  const navigate = useNavigate();
+  const responseMessage = useWebSocket(
+    `wss://${IP}/connect/post/${postId}/${memberId}`
+  );
 
-  // TODO: 웹 소켓 연결
-  useEffect(function () {
-    let timer = null;
-    function connectWebSocket() {
-      webSocket.current = new WebSocket(
-        `wss://${IP}/connect/post/${postId}/${memberId}`
-      );
-
-      webSocket.current.onopen = () => {
-        console.log("WebSocket 연결! - 평균 버전");
-      };
-
-      webSocket.current.onclose = (event) => {
-        console.log("close");
-        console.log(event.code);
-        if (event.code !== 4000 && event.code !== 1000) {
-          console.log("재연결");
-          timer = setTimeout(connectWebSocket, 500);
-        }
-      };
-
-      webSocket.current.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        console.log(data);
-        if (data.message && data.message.startsWith("SELECT")) {
-          setEndMessage(data);
-        } else {
-          setAvgPrice(JSON.parse(event.data).avgPrice);
-        }
-      };
+  useEffect(() => {
+    if (
+      responseMessage.message &&
+      responseMessage.message.startsWith("SELECT")
+    ) {
+      setEndMessage(data);
+    } else {
+      setAvgPrice(responseMessage.avgPrice);
     }
-
-    connectWebSocket();
-
-    return () => {
-      clearTimeout(timer);
-      if (webSocket.current.readyState === WebSocket.OPEN) {
-        const closeMessage = {
-          type: "post",
-          roomId: postId,
-          memberId: memberId,
-        };
-        webSocket.current.send(JSON.stringify(closeMessage));
-        webSocket.current.close(4000, "close");
-      }
-    };
-  }, []);
+  }, [responseMessage]);
 
   // type 이 center인 경우 경매 참여하기 or 수정하기 버튼 보여주기
   // type 이 user인 경우 평균만 보여주기
