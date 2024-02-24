@@ -19,7 +19,6 @@ function OfferList({ offerList, recentOfferId, disabled }) {
   // 가장 최근에 바뀐 견적 제시로 포커스
   useEffect(() => {
     if (newOffer && newOffer.current) {
-      console.log(recentOfferId + "로 이동");
       newOffer.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [offerList]);
