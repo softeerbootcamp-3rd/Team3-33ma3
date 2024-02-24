@@ -9,8 +9,14 @@ function AuctionStatus({ postId, curOfferDetails }) {
   const [offerList, setOfferList] = useState(curOfferDetails);
   const [recentOfferId, setRecentOfferId] = useState();
   const { memberId } = useRouteLoaderData("root");
-  const responseMessage = useWebSocket(
-    `wss://${IP}/connect/post/${postId}/${memberId}`
+  const quitMessage = {
+    type: "post",
+    roomId: postId,
+    memberId: memberId,
+  };
+  const { responseMessage } = useWebSocket(
+    `wss://${IP}/connect/post/${postId}/${memberId}`,
+    quitMessage
   );
 
   useEffect(() => {

@@ -40,14 +40,19 @@ const Text = styled.div`
 `;
 
 function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
-  const webSocket = useRef();
   const [avgPrice, setAvgPrice] = useState(curAvgPrice);
   const [offerDetail, setOfferDetail] = useState(curOfferDetail);
   const { memberId, memberType } = useRouteLoaderData("root");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [endMessage, setEndMessage] = useState();
-  const responseMessage = useWebSocket(
-    `wss://${IP}/connect/post/${postId}/${memberId}`
+  const quitMessage = {
+    type: "post",
+    roomId: postId,
+    memberId: memberId,
+  };
+  const { responseMessage } = useWebSocket(
+    `wss://${IP}/connect/post/${postId}/${memberId}`,
+    quitMessage
   );
 
   useEffect(() => {
