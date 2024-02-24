@@ -56,11 +56,12 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
   );
 
   useEffect(() => {
+    console.log(responseMessage);
     if (
       responseMessage.message &&
       responseMessage.message.startsWith("SELECT")
     ) {
-      setEndMessage(data);
+      setEndMessage(responseMessage);
     } else {
       setAvgPrice(responseMessage.avgPrice);
     }

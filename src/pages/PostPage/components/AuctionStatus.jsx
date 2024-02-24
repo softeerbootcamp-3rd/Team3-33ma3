@@ -20,7 +20,6 @@ function AuctionStatus({ postId, curOfferDetails }) {
   );
 
   useEffect(() => {
-    console.log(`wss://${IP}/connect/post/${postId}/${memberId}`);
     console.log(responseMessage);
     switch (responseMessage.message) {
       case "CREATE":
