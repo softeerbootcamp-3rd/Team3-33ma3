@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import softeer.be33ma3.domain.*;
+import softeer.be33ma3.dto.response.LastMessageDto;
 import softeer.be33ma3.repository.Chat.ChatMessageRepository;
+import softeer.be33ma3.repository.Chat.ChatRoomRepository;
 
 import java.util.List;
 
@@ -24,8 +26,8 @@ class ChatMessageRepositoryTest {
 
     @BeforeEach
     void setUp(){
-        Member member1 = new Member(1, "client1", "1234");
-        Member member2 = new Member(2, "center1", "1234");
+        Member member1 = new Member(1, "client1", "1234", null);
+        Member member2 = new Member(1, "center1", "1234", null);
         memberRepository.saveAll(List.of(member1, member2));
     }
 
@@ -62,10 +64,10 @@ class ChatMessageRepositoryTest {
         ChatRoom savedChatRoom = createChatMessage(client, center);
 
         //when
-        String lastMessage = chatMessageRepository.findLastMessageByChatRoomId(savedChatRoom.getChatRoomId());
+        LastMessageDto lastMessage = chatMessageRepository.findLastMessageByChatRoomId(savedChatRoom.getChatRoomId());
 
         //then
-        assertThat(lastMessage).isEqualTo("2");
+        assertThat(lastMessage.getMessage()).isEqualTo("2");
 
     }
 

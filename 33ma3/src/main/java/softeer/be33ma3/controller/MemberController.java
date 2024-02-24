@@ -1,8 +1,6 @@
 package softeer.be33ma3.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,7 +24,6 @@ import softeer.be33ma3.service.MemberService;
 import static softeer.be33ma3.jwt.JwtProperties.REFRESH_HEADER_STRING;
 
 @Tag(name = "Member", description = "회원가입, 로그인, 토큰 관련 api")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequiredArgsConstructor
 public class MemberController {

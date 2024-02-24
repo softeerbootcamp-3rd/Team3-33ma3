@@ -25,11 +25,11 @@ class MemberRepositoryTest {
     @Test
     void findMemberByLoginId(){
         //given
-        Member member = Member.createMember(1, "user1", "1234");
-        member = memberRepository.save(member);
+        Member member = Member.createClient("user1", "1234", null);
+        Member savedMember = memberRepository.save(member);
 
         //when
-        Member findMember = memberRepository.findMemberByLoginId(member.getLoginId()).get();
+        Member findMember = memberRepository.findMemberByLoginId(savedMember.getLoginId()).get();
 
         //then
         assertThat(findMember)
@@ -41,11 +41,11 @@ class MemberRepositoryTest {
     @Test
     void findByLoginIdAndPassword(){
         //given
-        Member member = Member.createMember(1, "user1", "1234");
-        member = memberRepository.save(member);
+        Member member = Member.createClient("user1", "1234", null);
+        Member savedMember = memberRepository.save(member);
 
         //when
-        Member findMember = memberRepository.findByLoginIdAndPassword("user1", "1234").get();
+        Member findMember = memberRepository.findByLoginIdAndPassword(savedMember.getLoginId(), savedMember.getPassword()).get();
 
         //then
         assertThat(findMember)

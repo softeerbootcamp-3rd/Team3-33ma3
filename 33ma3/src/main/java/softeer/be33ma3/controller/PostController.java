@@ -26,7 +26,6 @@ import java.util.List;
 
 
 @Tag(name = "Post", description = "게시글 관련 api")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/post")
@@ -57,7 +56,7 @@ public class PostController {
     })
     @Operation(summary = "게시글 작성", description = "게시글 작성 메서드 입니다.")
     @PostMapping(value = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> createPost(@Schema(hidden = true) @CurrentUser Member member, @RequestPart(name = "images", required = false) List<MultipartFile> images, @RequestPart(name = "request") PostCreateDto postCreateDto){
+    public ResponseEntity<?> createPost(@Schema(hidden = true) @CurrentUser Member member, @RequestPart(name = "images", required = false) List<MultipartFile> images, @Valid @RequestPart(name = "request") PostCreateDto postCreateDto){
         Long postId = postService.createPost(member,postCreateDto, images);
 
         return ResponseEntity.ok().body(DataResponse.success("게시글 작성 성공", postId));

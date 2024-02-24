@@ -1,12 +1,10 @@
 package softeer.be33ma3.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.socket.TextMessage;
 import softeer.be33ma3.domain.*;
 import softeer.be33ma3.dto.request.ChatMessageDto;
 import softeer.be33ma3.dto.response.ChatHistoryDto;
@@ -46,7 +44,7 @@ public class ChatService {
         Member center = memberRepository.findById(centerId).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
         Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException(NOT_FOUND_POST));
 
-        if(!post.getMember().equals(client)){   //게시글 작성자만 생성할 수 있음
+        if(!post.getMember().getMemberId().equals(client.getMemberId())){   //게시글 작성자만 생성할 수 있음
             throw new BusinessException(ONLY_POST_AUTHOR_ALLOWED);
         }
         if(chatRoomRepository.findRoomIdByCenterIdAndClientId(centerId, client.getMemberId()).isPresent()){     // 이미 방이 존재하는 경우
@@ -109,7 +107,6 @@ public class ChatService {
         webSocketService.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //목록 실시간 전송
         webSocketService.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);   //채팅 내용 실시간 전송
     }
-
 
     private AllChatRoomDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
         LastMessageDto lastMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());//마지막 메세지

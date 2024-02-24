@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.domain.Center;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.response.CenterListDto;
@@ -29,13 +28,13 @@ class LocationServiceTest {
 
     @BeforeEach
     void setUp(){
-        Member member1 = new Member(2, "center1", "1234");
-        Member member2 = new Member(2, "center2", "1234");
+        Member member1 = new Member(2, "center1", "1234", null);
+        Member member2 = new Member(2, "center2", "1234", null);
 
         memberRepository.saveAll(List.of(member1, member2));
 
-        Center center1 = Center.createCenter("테스트 센터점1", 37.6, 127.0, member1);
-        Center center2 = Center.createCenter("테스트 센터점2", 37.509, 127.0, member2);
+        Center center1 = Center.createCenter(37.6, 127.0, member1);
+        Center center2 = Center.createCenter(37.509, 127.0, member2);
 
         centerRepository.saveAll(List.of(center1, center2));
     }
@@ -59,8 +58,8 @@ class LocationServiceTest {
 
         //then
         assertThat(centers).hasSize(1)
-                .extracting("centerId", "centerName", "latitude", "longitude")
-                .containsExactlyInAnyOrder(tuple(2L, "테스트 센터점2", 37.509, 127.0));
+                .extracting("latitude", "longitude")
+                .containsExactlyInAnyOrder(tuple(37.509, 127.0));
     }
 
     @DisplayName("저장된 모든 센터들을 반환한다.")
@@ -71,8 +70,8 @@ class LocationServiceTest {
 
         //then
         assertThat(allCenters).hasSize(2)
-                .extracting("centerName", "latitude", "longitude")
-                .containsExactly(tuple("테스트 센터점1", 37.6, 127.0),
-                        tuple("테스트 센터점2", 37.509, 127.0));
+                .extracting("latitude", "longitude")
+                .containsExactly(tuple(37.6, 127.0),
+                        tuple(37.509, 127.0));
     }
 }

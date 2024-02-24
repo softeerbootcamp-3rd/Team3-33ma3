@@ -11,12 +11,12 @@ import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.LoginDto;
 import softeer.be33ma3.dto.response.LoginSuccessDto;
 import softeer.be33ma3.exception.BusinessException;
+import softeer.be33ma3.exception.ErrorCode;
 import softeer.be33ma3.repository.MemberRepository;
 import softeer.be33ma3.service.MemberService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static softeer.be33ma3.exception.ErrorCode.REFRESH_TOKEN_NOT_VALID;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -27,7 +27,7 @@ class JwtServiceTest {
 
     @BeforeEach
     void setUp(){
-        Member client1 = Member.createMember(1, "client1", "1234");
+        Member client1 = Member.createClient("client1", "1234", null);
         memberRepository.save(client1);
     }
 
@@ -61,6 +61,7 @@ class JwtServiceTest {
 
         //when //then
         assertThatThrownBy(() -> jwtService.reissue(refreshToken))
-                .isInstanceOf(BusinessException.class);
+                .isInstanceOf(BusinessException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.REFRESH_TOKEN_NOT_VALID);
     }
 }

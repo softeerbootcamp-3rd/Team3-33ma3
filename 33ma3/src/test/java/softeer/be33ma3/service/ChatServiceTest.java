@@ -10,11 +10,14 @@ import softeer.be33ma3.domain.ChatMessage;
 import softeer.be33ma3.domain.ChatRoom;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Post;
+import softeer.be33ma3.dto.request.ChatMessageDto;
 import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.repository.*;
 import softeer.be33ma3.repository.Chat.ChatMessageRepository;
+import softeer.be33ma3.repository.Chat.ChatRoomRepository;
 import softeer.be33ma3.repository.post.PostRepository;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +28,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ChatServiceTest {
     @Autowired ChatService chatService;
     @Autowired MemberRepository memberRepository;
-    @Autowired
-    ChatRoomRepository chatRoomRepository;
+    @Autowired ChatRoomRepository chatRoomRepository;
     @Autowired PostRepository postRepository;
-    @Autowired
-    ChatMessageRepository chatMessageRepository;
+    @Autowired ChatMessageRepository chatMessageRepository;
 
     @AfterEach
     void tearDown() {
@@ -43,9 +44,9 @@ class ChatServiceTest {
     @Test
     void createRoom(){
         //given
-        Member client = new Member(1, "client1", "1234");
+        Member client = new Member(1, "client1", "1234", null);
         Member savedClient = memberRepository.save(client);
-        Member center = new Member(2, "center1", "1234");
+        Member center = new Member(2, "center1", "1234", null);
         Member savedCenter = memberRepository.save(center);
 
         Long postId = createPost(savedClient).getPostId();
@@ -59,24 +60,26 @@ class ChatServiceTest {
 
     @DisplayName("채팅방에서 메세지를 전송할 수 있다.")
     @Test
-    void sendMessage(){
+    void sendMessage() throws IOException {
         //given
-        Member client = new Member(1, "client1", "1234");
+        Member client = new Member(1, "client1", "1234", null);
         Member savedClient = memberRepository.save(client);
-        Member center = new Member(2, "center1", "1234");
+        Member center = new Member(2, "center1", "1234", null);
         Member savedCenter = memberRepository.save(center);
 
         ChatRoom chatRoom = ChatRoom.createChatRoom(savedClient, savedCenter);
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
 
+        ChatMessageDto chatMessageDto = new ChatMessageDto(chatRoom.getChatRoomId(), client.getMemberId(), center.getMemberId(), "내용");
+
         //when
-        chatService.sendMessage(savedClient, savedChatRoom.getChatRoomId(), savedCenter.getMemberId(), "메세지 내용");
+        chatService.sendChatMessage(chatMessageDto);
 
         //then
         List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoom_ChatRoomId(savedChatRoom.getChatRoomId());
         assertThat(chatMessages).hasSize(1)
                 .extracting("contents")
-                .containsExactly("메세지 내용");
+                .containsExactly("내용");
     }
 
     private Post createPost(Member savedClient) {

@@ -73,7 +73,7 @@ public class PostService {
         //정비소랑 게시물 매핑하기
         centerAndPostMapping(postCreateDto, savedPost);
 
-        if(multipartFiles.isEmpty()){     //이미지가 없는 경우
+        if(multipartFiles == null){     //이미지가 없는 경우
             return savedPost.getPostId();
         }
 
@@ -175,7 +175,7 @@ public class PostService {
         if (!post.getMember().getMemberId().equals(member.getMemberId())) {
             throw new BusinessException(AUTHOR_ONLY_ACCESS);
         }
-        if (!offerRepository.findByPost_PostId(postId).isEmpty()) { //댓글이 있는 경우(경매 시작 후)
+        if (!post.getOffers().isEmpty()) { //댓글이 있는 경우(경매 시작 후)
             throw new BusinessException(PRE_AUCTION_ONLY);
         }
         return post;

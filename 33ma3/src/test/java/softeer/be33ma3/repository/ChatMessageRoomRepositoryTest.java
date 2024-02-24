@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import softeer.be33ma3.domain.ChatRoom;
 import softeer.be33ma3.domain.Member;
-import softeer.be33ma3.repository.Chat.ChatMessageRoomRepository;
+import softeer.be33ma3.repository.Chat.ChatRoomRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,21 +17,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 class ChatMessageRoomRepositoryTest {
     @Autowired private MemberRepository memberRepository;
-    @Autowired private ChatMessageRoomRepository chatRoomRepository;
+    @Autowired private ChatRoomRepository chatRoomRepository;
 
     @AfterEach
     void tearDown() {
         chatRoomRepository.deleteAllInBatch();
-        chatRoomRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
     }
 
     @DisplayName("센터아이디와 클라이언트 아이디로 두 사용자의 채팅방을 찾을 수 있다.")
     @Test
-    void indRoomIdByCenterIdAndClientId(){
+    void findRoomIdByCenterIdAndClientId(){
         //given
-        Member client = new Member(1, "client1", "1234");
+        Member client = new Member(1, "client1", "1234", null);
         client = memberRepository.save(client);
-        Member center = new Member(2, "center1", "1234");
+        Member center = new Member(2, "center1", "1234", null);
         center = memberRepository.save(center);
 
         ChatRoom chatRoom = ChatRoom.createChatRoom(client, center);

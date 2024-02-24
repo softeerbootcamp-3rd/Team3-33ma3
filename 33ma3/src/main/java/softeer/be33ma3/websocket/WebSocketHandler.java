@@ -16,6 +16,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class WebSocketHandler extends TextWebSocketHandler {
+
     private final ObjectMapper objectMapper;
     private final WebSocketService webSocketService;
     private final ChatService chatService;
@@ -26,7 +27,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
         try {
             String payload = message.getPayload();
             if (payload.contains("senderId") && payload.contains("receiverId")) {   //채팅인 경우
-                ChatMessageDto chatMessageDto = objectMapper.readValue(payload, ChatMessageDto.class);
+                ChatMessageDto chatMessageDto = objectMapper.readValue(payload, ChatMessageDto.class);//payload -> chatMessageDto 로 변환
+
                 chatService.sendChatMessage(chatMessageDto);
             }
             else{
@@ -37,6 +39,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             log.error("메세지 수신 에러");
         }
     }
+  
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         try {
