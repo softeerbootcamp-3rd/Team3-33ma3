@@ -22,7 +22,7 @@ const OpponentName = styled.p`
   font-weight: 700;
 `;
 
-const OpponentMessage = styled.p`
+const OpponentMessage = styled.div`
   display: flex;
   justify-content: space-between;
   color: ${(props) => props.theme.colors.border_strong};
