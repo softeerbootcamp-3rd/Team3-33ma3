@@ -12,10 +12,6 @@ function useWebSocket(url, quitMessage) {
   useEffect(() => {
     connectWebSocket();
 
-    setTimeout(() => {
-      webSocket.current.close(4001);
-    }, 5000);
-
     // 브라우저 새로고침, 탭 닫을 시 정상 종료
     window.addEventListener("beforeunload", () => {
       closeWebSocket();
@@ -58,6 +54,13 @@ function useWebSocket(url, quitMessage) {
     };
   }
 
+  // webSocket 메세지 전송
+  function sendMessage(message) {
+    if (webSocket.current.readyState === WebSocket.OPEN) {
+      webSocket.current.send(JSON.stringify(message));
+    }
+  }
+
   // webSocket 연결 종료
   function closeWebSocket() {
     if (reconnectionTimeout.current) {
@@ -70,7 +73,7 @@ function useWebSocket(url, quitMessage) {
     }
   }
 
-  return responseMessage;
+  return { responseMessage, sendMessage };
 }
 
 export default useWebSocket;
