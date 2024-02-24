@@ -1,6 +1,7 @@
 package softeer.be33ma3.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -18,6 +20,7 @@ import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.jwt.JwtProvider;
 import softeer.be33ma3.repository.MemberRepository;
+import softeer.be33ma3.repository.post.PostRepository;
 import softeer.be33ma3.service.PostService;
 
 import java.io.FileInputStream;
@@ -31,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class PostControllerTest {
     private static String accessToken;
 
@@ -47,9 +51,14 @@ class PostControllerTest {
         accessToken = jwtProvider.createAccessToken(savedMember.getMemberType(), savedMember.getMemberId(), savedMember.getLoginId());
     }
 
+    @AfterEach
+    void tearDown() {
+        memberRepository.deleteAllInBatch();
+    }
+
     @DisplayName("게시글을 생성할 수 있다.")
     @Test
-    void cratePost() throws Exception {
+    void createPost() throws Exception {
         //given
         PostCreateDto postCreateDto = new PostCreateDto("승용차", "제네시스", 3, "서울시 강남구", "기스, 깨짐", "오일 교체", new ArrayList<>(),"수정전 내용");
         MockMultipartFile multipartFile = createImages();
