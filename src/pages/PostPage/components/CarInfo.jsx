@@ -33,7 +33,7 @@ function CarInfo({ postData }) {
 
   return (
     <>
-      <Carousel imgList={postData.imageList} size={"large"} thumbnail={true} />
+      <Carousel imgList={postData.imageList} size={"large"} thumbnail />
       <OptionType title={"차량 정보"}>
         <OptionItems>
           <OptionItem title={"차종"}>

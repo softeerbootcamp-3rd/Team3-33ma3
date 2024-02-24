@@ -8,7 +8,7 @@ const sizeList = {
     height: "195px",
   },
   medium: {
-    width: "100%",
+    width: "340px",
     height: "240px",
   },
   large: {
@@ -30,6 +30,11 @@ const Image = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
 `;
 
 function PictureArea({ size, img }) {

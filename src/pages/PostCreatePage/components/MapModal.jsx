@@ -152,10 +152,13 @@ function MapModal(props) {
             return { centerId: element.centerId, marker: marker };
           });
           const circle = initCircle(newMap, {
-            latitude: DEFAULT_LATITUDE,
-            longitude: DEFAULT_LONGITUDE,
+            latitude: newMap.center._lat,
+            longitude: newMap.center._lng,
           });
           setNewCircle(circle);
+
+          updateMarkers(newMap, circle, markers);
+
           naver.maps.Event.addListener(newMap, "drag", (e) => {
             const currentCoords = newMap.getCenter();
             newMarker.setPosition(currentCoords);

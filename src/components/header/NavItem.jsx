@@ -18,14 +18,17 @@ const NavTitle = styled.p`
 `;
 
 function NavItem() {
-  const { memberType } = useRouteLoaderData("root");
+  const { memberType, accessToken } = useRouteLoaderData("root");
 
   const navItemList = [
     MEMBER_TYPE === Number(memberType) && {
       title: "견적 문의",
       link: "/post/create",
     },
-    { title: "문의 내역", link: "/chat-room?mode=message" },
+    accessToken !== null && {
+      title: "상담 내역",
+      link: "/chat-room?mode=message",
+    },
     { title: "센터 후기", link: "/center-review/list" },
   ];
 

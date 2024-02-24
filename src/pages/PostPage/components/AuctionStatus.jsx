@@ -7,7 +7,7 @@ import { useRouteLoaderData } from "react-router-dom";
 function AuctionStatus({ postId, curOfferDetails }) {
   const webSocket = useRef(null);
   const [offerList, setOfferList] = useState(curOfferDetails);
-  const recentOffer = useRef();
+  const [recentOfferId, setRecentOfferId] = useState();
   const { memberId } = useRouteLoaderData("root");
 
   useEffect(() => {
@@ -41,11 +41,11 @@ function AuctionStatus({ postId, curOfferDetails }) {
 
         switch (data.message) {
           case "CREATE":
-            recentOffer.current = data.data.offerId;
+            setRecentOfferId(data.data.offerId);
             createOffer(data.data);
             return;
           case "UPDATE":
-            recentOffer.current = data.data.offerId;
+            setRecentOfferId(data.data.offerId);
             updateOffer(data.data);
             return;
           case "DELETE":
@@ -130,7 +130,7 @@ function AuctionStatus({ postId, curOfferDetails }) {
 
   return (
     <OptionType title={"경매 현황"}>
-      <OfferList offerList={offerList} recentOffer={recentOffer} />
+      <OfferList offerList={offerList} recentOfferId={recentOfferId} />
     </OptionType>
   );
 }
