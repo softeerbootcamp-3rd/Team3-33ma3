@@ -26,6 +26,9 @@ const OpponentMessage = styled.div`
   display: flex;
   justify-content: space-between;
   color: ${(props) => props.theme.colors.border_strong};
+  font-size: 15px;
+  height: 20px;
+  align-items: center;
 `;
 
 const MessageCount = styled.div`
@@ -33,8 +36,8 @@ const MessageCount = styled.div`
   color: white;
   background: red;
   border-radius: 100%;
-  width: 25px;
-  height: 25px;
+  width: 20px;
+  height: 20px;
   align-items: center;
   justify-content: center;
 `;
