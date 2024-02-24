@@ -1,12 +1,10 @@
 package softeer.be33ma3.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.socket.TextMessage;
 import softeer.be33ma3.domain.*;
 import softeer.be33ma3.dto.request.ChatMessageDto;
 import softeer.be33ma3.dto.response.ChatHistoryDto;
@@ -109,7 +107,6 @@ public class ChatService {
         webSocketService.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //목록 실시간 전송
         webSocketService.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);   //채팅 내용 실시간 전송
     }
-
     private AllChatRoomDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
         LastMessageDto lastMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());//마지막 메세지
         if(lastMessage == null){    //방이 만들어지고 메세지를 보내지 않은 경우

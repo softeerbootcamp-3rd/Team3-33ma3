@@ -25,7 +25,6 @@ import java.util.List;
 
 
 @Tag(name = "Review", description = "센터 리뷰 관련 api")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/review")

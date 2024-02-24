@@ -24,7 +24,6 @@ import softeer.be33ma3.service.MemberService;
 import static softeer.be33ma3.jwt.JwtProperties.REFRESH_HEADER_STRING;
 
 @Tag(name = "Member", description = "회원가입, 로그인, 토큰 관련 api")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequiredArgsConstructor
 public class MemberController {

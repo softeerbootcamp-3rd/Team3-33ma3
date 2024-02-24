@@ -21,7 +21,6 @@ import softeer.be33ma3.service.ChatService;
 
 import java.util.List;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @Tag(name = "문의", description = "문의 내역, 채팅 관련 api")
 @RestController
 @RequiredArgsConstructor
