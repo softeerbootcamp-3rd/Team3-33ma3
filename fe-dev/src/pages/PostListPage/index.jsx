@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Page from "../../components/post/Page";
 import SideBar from "./components/SideBar";
 import CarCardItem from "./components/CarCardItem";
+import Loading from "../../components/loading/Loading";
 import { BASE_URL } from "../../constants/url";
 import { Link, useRouteLoaderData } from "react-router-dom";
 
@@ -108,7 +109,7 @@ function PostListPage() {
         />
         <CardListContainer>
           {isLoading ? (
-            <p>Loading...</p>
+            <Loading />
           ) : (
             <>
               <CardListHeader>
