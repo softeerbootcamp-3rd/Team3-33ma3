@@ -11,8 +11,12 @@ public class AllChatRoomDto {
     private Long roomId;
     @Schema(description = "센터 아이디", example = "1")
     private Long centerId;
+    @Schema(description = "센터 프로필", example = "image.png")
+    private String centerProfile;
     @Schema(description = "사용자 아이디", example = "2")
     private Long clientId;
+    @Schema(description = "클라이언트 아이디", example = "1")
+    private String clientProfile;
     @Schema(description = "채팅한 상대 이름", example = "현대자동차 강남점")
     private String memberName;      // 상대방 이름
     @Schema(description = "마지막 메세지", example = "네 답변드립니다")

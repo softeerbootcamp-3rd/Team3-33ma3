@@ -93,6 +93,8 @@ public class ChatService {
             }
             return;
         }
+
+        webSocketService.sendData2Client(sender.getMemberId(), true);
         sendDirectToReceiver(savedChatMessage, chatRoom, sender, receiver);     //채팅방에 상대방이 존재하는 경우
     }
 
