@@ -36,6 +36,7 @@ function scrollToBottom(scroll) {
 
 function ChatList(props) {
   const [chatHistory, setChatHistory] = useState([]);
+  const [existOpponent, setExistOpponent] = useState(false);
   const webSocket = useRef();
 
   const scrollRef = useRef();
@@ -47,8 +48,9 @@ function ChatList(props) {
       senderId: Number(props.memberId),
       contents: newChat,
       createTime: getCurrentTimeFormatted(),
-      readDone: false,
+      readDone: existOpponent,
     };
+    console.log(newChatData);
     setChatHistory((prev) => [...prev, newChatData]);
   }
 
@@ -62,6 +64,10 @@ function ChatList(props) {
 
       webSocket.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
+        if (typeof data === "boolean") {
+          setExistOpponent(data);
+          return;
+        }
         console.log(`메시지 수신:`, data);
         const newData = {
           senderId: Number(props.receiverId),
@@ -69,6 +75,7 @@ function ChatList(props) {
           createTime: data.createTime,
           readDone: true,
         };
+        console.log(newData);
         setChatHistory((prev) => [...prev, newData]);
       };
 
@@ -87,19 +94,6 @@ function ChatList(props) {
     }
 
     connectWebSocket();
-
-    fetch(`${BASE_URL}chat/history/${props.roomId}`, {
-      headers: {
-        Authorization: props.accessToken,
-        Accept: "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const newData = data.data;
-        setChatHistory((prev) => newData);
-      })
-      .catch((error) => console.log(error));
 
     // 컴포넌트 언마운트 시 웹소켓 연결 종료
     return () => {
@@ -120,12 +114,30 @@ function ChatList(props) {
   }, [props.roomId]);
 
   useEffect(() => {
+    fetch(`${BASE_URL}chat/history/${props.roomId}`, {
+      headers: {
+        Authorization: props.accessToken,
+        Accept: "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const newData = data.data;
+        setChatHistory((prev) => newData);
+      })
+      .catch((error) => console.log(error));
+  }, [props.roomId, props.accessToken, existOpponent]);
+
+  useEffect(() => {
     scrollToBottom(scrollRef.current);
   }, [chatHistory]);
 
   return (
     <ChatContainer>
-      <ChatHeader roomName={props.roomName} />
+      <ChatHeader
+        roomName={props.roomName}
+        profile={props.profiles !== null && props.profiles[props.roomId]}
+      />
       <ChatBodyContainer ref={scrollRef}>
         <ChatBody>
           {chatHistory &&
