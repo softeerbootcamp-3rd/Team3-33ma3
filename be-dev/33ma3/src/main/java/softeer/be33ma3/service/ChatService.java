@@ -20,6 +20,7 @@ import softeer.be33ma3.websocket.WebSocketRepository;
 import softeer.be33ma3.websocket.WebSocketService;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,7 +115,7 @@ public class ChatService {
         LastMessageDto lastMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());//마지막 메세지
 
         if(lastMessage == null){    //방이 만들어지고 메세지를 보내지 않은 경우
-            return AllChatRoomDto.create(chatRoom, "", memberName, 0, null);
+            return AllChatRoomDto.create(chatRoom, "", memberName, 0, LocalDateTime.now());
         }
 
         int count = (int) chatMessageRepository.countReadDoneIsFalse(chatRoom.getChatRoomId(), member.getMemberId());     //안읽은 메세지 개수
