@@ -103,10 +103,12 @@ public class WebSocketService {
     private void sendIsReceiverAbsent(Long roomId, Long memberId) throws IOException {
         if(webSocketRepository.findReceiverInChatRoom(roomId, memberId) != null){
             Long receiverId = webSocketRepository.findReceiverInChatRoom(roomId, memberId);
-            WebSocketSession session = webSocketRepository.findSessionByMemberId(receiverId);
+            WebSocketSession receiver = webSocketRepository.findSessionByMemberId(receiverId);
+            WebSocketSession sender = webSocketRepository.findSessionByMemberId(memberId);
 
             TextMessage textMessage = new TextMessage("true");
-            session.sendMessage(textMessage);
+            receiver.sendMessage(textMessage);
+            sender.sendMessage(textMessage);
         }
     }
 

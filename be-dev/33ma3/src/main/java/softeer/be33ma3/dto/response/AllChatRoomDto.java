@@ -4,6 +4,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import softeer.be33ma3.domain.ChatRoom;
 
+import java.time.LocalDateTime;
+
+import static softeer.be33ma3.utils.StringParser.createTimeParsing;
+
 @Data
 @Schema(description = "문의 내역 리스트 응답")
 public class AllChatRoomDto {
@@ -26,15 +30,17 @@ public class AllChatRoomDto {
     @Schema(description = "메세지 생성 시간", example = "오전 07:12")
     private String createTime;
 
-    public static AllChatRoomDto create(ChatRoom chatRoom, String lastMessage, String memberName, int noReadCount, String createTime) {
+    public static AllChatRoomDto create(ChatRoom chatRoom, String lastMessage, String memberName, int noReadCount, LocalDateTime createTime) {
         AllChatRoomDto allChatRoomDto = new AllChatRoomDto();
         allChatRoomDto.roomId = chatRoom.getChatRoomId();
         allChatRoomDto.centerId = chatRoom.getCenter().getMemberId();
+        allChatRoomDto.centerProfile = chatRoom.getCenter().getImage().getLink();
         allChatRoomDto.clientId = chatRoom.getClient().getMemberId();
+        allChatRoomDto.clientProfile = chatRoom.getClient().getImage().getLink();
         allChatRoomDto.memberName = memberName;
         allChatRoomDto.lastMessage = lastMessage;
         allChatRoomDto.noReadCount = noReadCount;
-        allChatRoomDto.createTime = createTime;
+        allChatRoomDto.createTime = createTimeParsing(createTime);
 
         return allChatRoomDto;
     }
