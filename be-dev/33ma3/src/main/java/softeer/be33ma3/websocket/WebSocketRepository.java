@@ -33,10 +33,14 @@ public class WebSocketRepository {
     public Long findReceiverInChatRoom(Long roomId, Long memberId) {
         Set<Long> memberIds = chatRoom.get(roomId);
 
-        return memberIds.stream()
-                .filter(id -> !id.equals(memberId))
-                .findFirst()
-                .orElse(null); // 해당하는 멤버가 없을 경우
+        if(memberIds != null){
+            return memberIds.stream()
+                    .filter(id -> !id.equals(memberId))
+                    .findFirst()
+                    .orElse(null); // 해당하는 멤버가 없을 경우
+        }
+
+        return null;
     }
 
     public WebSocketSession findSessionByMemberId(Long memberId) {

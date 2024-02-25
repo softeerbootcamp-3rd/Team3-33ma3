@@ -37,7 +37,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             }
 
         } catch (Exception e) {
-            log.error("메세지 수신 에러");
+            log.error(e.getMessage());
         }
     }
   

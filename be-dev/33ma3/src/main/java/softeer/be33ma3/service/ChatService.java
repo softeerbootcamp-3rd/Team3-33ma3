@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static softeer.be33ma3.exception.ErrorCode.*;
-import static softeer.be33ma3.utils.StringParser.createTimeParsing;
 
 @Service
 @RequiredArgsConstructor

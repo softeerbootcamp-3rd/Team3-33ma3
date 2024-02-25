@@ -22,7 +22,7 @@ public class StringParser {    // 구분자 콤마로 문자열 파싱 후 각�
             minute = "0" + createTime.getMinute();
         }
 
-        if (hour> 12) {   //오후인 경우 12빼서 보내기
+        if (hour > 12) {   //오후인 경우 12빼서 보내기
             hour = hour - 12;
             return  "오후 " + (hour < 10 ? "0" + hour : hour)  + ":" + minute;
         }
