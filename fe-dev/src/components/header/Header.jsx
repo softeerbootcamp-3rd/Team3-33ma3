@@ -58,7 +58,6 @@ function Header({ token }) {
             <Link to={token ? "/auth?mode=logout" : "/auth?mode=login"}>
               <LoginNav>{token ? "로그아웃" : "로그인"}</LoginNav>
             </Link>
-            <img src={Alarm} style={{ width: "30px", height: "30px" }} />
           </NavItems>
         </HeaderItems>
       </HeaderContainer>

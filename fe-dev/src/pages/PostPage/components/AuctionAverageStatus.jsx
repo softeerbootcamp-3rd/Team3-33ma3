@@ -54,6 +54,7 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
     `wss://${IP}/connect/post/${postId}/${memberId}`,
     quitMessage
   );
+  console.log("avgPrice", avgPrice);
 
   useEffect(() => {
     console.log(responseMessage);
@@ -62,7 +63,7 @@ function AuctionAverageStatus({ curAvgPrice, curOfferDetail, postId }) {
       responseMessage.message.startsWith("SELECT")
     ) {
       setEndMessage(responseMessage);
-    } else {
+    } else if (responseMessage.avgPrice) {
       setAvgPrice(responseMessage.avgPrice);
     }
   }, [responseMessage]);
