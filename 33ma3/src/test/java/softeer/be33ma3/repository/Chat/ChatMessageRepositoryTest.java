@@ -1,4 +1,4 @@
-package softeer.be33ma3.repository;
+package softeer.be33ma3.repository.Chat;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import softeer.be33ma3.domain.*;
-import softeer.be33ma3.dto.response.LastMessageDto;
-import softeer.be33ma3.repository.Chat.ChatMessageRepository;
-import softeer.be33ma3.repository.Chat.ChatRoomRepository;
+import softeer.be33ma3.repository.MemberRepository;
 
 import java.util.List;
 
@@ -54,21 +52,26 @@ class ChatMessageRepositoryTest {
         assertThat(count).isEqualTo(2);
     }
 
-    @DisplayName("마지막으로 작성된 메세지를 찾을 수 있다.")
+    @DisplayName("채팅방 아이디로 해당 채팅방의 메세지들을 찾을 수 있다.")
     @Test
-    void findLastMessageByChatRoomId(){
+    void findByChatRoom_ChatRoomId(){
         //given
         Member client = memberRepository.findMemberByLoginId("client1").get();
         Member center = memberRepository.findMemberByLoginId("center1").get();
 
-        ChatRoom savedChatRoom = createChatMessage(client, center);
+        ChatRoom chatRoom = ChatRoom.createChatRoom(client, center);
+        ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
+
+        ChatMessage chatMessage1 = ChatMessage.createChatMessage(client, savedChatRoom, "첫번째 메세지");
+        ChatMessage chatMessage2 = ChatMessage.createChatMessage(center, savedChatRoom, "마지막 메세지");
+
+        chatMessageRepository.saveAll(List.of(chatMessage1, chatMessage2));
 
         //when
-        LastMessageDto lastMessage = chatMessageRepository.findLastMessageByChatRoomId(savedChatRoom.getChatRoomId());
+        List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoom_ChatRoomId(savedChatRoom.getChatRoomId());
 
         //then
-        assertThat(lastMessage.getMessage()).isEqualTo("2");
-
+        assertThat(chatMessages).hasSize(2);
     }
 
     private ChatRoom createChatMessage(Member client, Member center) {

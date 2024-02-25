@@ -84,13 +84,11 @@ public class ChatService {
         ChatMessage chatMessage = ChatMessage.createChatMessage(sender, chatRoom, chatMessageDto.getMessage());
         ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
 
-        AllChatRoomDto chatDto = getChatDto(chatRoom, receiver.getLoginId(), sender); //sender 한테 전송할 목록
-        webSocketService.sendAllChatData2Client(sender.getMemberId(), chatDto);  //목록 실시간 전송
+        directUpdateAllChatRoom(chatRoom, receiver.getLoginId(), sender); //나의 목록 실시간 업데이트
 
         if(!webSocketRepository.isMemberInChatRoom(chatRoom.getChatRoomId(), receiver.getMemberId())){      //채팅룸에 상대방이 존재하지 않을 경우
             if(webSocketRepository.findAllChatRoomSessionByMemberId(receiver.getMemberId()) != null){   //목록 세션에 있는 경우
-                chatDto = getChatDto(chatRoom, sender.getLoginId(), receiver);     //업데이트 할 목록 생성
-                webSocketService.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //실시간 전송 - 채팅 목록
+                directUpdateAllChatRoom(chatRoom, sender.getLoginId(), receiver);   //상대방 목록 실시간 업데이트
                 return;
             }
             return;
@@ -98,21 +96,27 @@ public class ChatService {
         sendDirectToReceiver(savedChatMessage, chatRoom, sender, receiver);     //채팅방에 상대방이 존재하는 경우
     }
 
+    private void directUpdateAllChatRoom(ChatRoom chatRoom, String memberName, Member sender) {
+        AllChatRoomDto chatDto = getChatDto(chatRoom, memberName, sender); //전송할 목록
+        webSocketService.sendAllChatData2Client(sender.getMemberId(), chatDto);  //목록 실시간 전송
+    }
+
     private void sendDirectToReceiver(ChatMessage savedChatMessage, ChatRoom chatRoom, Member sender, Member receiver) {
         savedChatMessage.setReadDoneTrue();   //읽음 처리
 
         //receiver 에게 전송
         ChatMessageResponseDto chatMessageResponseDto = ChatMessageResponseDto.create(savedChatMessage);
-        AllChatRoomDto chatDto = getChatDto(chatRoom, sender.getLoginId(), receiver);     //전송할 목록 생성
-        webSocketService.sendAllChatData2Client(receiver.getMemberId(), chatDto);   //목록 실시간 전송
+        directUpdateAllChatRoom(chatRoom, sender.getLoginId(), receiver);   //상대방 목록 실시간 업데이트
         webSocketService.sendData2Client(receiver.getMemberId(), chatMessageResponseDto);   //채팅 내용 실시간 전송
     }
 
     private AllChatRoomDto getChatDto(ChatRoom chatRoom, String memberName, Member member) {
         LastMessageDto lastMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());//마지막 메세지
+
         if(lastMessage == null){    //방이 만들어지고 메세지를 보내지 않은 경우
             return AllChatRoomDto.create(chatRoom, "", memberName, 0, "");
         }
+
         int count = (int) chatMessageRepository.countReadDoneIsFalse(chatRoom.getChatRoomId(), member.getMemberId());     //안읽은 메세지 개수
         return AllChatRoomDto.create(chatRoom, lastMessage.getMessage(), memberName, count, createTimeParsing(lastMessage.getCreateTime()));
     }
@@ -136,11 +140,11 @@ public class ChatService {
     }
 
     private void isValidRoomMember(Member member, ChatRoom chatRoom) {
-        if (member.isClient() && !chatRoom.getClient().equals(member)) {
+        if (member.isClient() && !chatRoom.getClient().getMemberId().equals(member.getMemberId())) {
             throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
         }
 
-        if (member.isCenter() && !chatRoom.getCenter().equals(member)) {
+        if (member.isCenter() && !chatRoom.getCenter().getMemberId().equals(member.getMemberId())) {
             throw new BusinessException(NOT_A_MEMBER_OF_ROOM);
         }
     }
