@@ -15,7 +15,7 @@ public class StringParser {    // 구분자 콤마로 문자열 파싱 후 각�
     }
 
     public static String createTimeParsing(LocalDateTime createTime) {
-        int hour = createTime.getHour();
+        int hour = createTime.getHour() + 9;
         String minute = String.valueOf(createTime.getMinute());
 
         if(createTime.getMinute() < 10){
