@@ -1,7 +1,6 @@
 package softeer.be33ma3.utils;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,14 +15,18 @@ public class StringParser {    // 구분자 콤마로 문자열 파싱 후 각�
     }
 
     public static String createTimeParsing(LocalDateTime createTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        String formattedTime = createTime.format(formatter);
+        int hour = createTime.getHour();
+        String minute = String.valueOf(createTime.getMinute());
 
-        if (createTime.getHour() >= 12) {   //오후인 경우 12빼서 보내기
-            int hour = createTime.getHour() - 12;
-            return formattedTime = "오후 " + (hour < 10 ? "0" + hour : hour)  + ":" + createTime.getMinute();
+        if(createTime.getMinute() < 10){
+            minute = "0" + createTime.getMinute();
         }
 
-        return "오전 "  + formattedTime;
+        if (hour> 12) {   //오후인 경우 12빼서 보내기
+            hour = hour - 12;
+            return  "오후 " + (hour < 10 ? "0" + hour : hour)  + ":" + minute;
+        }
+
+        return "오전 "  + hour + ":" +  minute;
     }
 }

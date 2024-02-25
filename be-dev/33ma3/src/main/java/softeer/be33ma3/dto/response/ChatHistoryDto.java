@@ -5,6 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import softeer.be33ma3.domain.ChatMessage;
 
+import java.time.LocalDateTime;
+
+import static softeer.be33ma3.utils.StringParser.createTimeParsing;
+
 @Data
 @Builder
 @Schema(description = "채팅 내역")
@@ -18,11 +22,11 @@ public class ChatHistoryDto {
     @Schema(description = "읽음 여부", example = "1")
     private boolean readDone;
 
-    public static ChatHistoryDto getChatHistoryDto(ChatMessage chatMessage, String createTime){
+    public static ChatHistoryDto getChatHistoryDto(ChatMessage chatMessage, LocalDateTime createTime){
         return ChatHistoryDto.builder()
                 .senderId(chatMessage.getSender().getMemberId())
                 .contents(chatMessage.getContents())
-                .createTime(createTime)
+                .createTime(createTimeParsing(createTime))
                 .readDone(chatMessage.isReadDone())
                 .build();
     }
