@@ -107,7 +107,16 @@ function MessageList(props) {
     })
       .then((res) => res.json())
       .then((data) => {
-        setMessages(data.data);
+        const messageList = data.data;
+        const updatedProfiles = messageList.reduce((acc, obj) => {
+          acc[obj.roomId] = {
+            clientProfile: obj.clientProfile,
+            centerProfile: obj.centerProfile,
+          };
+          return acc;
+        }, {});
+        setMessages(messageList);
+        props.updateProfiles(updatedProfiles);
       });
   }, []);
 

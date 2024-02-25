@@ -2,10 +2,14 @@ import styled from "styled-components";
 import CenterLogo from "/src/assets/33MA3_logo.png";
 import { useNavigate } from "react-router-dom";
 import { MAX_MESSAGE_LENGTH } from "../../../constants/options";
+import { getMemberId } from "../../../utils/auth";
 
 const Logo = styled.img`
-  width: 45px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
+  object-fit: cover;
+  // border: 2px solid ${(props) => props.theme.colors.surface_brand};
 `;
 
 const OpponentInfo = styled.div`
@@ -85,6 +89,11 @@ function TruncatedText(text, maxLength) {
 }
 
 function Message(props) {
+  const memberId = Number(getMemberId());
+  const profile =
+    memberId === props.info.clientId
+      ? props.info.centerProfile
+      : props.info.clientProfile;
   const navigate = useNavigate();
   function handleOnClick() {
     const data = props.info;
@@ -101,7 +110,8 @@ function Message(props) {
     <>
       <MessageBox onClick={handleOnClick}>
         <KeyContent>
-          <Logo src={CenterLogo} />
+          <Logo src={profile} />
+
           <OpponentInfo>
             <NameTimeWrapper>
               <OpponentName>{props.info.memberName}</OpponentName>
