@@ -1,7 +1,11 @@
 import styled from "styled-components";
 import CenterLogo from "/src/assets/33MA3_logo.png";
 import SubmitButton from "../../../components/button/SubmitButton";
-import { getMemberId, getOpponentName } from "../../../utils/auth";
+import {
+  getMemberId,
+  getMemberType,
+  getOpponentName,
+} from "../../../utils/auth";
 import { MEMBER_TYPE } from "../../../constants/options";
 const Header = styled.div`
   display: flex;
@@ -42,9 +46,9 @@ const CenterStatus = styled.div`
 `;
 function ChatHeader(props) {
   const profileData = props.profile;
-  const memberId = Number(getMemberId());
+  const memberType = Number(getMemberType());
   const profile =
-    memberId === MEMBER_TYPE
+    memberType === MEMBER_TYPE
       ? profileData.centerProfile
       : profileData.clientProfile;
   const opponentName = getOpponentName();
