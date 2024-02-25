@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { MessageList } from "./components/MessageList";
 import { ChatList } from "./components/ChatList";
 import { useLoaderData, useSearchParams } from "react-router-dom";
@@ -16,6 +16,7 @@ const ChatMessageContainer = styled.div`
 `;
 
 function ChatRoomPage() {
+  const [profiles, setProfiles] = useState(null);
   const authData = useLoaderData();
   const accessToken = authData.accessToken;
 
@@ -33,6 +34,10 @@ function ChatRoomPage() {
     `senderId: ${memberId} receiverId: ${receiverId} memberType: ${memberType}`
   );
 
+  function updateProfiles(data) {
+    setProfiles(data);
+  }
+
   return (
     <Page>
       <ChatMessageContainer mode={urlMode}>
@@ -40,6 +45,7 @@ function ChatRoomPage() {
           mode={urlMode}
           memberId={memberId}
           accessToken={accessToken}
+          updateProfiles={updateProfiles}
         />
         {urlMode === "chat" && (
           <ChatList
@@ -50,6 +56,7 @@ function ChatRoomPage() {
             roomId={urlRoomId}
             roomName={urlRoomName}
             accessToken={accessToken}
+            profiles={profiles}
           />
         )}
       </ChatMessageContainer>

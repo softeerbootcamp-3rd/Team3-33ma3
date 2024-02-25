@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import CenterLogo from "/src/assets/33MA3_logo.png";
 import SubmitButton from "../../../components/button/SubmitButton";
-import { getOpponentName } from "../../../utils/auth";
+import { getMemberId, getOpponentName } from "../../../utils/auth";
+import { MEMBER_TYPE } from "../../../constants/options";
 
 const Header = styled.div`
   display: flex;
@@ -24,8 +25,10 @@ const CenterContainer = styled.div`
 `;
 
 const Logo = styled.img`
-  width: 58px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
+  object-fit: cover;
 `;
 
 const CenterInfo = styled.div`
@@ -45,12 +48,18 @@ const CenterStatus = styled.div`
 `;
 
 function ChatHeader(props) {
+  const profileData = props.profile;
+  const memberId = Number(getMemberId());
+  const profile =
+    memberId === MEMBER_TYPE
+      ? profileData.centerProfile
+      : profileData.clientProfile;
   const opponentName = getOpponentName();
   const roomName = opponentName ? opponentName : props.roomName;
   return (
     <Header>
       <CenterContainer>
-        <Logo src={CenterLogo} />
+        <Logo src={profileData ? profile : Logo} />
         <CenterInfo>
           <CenterName>{roomName}</CenterName>
           <CenterStatus></CenterStatus>
