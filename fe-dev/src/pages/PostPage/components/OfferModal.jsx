@@ -15,17 +15,17 @@ const OfferContainer = styled.form`
   width: 100%;
 `;
 
+const Span = styled.span`
+  font-size: ${({ theme }) => theme.fontSize.small};
+  color: ${({ theme }) => theme.colors.text_red};
+  font-weight: 500;
+`;
+
 const SubmitItems = styled.div`
   display: flex;
   flex-direction: column;
   gap: 3px;
   width: 100%;
-
-  & > span {
-    font-size: ${({ theme }) => theme.fontSize.small};
-    color: ${({ theme }) => theme.colors.text_red};
-    font-weight: 500;
-  }
 `;
 
 const OfferPrice = styled.div`
@@ -42,6 +42,12 @@ const ButtonContainer = styled.div`
   display: flex;
   flex-direction: row;
   gap: 10px;
+`;
+
+const SubmitButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 `;
 
 function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
@@ -185,10 +191,10 @@ function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
             />
             <p>만원</p>
           </OfferPrice>
-          {errorForm.price && <span>{errorForm.price}</span>}
+          {errorForm.price && <Span>{errorForm.price}</Span>}
         </SubmitItems>
         <SubmitItems>
-          {errorForm.contents && <span>{errorForm.contents}</span>}
+          {errorForm.contents && <Span>{errorForm.contents}</Span>}
           <TextArea
             maxLength={200}
             name="contents"
@@ -204,7 +210,13 @@ function OfferModal({ handleClose, postId, updateOfferDetail, offerDetail }) {
             <SubmitButton disabled={isLoading}>수정</SubmitButton>
           </ButtonContainer>
         ) : (
-          <SubmitButton disabled={isLoading}>응찰</SubmitButton>
+          <SubmitButtonContainer>
+            <Span>
+              응찰의 경우 제시된 가격보다 낮은 가격으로만 수정이 가능합니다.
+              유의해 주세요.
+            </Span>
+            <SubmitButton disabled={isLoading}>응찰</SubmitButton>
+          </SubmitButtonContainer>
         )}
       </OfferContainer>
     </ModalPortal>

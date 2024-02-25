@@ -91,8 +91,8 @@ function OfferSelectModal({ offerInfo, handleClose }) {
         {!isSuccess ? (
           <>
             <TextContent>
-              <h1>가격: {offerInfo.price}</h1>
-              <p>{offerInfo.contents}</p>
+              <h1>가격: {offerInfo.price}만원</h1>
+              <p>상세 설명: {offerInfo.contents}</p>
             </TextContent>
             <SubmitButton onClick={handleSelectOffer}>낙찰</SubmitButton>
           </>
