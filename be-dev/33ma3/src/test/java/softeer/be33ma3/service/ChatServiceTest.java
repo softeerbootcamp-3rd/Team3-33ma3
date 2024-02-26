@@ -7,10 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import softeer.be33ma3.domain.ChatMessage;
-import softeer.be33ma3.domain.ChatRoom;
-import softeer.be33ma3.domain.Member;
-import softeer.be33ma3.domain.Post;
+import org.springframework.transaction.annotation.Transactional;
+import softeer.be33ma3.domain.*;
 import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.dto.response.AllChatRoomDto;
 import softeer.be33ma3.dto.response.ChatHistoryDto;
@@ -20,7 +18,6 @@ import softeer.be33ma3.repository.*;
 import softeer.be33ma3.repository.Chat.ChatMessageRepository;
 import softeer.be33ma3.repository.Chat.ChatRoomRepository;
 import softeer.be33ma3.repository.post.PostRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,12 +26,14 @@ import static softeer.be33ma3.exception.ErrorCode.ONLY_POST_AUTHOR_ALLOWED;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Transactional
 class ChatServiceTest {
     @Autowired ChatService chatService;
     @Autowired MemberRepository memberRepository;
     @Autowired ChatRoomRepository chatRoomRepository;
     @Autowired PostRepository postRepository;
     @Autowired ChatMessageRepository chatMessageRepository;
+    @Autowired ImageRepository imageRepository;
 
     @BeforeEach
     void setUp(){
@@ -49,6 +48,7 @@ class ChatServiceTest {
         chatRoomRepository.deleteAllInBatch();
         postRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();
+        imageRepository.deleteAllInBatch();
     }
 
     @DisplayName("채팅을 할 채팅방을 만든다.")
@@ -107,6 +107,8 @@ class ChatServiceTest {
         //given
         Member client = memberRepository.findMemberByLoginId("client1").get();
         Member center = memberRepository.findMemberByLoginId("center1").get();
+        center.setProfile(saveProfile());
+        client.setProfile(saveProfile());
 
         ChatRoom chatRoom = ChatRoom.createChatRoom(client, center);
         chatRoomRepository.save(chatRoom);
@@ -178,5 +180,9 @@ class ChatServiceTest {
         PostCreateDto postCreateDto = new PostCreateDto("승용차", "제네시스", 3, "서울시 강남구", "기스, 깨짐", "오일 교체", new ArrayList<>(),"수정후 내용");
         Post post = Post.createPost(postCreateDto, null, savedClient);
         return postRepository.save(post);
+    }
+
+    private Image saveProfile() {
+        return imageRepository.save(Image.createImage("test", "test.png"));
     }
 }
