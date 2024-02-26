@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
+import softeer.be33ma3.domain.Image;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.CenterSignUpDto;
 import softeer.be33ma3.dto.request.ClientSignUpDto;
@@ -61,7 +62,7 @@ class MemberServiceTest {
 
     @DisplayName("아이디가 이미 존재하는 경우 예외가 발생한다 - 클라이언트")
     @Test
-    void clientSignUpWithExistsId() throws IOException {
+    void clientSignUpWithExistsId() {
         //given
         Member client = Member.createClient("test1", "1234", null);
         memberRepository.save(client);
@@ -128,6 +129,19 @@ class MemberServiceTest {
         assertThatThrownBy(() -> memberService.login(loginDto))
                 .isInstanceOf(BusinessException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.ID_PASSWORD_MISMATCH);
+    }
+
+    @DisplayName("프로필을 업로드한다.")
+    @Test
+    void saveProfile() throws IOException {
+        //given
+        MockMultipartFile profile = createImages();
+
+        //when
+        Image image = memberService.saveProfile(profile);
+
+        //then
+        assertThat(image).isNotNull();
     }
 
     private MockMultipartFile createImages() throws IOException {
