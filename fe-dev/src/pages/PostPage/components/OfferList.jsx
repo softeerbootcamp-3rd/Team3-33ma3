@@ -5,7 +5,7 @@ import AuctionPrice from "../../../components/post/AuctionPrice";
 
 const AuctionList = styled.div`
   width: 100%;
-  height: 298px;
+  height: 330px;
   overflow-x: auto;
   display: flex;
   align-items: center;
@@ -19,7 +19,11 @@ function OfferList({ offerList, recentOfferId, disabled }) {
   // 가장 최근에 바뀐 견적 제시로 포커스
   useEffect(() => {
     if (newOffer && newOffer.current) {
-      newOffer.current.scrollIntoView({ behavior: "smooth" });
+      newOffer.current.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "nearest",
+      });
     }
   }, [offerList]);
 
@@ -67,7 +71,7 @@ function OfferList({ offerList, recentOfferId, disabled }) {
   return (
     <div ref={scrollRef}>
       <AuctionList>{offers}</AuctionList>
-      {focusOffer !== null && (
+      {focusOffer !== null && offerList[focusOffer] && (
         <Comment offerInfo={offerList[focusOffer]} disabled={disabled} />
       )}
     </div>
