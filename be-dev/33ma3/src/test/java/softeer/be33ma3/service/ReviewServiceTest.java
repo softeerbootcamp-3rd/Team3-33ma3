@@ -112,6 +112,18 @@ class ReviewServiceTest {
                         tuple("client2", "리뷰 작성 테스트2", 4.5));
     }
 
+    @DisplayName("센터가 존재하지 않는 경우 예외가 발생한다.")
+    @Test
+    void showOneCenterReviewsWithUnknownCenter(){
+        //given
+        Long unknownCenterId = 0L;
+
+        //when //then
+        assertThatThrownBy(() -> reviewService.showOneCenterReviews(unknownCenterId))
+                .isInstanceOf(BusinessException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_FOUND_CENTER);
+    }
+
     private Post createPost(Region region, Member writer1) {
         PostCreateDto postCreateDto = new PostCreateDto("승용차", "제네시스", 3, "서울시 강남구", "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 생성");
         Post post = Post.createPost(postCreateDto, region, writer1);
