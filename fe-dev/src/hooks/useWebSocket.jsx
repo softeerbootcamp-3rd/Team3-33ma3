@@ -38,7 +38,7 @@ function useWebSocket(url, quitMessage) {
     webSocket.current.onclose = (event) => {
       console.log("webSocket close", event.code);
       if (event.code !== 4000) {
-        console.log("webSocket reconnection");
+        console.log("webSocket reconnection", url);
         reconnectionTimeout.current = setTimeout(connectWebSocket, 300);
       }
     };

@@ -5,7 +5,7 @@ import AuctionPrice from "../../../components/post/AuctionPrice";
 
 const AuctionList = styled.div`
   width: 100%;
-  height: 330px;
+  height: 298px;
   overflow-x: auto;
   display: flex;
   align-items: center;
