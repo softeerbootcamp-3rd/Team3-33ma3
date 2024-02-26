@@ -83,7 +83,7 @@ class MemberServiceTest {
         CenterSignUpDto centerSignUpDto = new CenterSignUpDto("test1", "1234", 37.5, 127.0);
 
         //when //then
-        assertThatThrownBy(() -> memberService.clientSignUp(centerSignUpDto, createImages()))
+        assertThatThrownBy(() -> memberService.centerSignUp(centerSignUpDto, createImages()))
                 .isInstanceOf(BusinessException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.DUPLICATE_ID);
     }
@@ -96,7 +96,7 @@ class MemberServiceTest {
         CenterSignUpDto centerSignUpDto = new CenterSignUpDto("test1", "1234", 37.5, 127.0);
 
         //when
-        memberService.clientSignUp(centerSignUpDto, profile);
+        memberService.centerSignUp(centerSignUpDto, profile);
 
         //then
         Member member = memberRepository.findByLoginIdAndPassword("test1", "1234").get();
@@ -139,6 +139,16 @@ class MemberServiceTest {
 
         //when
         Image image = memberService.saveProfile(profile);
+
+        //then
+        assertThat(image).isNotNull();
+    }
+
+    @DisplayName("이미지가 null인 경우도 기본 프로필을 반환한다.")
+    @Test
+    void saveProfileWithNullImage() throws IOException {
+        //given //when
+        Image image = memberService.saveProfile(null);
 
         //then
         assertThat(image).isNotNull();

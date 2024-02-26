@@ -7,7 +7,7 @@ plugins {
 
 jacoco {
 	// JaCoCo 버전
-	toolVersion = '0.8.5'
+	toolVersion = "0.8.7"
 }
 
 group = 'softeer'
