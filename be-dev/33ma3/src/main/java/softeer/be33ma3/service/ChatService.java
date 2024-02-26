@@ -75,7 +75,7 @@ public class ChatService {
     }
 
     @Transactional
-    public void sendChatMessage(ChatMessageDto chatMessageDto) throws IOException {
+    public void sendChatMessage(ChatMessageDto chatMessageDto) {
         Member sender = memberRepository.findById(chatMessageDto.getSenderId()).get();
         Member receiver = memberRepository.findById(chatMessageDto.getReceiverId()).get();
         ChatRoom chatRoom = chatRoomRepository.findById(chatMessageDto.getRoomId()).get();

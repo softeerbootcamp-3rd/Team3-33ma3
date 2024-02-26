@@ -28,8 +28,8 @@ public class WebSocketService {
         if(payload.contains("chat") && payload.contains("memberId")) {
             log.info("채팅방에서 유저가 나갔습니다.");
             ExitRoomMember exitRoomMember = objectMapper.readValue(payload, ExitRoomMember.class);
-            closeChatConnection(exitRoomMember.getRoomId(), exitRoomMember.getMemberId());
             sendReceiverExit(exitRoomMember.getRoomId(), exitRoomMember.getMemberId()); //상대방이 나가는 경우 전송
+            closeChatConnection(exitRoomMember.getRoomId(), exitRoomMember.getMemberId());
         }
         if(payload.contains("chatRoom") && payload.contains("memberId")){
             log.info("채팅 목록에서 유저가 나갔습니다.");
