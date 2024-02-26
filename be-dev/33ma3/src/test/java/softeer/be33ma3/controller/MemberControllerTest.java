@@ -89,6 +89,23 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.message").value("회원가입 성공"));
     }
 
+    @DisplayName("로그인 또는 아이디가 비어있으면 회원가입 시 예외가 발생한다.")
+    @Test
+    void clientSignUpWithoutLoginId() throws Exception {
+        //given
+        ClientSignUpDto clientSignUpDto = new ClientSignUpDto("", "1234");
+        String request = objectMapper.writeValueAsString(clientSignUpDto);
+
+        //when //then
+        mockMvc.perform(multipart("/client/signUp")
+                        .file(new MockMultipartFile("request", "", "application/json", request.getBytes(StandardCharsets.UTF_8)))
+                        .accept(APPLICATION_JSON)
+                        .characterEncoding("UTF-8"))
+                .andDo(print())
+                .andExpect(jsonPath("$.status").value("ERROR"))
+                .andExpect(jsonPath("$.message").value("아이디는 필수입니다."));
+    }
+
     @DisplayName("센터, 일반 사용자 로그인 기능")
     @Test
     void login() throws Exception {
