@@ -1,9 +1,11 @@
 package softeer.be33ma3.service;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.dto.request.PostCreateDto;
@@ -15,10 +17,17 @@ import java.util.List;
 
 
 @SpringBootTest
+@ActiveProfiles("test")
 class SchedulingServiceTest {
     @Autowired private SchedulingService schedulingService;
     @Autowired private PostRepository postRepository;
     @Autowired private MemberRepository memberRepository;
+
+    @AfterEach
+    void tearDown() {
+        postRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
+    }
 
     @DisplayName("")
     @Test
