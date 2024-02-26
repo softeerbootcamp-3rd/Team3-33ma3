@@ -59,6 +59,34 @@ class MemberServiceTest {
                 .containsExactly("test1", "1234");
     }
 
+    @DisplayName("아이디가 이미 존재하는 경우 예외가 발생한다 - 클라이언트")
+    @Test
+    void clientSignUpWithExistsId() throws IOException {
+        //given
+        Member client = Member.createClient("test1", "1234", null);
+        memberRepository.save(client);
+        ClientSignUpDto clientSignUpDto = new ClientSignUpDto("test1", "1234");
+
+        //when //then
+        assertThatThrownBy(() -> memberService.clientSignUp(clientSignUpDto, createImages()))
+                .isInstanceOf(BusinessException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.DUPLICATE_ID);
+    }
+
+    @DisplayName("아이디가 이미 존재하는 경우 예외가 발생한다 - 센터")
+    @Test
+    void centerSignUpWithExistsId(){
+        //given
+        Member center = Member.createCenter("test1", "1234", null);
+        memberRepository.save(center);
+        CenterSignUpDto centerSignUpDto = new CenterSignUpDto("test1", "1234", 37.5, 127.0);
+
+        //when //then
+        assertThatThrownBy(() -> memberService.clientSignUp(centerSignUpDto, createImages()))
+                .isInstanceOf(BusinessException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.DUPLICATE_ID);
+    }
+
     @DisplayName("센터 회원가입")
     @Test
     void centerSignUp() throws IOException {
