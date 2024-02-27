@@ -246,8 +246,8 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("게시글 작성자가 아닌 유저의 경매 중인 게시글 조회 요청 시 평균 제시가와 함께 조회 가능하다")
-    void showPost_withNotDonePostAndNotWriter() {
+    @DisplayName("경매에 참여햐지 않은 유저의 경매 중인 게시글 조회 요청 시 평균 제시가와 함께 조회 가능하다")
+    void showPost_withNotDonePostAndNotParticipant() {
         // given
         Member member1 = memberRepository.findMemberByLoginId("client1").get();
         Region region = regionRepository.findByRegionName("강남구").get();
@@ -257,6 +257,7 @@ class PostServiceTest {
         Object actual = postService.showPost(post.getPostId(), member2);
         // then
         assertThat(actual).isInstanceOf(PostWithAvgPriceDto.class);
+        assertThat(actual).extracting("offerDetail").isNull();
     }
 
     @Test
