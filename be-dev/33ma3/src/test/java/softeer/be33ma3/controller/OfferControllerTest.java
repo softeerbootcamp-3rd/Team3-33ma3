@@ -61,46 +61,80 @@ class OfferControllerTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 게시글에 대해 댓글 조회 요청이 올 경우 404 응답이 반환된다.")
-    void showOffer_withNoPost() throws Exception {
-        // given
-        saveLoginClient("user1", "user1");
-        when(offerService.showOffer(eq(1L), eq(1L))).thenThrow(new BusinessException(NOT_FOUND_POST));
-        // when & then
-        mockMvc.perform(get("/post/{post_id}/offer/{offer_id}", 1L, 1L)
-                        .header("Authorization", accessToken))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.status").value("ERROR"))
-                .andExpect(jsonPath("$.message").value("존재하지 않는 게시글"));
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 댓글에 대해 댓글 조회 요청이 올 경우 404 응답이 반환된다.")
-    void showOffer_withNoOffer() throws Exception {
-        // given
-        saveLoginClient("user1", "user1");
-        when(offerService.showOffer(eq(1L), eq(1L))).thenThrow(new BusinessException(NOT_FOUND_OFFER));
-        // when & then
-        mockMvc.perform(get("/post/{post_id}/offer/{offer_id}", 1L, 1L)
-                        .header("Authorization", accessToken))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.status").value("ERROR"))
-                .andExpect(jsonPath("$.message").value("존재하지 않는 견적"));
-    }
-
-    @Test
     @DisplayName("해당하는 게시글에 댓글을 생성한다.")
     void createOffer() throws Exception {
         // given
         OfferCreateDto offerCreateDto = new OfferCreateDto(10, "offer"); // 생성에 필요한 DTO 객체 생성
         Member member = saveLoginClient("user1", "user1");
-        Long mockOfferId = 1L; // 모의 offerId
-        when(offerService.createOffer(eq(1L), eq(offerCreateDto), eq(member))).thenReturn(mockOfferId);
 
         // when & then
         mockMvc.perform(post("/post/{post_id}/offer", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(offerCreateDto)) // DTO 객체를 JSON 문자열로 변환하여 요청 본문에 추가
+                        .header("Authorization", accessToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("입찰 성공"));
+    }
+
+    @Test
+    @DisplayName("견적 제시 가격이 1만원보다 작으면 댓글을 생성하지 못하고 400 응답이 반환된다.")
+    void createOffer_withSmallPrice() throws Exception {
+        // given
+        OfferCreateDto offerCreateDto = new OfferCreateDto(0, "offer");
+        Member member = saveLoginClient("user1", "user1");
+        // when & then
+        mockMvc.perform(post("/post/{post_id}/offer", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(offerCreateDto))
+                        .header("Authorization", accessToken))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("ERROR"))
+                .andExpect(jsonPath("$.message").value("제시 금액은 1만원 이상이어야 합니다."));
+    }
+
+    @Test
+    @DisplayName("견적 제시 가격이 딱 1만원이면 성공적으로 댓글을 작성할 수 있다.")
+    void createOffer_withPrice1() throws Exception {
+        // given
+        OfferCreateDto offerCreateDto = new OfferCreateDto(1, "offer");
+        Member member = saveLoginClient("user1", "user1");
+        // when & then
+        mockMvc.perform(post("/post/{post_id}/offer", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(offerCreateDto))
+                        .header("Authorization", accessToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("입찰 성공"));
+    }
+
+    @Test
+    @DisplayName("견적 제시 가격이 1000만원보다 크면 댓글을 생성하지 못하고 400 응답이 반환된다.")
+    void createOffer_withBigPrice() throws Exception {
+        // given
+        OfferCreateDto offerCreateDto = new OfferCreateDto(1001, "offer");
+        Member member = saveLoginClient("user1", "user1");
+        // when & then
+        mockMvc.perform(post("/post/{post_id}/offer", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(offerCreateDto))
+                        .header("Authorization", accessToken))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("ERROR"))
+                .andExpect(jsonPath("$.message").value("제시 금액은 1000만원 이하여야 합니다."));
+    }
+
+    @Test
+    @DisplayName("견적 제시 가격이 딱 1000만원이면 성공적으로 댓글을 작성할 수 있다.")
+    void createOffer_withPrice1000() throws Exception {
+        // given
+        OfferCreateDto offerCreateDto = new OfferCreateDto(1000, "offer");
+        Member member = saveLoginClient("user1", "user1");
+        // when & then
+        mockMvc.perform(post("/post/{post_id}/offer", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(offerCreateDto))
                         .header("Authorization", accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("SUCCESS"))

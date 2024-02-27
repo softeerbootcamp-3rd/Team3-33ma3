@@ -174,28 +174,6 @@ class OfferServiceTest {
     }
 
     @Test
-    @DisplayName("견적 제시 가격을 1보다 작은 금액으로 선택하여 댓글 작성 요청 시 예외가 발생한다.")
-    void createOffer_withSmallPrice() {
-        // given
-        Member member = saveClient("user1", "user1");
-        Post post = savePost(member);
-        Member center = saveCenter("center1", "center1");
-        OfferCreateDto offerCreateDto = new OfferCreateDto(0, "create offer");
-        // when
-        Long offerId = offerService.createOffer(post.getPostId(), offerCreateDto, center);
-        // then
-        Optional<Offer> actual = offerRepository.findByPost_PostIdAndOfferId(post.getPostId(), offerId);
-        assertThat(actual).isPresent().get().extracting("price", "contents", "post", "center")
-                .containsExactly(10, "create offer", post, center);
-    }
-
-    @Test
-    @DisplayName("견적 제시 가격을 1000보다 큰 금액으로 선택하여 댓글 작성 요청 시 예외가 발생한다.")
-    void createOffer_withBiggerPrice() {
-
-    }
-
-    @Test
     @DisplayName("성공적으로 댓글을 수정할 수 있다.")
     void updateOffer() {
         // given
@@ -269,6 +247,22 @@ class OfferServiceTest {
         // then
         Optional<Offer> actual = offerRepository.findByPost_PostIdAndOfferId(post.getPostId(), offer.getOfferId());
         assertThat(actual).isEmpty();
+    }
+
+    @Test
+    @DisplayName("댓글 작성자가 아닌 유저가 댓글 삭제 요청 시 예외가 발생한다.")
+    void deleteOffer_withNotWriter() {
+        // given
+        Member member = saveClient("user1", "user1");
+        Post post = savePost(member);
+        Member center = saveCenter("center1", "center1");
+        Offer offer = saveOffer(10, "offer1", post, center);
+        Member center2 = saveCenter("center2", "center2");
+        // when
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> offerService.deleteOffer(post.getPostId(), offer.getOfferId(), center2));
+        // then
+        assertThat(exception.getErrorCode().getErrorMessage()).isEqualTo("작성자만 가능합니다.");
     }
 
     @Test
