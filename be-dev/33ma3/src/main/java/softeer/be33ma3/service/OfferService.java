@@ -77,7 +77,7 @@ public class OfferService {
         // 2. 기존 댓글 가져오기
         Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
         // 3. 수정 가능한지 검증
-        if(!offer.getCenter().equals(member))
+        if(!offer.getCenter().getMemberId().equals(member.getMemberId()))
             throw new BusinessException(AUTHOR_ONLY_ACCESS);
         if(offerCreateDto.getPrice() > offer.getPrice())
             throw new BusinessException(ONLY_LOWER_AMOUNT_ALLOWED);
@@ -97,7 +97,7 @@ public class OfferService {
         // 2. 기존 댓글 가져오기
         Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
         // 3. 삭제 가능한지 검증
-        if(!offer.getCenter().equals(member))
+        if(!offer.getCenter().getMemberId().equals(member.getMemberId()))
             throw new BusinessException(AUTHOR_ONLY_ACCESS);
         // 4. 댓글 삭제
         offerRepository.delete(offer);
