@@ -17,12 +17,14 @@ import softeer.be33ma3.domain.Offer;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.domain.Region;
 import softeer.be33ma3.dto.request.PostCreateDto;
+import softeer.be33ma3.dto.response.PostWithAvgPriceDto;
+import softeer.be33ma3.dto.response.PostWithOffersDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.exception.ErrorCode;
 import softeer.be33ma3.repository.ImageRepository;
 import softeer.be33ma3.repository.MemberRepository;
 import softeer.be33ma3.repository.OfferRepository;
-import softeer.be33ma3.repository.post.PostRepository;
+import softeer.be33ma3.repository.PostRepository;
 import softeer.be33ma3.repository.RegionRepository;
 
 import java.io.FileInputStream;
@@ -33,6 +35,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -214,6 +217,73 @@ class PostServiceTest {
         assertThatThrownBy(() -> postService.deletePost(client, savedPost.getPostId()))
                 .isInstanceOf(BusinessException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.PRE_AUCTION_ONLY);
+    }
+
+    @Test
+    @DisplayName("게시글 작성자의 게시글 조회 요청 시 모든 댓글 목록과 함께 조회 가능하다.")
+    void showPost_withWriter() {
+        // given
+        Member member1 = memberRepository.findMemberByLoginId("client1").get();
+        Region region = regionRepository.findByRegionName("강남구").get();
+        Post savedPost = savePost(region, member1);
+        // when
+        Object actual = postService.showPost(savedPost.getPostId(), member1);
+        // then
+        assertThat(actual).isInstanceOf(PostWithOffersDto.class);
+    }
+
+    @Test
+    @DisplayName("경매 마감된 게시글 조회 요청 시 모든 유저가 모든 댓글 목록과 함께 조회 가능하다.")
+    void showPost_withDonePost() {
+        // given
+        Member member1 = memberRepository.findMemberByLoginId("client1").get();
+        Region region = regionRepository.findByRegionName("강남구").get();
+        Post post = savePost(region, member1);
+        post.setDone();
+        Post savedPost = postRepository.save(post);
+        // when
+        Object actual = postService.showPost(savedPost.getPostId(), null);
+        // then
+        assertThat(actual).isInstanceOf(PostWithOffersDto.class);
+    }
+
+    @Test
+    @DisplayName("게시글 작성자가 아닌 유저의 경매 중인 게시글 조회 요청 시 평균 제시가와 함께 조회 가능하다")
+    void showPost_withNotDonePostAndNotWriter() {
+        // given
+        Member member1 = memberRepository.findMemberByLoginId("client1").get();
+        Region region = regionRepository.findByRegionName("강남구").get();
+        Post post = savePost(region, member1);
+        Member member2 = memberRepository.findMemberByLoginId("client2").get();
+        // when
+        Object actual = postService.showPost(post.getPostId(), member2);
+        // then
+        assertThat(actual).isInstanceOf(PostWithAvgPriceDto.class);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글에 대해 조회 요청 시 예외가 발생한다.")
+    void showPost_withNoPost() {
+        // given
+        // when
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> postService.showPost(999L, null));
+        // then
+        assertThat(exception.getErrorCode().getErrorMessage()).isEqualTo("존재하지 않는 게시글");
+    }
+
+    @Test
+    @DisplayName("로그인하지 않은 유저가 경매 중인 게시글 조회 요청 시 예외가 발생한다.")
+    void showPost_logInRequired() {
+        // given
+        Member member1 = memberRepository.findMemberByLoginId("client1").get();
+        Region region = regionRepository.findByRegionName("강남구").get();
+        Post post = savePost(region, member1);
+        // when
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> postService.showPost(post.getPostId(), null));
+        // then
+        assertThat(exception.getErrorCode().getErrorMessage()).isEqualTo("경매 중인 게시글을 보려면 로그인해주세요");
     }
 
     private List<MultipartFile> createMultipartFile() throws IOException {

@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.domain.Post;
-import softeer.be33ma3.repository.post.PostRepository;
+import softeer.be33ma3.repository.PostRepository;
 import softeer.be33ma3.websocket.WebSocketService;
 
 import java.time.LocalDateTime;

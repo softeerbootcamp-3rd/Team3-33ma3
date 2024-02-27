@@ -15,9 +15,9 @@ import softeer.be33ma3.dto.response.ChatHistoryDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.exception.ErrorCode;
 import softeer.be33ma3.repository.*;
-import softeer.be33ma3.repository.Chat.ChatMessageRepository;
-import softeer.be33ma3.repository.Chat.ChatRoomRepository;
-import softeer.be33ma3.repository.post.PostRepository;
+import softeer.be33ma3.repository.ChatMessageRepository;
+import softeer.be33ma3.repository.ChatRoomRepository;
+import softeer.be33ma3.repository.PostRepository;
 import java.util.ArrayList;
 import java.util.List;
 

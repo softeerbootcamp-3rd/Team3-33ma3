@@ -1,4 +1,4 @@
-package softeer.be33ma3.repository.review;
+package softeer.be33ma3.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

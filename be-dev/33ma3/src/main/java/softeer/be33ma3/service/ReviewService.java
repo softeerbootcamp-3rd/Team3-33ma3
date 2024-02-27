@@ -13,8 +13,8 @@ import softeer.be33ma3.dto.response.ShowAllReviewDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.MemberRepository;
 import softeer.be33ma3.repository.OfferRepository;
-import softeer.be33ma3.repository.post.PostRepository;
-import softeer.be33ma3.repository.review.ReviewRepository;
+import softeer.be33ma3.repository.PostRepository;
+import softeer.be33ma3.repository.ReviewRepository;
 
 import java.util.ArrayList;
 import java.util.List;

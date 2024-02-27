@@ -13,13 +13,12 @@ import softeer.be33ma3.dto.response.ChatMessageResponseDto;
 import softeer.be33ma3.dto.response.LastMessageDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.*;
-import softeer.be33ma3.repository.Chat.ChatMessageRepository;
-import softeer.be33ma3.repository.Chat.ChatRoomRepository;
-import softeer.be33ma3.repository.post.PostRepository;
+import softeer.be33ma3.repository.ChatMessageRepository;
+import softeer.be33ma3.repository.ChatRoomRepository;
+import softeer.be33ma3.repository.PostRepository;
 import softeer.be33ma3.websocket.WebSocketRepository;
 import softeer.be33ma3.websocket.WebSocketService;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
