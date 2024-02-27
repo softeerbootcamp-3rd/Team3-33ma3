@@ -12,20 +12,14 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
-import softeer.be33ma3.domain.Member;
-import softeer.be33ma3.domain.Offer;
-import softeer.be33ma3.domain.Post;
-import softeer.be33ma3.domain.Region;
+import softeer.be33ma3.domain.*;
 import softeer.be33ma3.dto.request.PostCreateDto;
+import softeer.be33ma3.dto.response.PostThumbnailDto;
 import softeer.be33ma3.dto.response.PostWithAvgPriceDto;
 import softeer.be33ma3.dto.response.PostWithOffersDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.exception.ErrorCode;
-import softeer.be33ma3.repository.ImageRepository;
-import softeer.be33ma3.repository.MemberRepository;
-import softeer.be33ma3.repository.OfferRepository;
-import softeer.be33ma3.repository.PostRepository;
-import softeer.be33ma3.repository.RegionRepository;
+import softeer.be33ma3.repository.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -44,10 +38,12 @@ class PostServiceTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private PostService postService;
     @Autowired private PostRepository postRepository;
+    @Autowired private PostPerCenterRepository postPerCenterRepository;
     @Autowired private MemberRepository memberRepository;
     @Autowired private RegionRepository regionRepository;
     @Autowired private ImageRepository imageRepository;
     @Autowired private OfferRepository offerRepository;
+    @Autowired private CenterRepository centerRepository;
 
     @BeforeEach
     void setUp(){
@@ -61,6 +57,8 @@ class PostServiceTest {
 
     @AfterEach
     void tearDown(){
+        postPerCenterRepository.deleteAllInBatch();
+        centerRepository.deleteAllInBatch();
         imageRepository.deleteAllInBatch();
         offerRepository.deleteAllInBatch();
         postRepository.deleteAllInBatch();
@@ -286,6 +284,44 @@ class PostServiceTest {
         assertThat(exception.getErrorCode().getErrorMessage()).isEqualTo("경매 중인 게시글을 보려면 로그인해주세요");
     }
 
+    @Test
+    @DisplayName("센터가 아닌 유저가 다중 조건 선택에 따른 게시글 목록을 조회할 수 있다.")
+    void showPosts_byNotCenter() {
+        // given
+        PostCreateDto postCreateDto1 = new PostCreateDto("승용차", "제네시스", 3, "서울시 강남구", "기스, 깨짐", "오일 교체", new ArrayList<>(),"내용");
+        Region region = regionRepository.findByRegionName("강남구").get();
+        Member member1 = memberRepository.findMemberByLoginId("client1").get();
+        Post post1 = Post.createPost(postCreateDto1, region, member1);
+        PostCreateDto postCreateDto2 = new PostCreateDto("승용차", "제네시스", 3, "서울시 강남구", "판금, 덴트", "타이어 교체", new ArrayList<>(),"내용");
+        Post post2 = Post.createPost(postCreateDto2, region, member1);
+        postRepository.saveAll(List.of(post1, post2));
+        // when
+        List<PostThumbnailDto> actual = postService.showPosts(true, false, "강남구", "판금", "타이어 교체", member1);
+        // then
+        assertThat(actual).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("센터가 다중 조건 선택에 따른 게시글 목록을 조회할 수 있다.")
+    void showPosts_byCenter() {
+        // given
+        Member center = Member.createCenter("center1", "center1", null);
+        Member center1 = memberRepository.save(center);
+        Center center2 = centerRepository.save(Center.createCenter(0, 0, center1));
+        Member client = memberRepository.findMemberByLoginId("client1").get();
+        PostCreateDto postCreateDto1 = new PostCreateDto("승용차", "제네시스", 3, "서울시 강남구", "기스, 깨짐", "오일 교체", new ArrayList<>(),"내용");
+        Region region = regionRepository.findByRegionName("강남구").get();
+        Post post1 = Post.createPost(postCreateDto1, region, client);
+        PostCreateDto postCreateDto2 = new PostCreateDto("승용차", "제네시스", 3, "서울시 강남구", "판금, 덴트", "타이어 교체", List.of(center2.getCenterId()),"내용");
+        Post post2 = Post.createPost(postCreateDto2, region, client);
+        postRepository.saveAll(List.of(post1, post2));
+        postPerCenterRepository.save(new PostPerCenter(center2, post2));
+        // when
+        List<PostThumbnailDto> actual = postService.showPosts(null, null, null, null, null, center1);
+        // then
+        assertThat(actual).hasSize(1);
+    }
+
     private List<MultipartFile> createMultipartFile() throws IOException {
         String fileName = "testImage"; //파일명
         String contentType = "jpg"; //파일타입
@@ -306,7 +342,7 @@ class PostServiceTest {
     }
 
     private Post savePost(Region region, Member member) {
-        PostCreateDto postCreateDto = new PostCreateDto("승용차", "제네시스", 3, "서울시 강남구", "기스, 깨짐", "오일 교체", new ArrayList<>(),"수정전 내용");
+        PostCreateDto postCreateDto = new PostCreateDto("승용차", "제네시스", 3, "서울시 " + region.getRegionName(), "기스, 깨짐", "오일 교체", new ArrayList<>(),"수정전 내용");
         Post post = Post.createPost(postCreateDto, region, member);
         return postRepository.save(post);
     }
