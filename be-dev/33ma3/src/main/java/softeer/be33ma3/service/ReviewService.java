@@ -71,9 +71,9 @@ public class ReviewService {
     }
 
     public ShowCenterReviewsDto showOneCenterReviews(Long centerId) {   //특정 센터 리뷰 조회
+        Member center = memberRepository.findById(centerId).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
         List<OneReviewDto> oneReviewDtos = new ArrayList<>();
         double totalScore = 0.0;
-        Member center = memberRepository.findById(centerId).orElseThrow(() -> new BusinessException(NOT_FOUND_CENTER));
         List<Review> reviews = reviewRepository.findReviewsByCenterIdOrderByScore(centerId);
 
         for (Review review : reviews) {
