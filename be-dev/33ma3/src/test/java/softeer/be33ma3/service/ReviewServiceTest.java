@@ -230,6 +230,59 @@ class ReviewServiceTest {
         assertThat(exception.getErrorCode().getErrorMessage()).isEqualTo("낙찰 처리된 센터가 없습니다.");
     }
 
+    @Test
+    @DisplayName("성공적으로 리뷰를 삭제할 수 있다.")
+    void deleteReview() {
+        // given
+        Member writer1 = memberRepository.findMemberByLoginId("client1").get();
+        Member center = memberRepository.findMemberByLoginId("center1").get();
+        Post post = createPost(null, writer1);
+        post.setDone();
+        Post savedPost = postRepository.save(post);
+        Offer offer = createOffer(10, "offer1", savedPost, center);
+        offer.setSelected();
+        offerRepository.save(offer);
+        Review review = createReview(savedPost, writer1, center, 4.5, "review1");
+        // when
+        reviewService.deleteReview(review.getReviewId(), writer1);
+        // then
+        Optional<Review> actual = reviewRepository.findById(review.getReviewId());
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    @DisplayName("작성자가 아닌 유저가 리뷰 삭제 요청 시 예외가 발생한다.")
+    void deleteReview_withNotWriter() {
+        // given
+        Member writer1 = memberRepository.findMemberByLoginId("client1").get();
+        Member center = memberRepository.findMemberByLoginId("center1").get();
+        Post post = createPost(null, writer1);
+        post.setDone();
+        Post savedPost = postRepository.save(post);
+        Offer offer = createOffer(10, "offer1", savedPost, center);
+        offer.setSelected();
+        offerRepository.save(offer);
+        Review review = createReview(savedPost, writer1, center, 4.5, "review1");
+        Member writer2 = memberRepository.findMemberByLoginId("client2").get();
+        // when
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> reviewService.deleteReview(review.getReviewId(), writer2));
+        // then
+        assertThat(exception.getErrorCode().getErrorMessage()).isEqualTo("작성자만 가능합니다.");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 리뷰에 대해 삭제 요청 시 예외가 발생한다.")
+    void deleteReview_withNoReview() {
+        // given
+        Member writer1 = memberRepository.findMemberByLoginId("client1").get();
+        // when
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> reviewService.deleteReview(999L, writer1));
+        // then
+        assertThat(exception.getErrorCode().getErrorMessage()).isEqualTo("존재하지 않는 리뷰");
+    }
+
     private Post createPost(Region region, Member writer1) {
         PostCreateDto postCreateDto = new PostCreateDto("승용차", "제네시스", 3, "서울시 강남구", "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 생성");
         Post post = Post.createPost(postCreateDto, region, writer1);
