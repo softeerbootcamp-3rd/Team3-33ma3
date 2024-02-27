@@ -13,7 +13,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewCus
 
     @Query("SELECT AVG(r.score) FROM Review r WHERE r.center.memberId = :memberId")
     Optional<Double> findAvgScoreByCenterId(@Param("memberId") Long memberId);
-    List<Review> findByCenter_MemberId(Long memberId);
     @Query("SELECT r FROM Review r WHERE r.center.memberId = :memberId ORDER BY r.score DESC, r.createTime DESC")
     List<Review> findReviewsByCenterIdOrderByScore(@Param("memberId") Long memberId);   //별점높은 순으로 정렬, 별점이 같으면 최신순으로 정렬
 }
