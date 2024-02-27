@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.dto.request.OfferCreateDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
-import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.jwt.JwtProvider;
 import softeer.be33ma3.repository.MemberRepository;
 import softeer.be33ma3.service.OfferService;
@@ -24,8 +23,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static softeer.be33ma3.exception.ErrorCode.NOT_FOUND_OFFER;
-import static softeer.be33ma3.exception.ErrorCode.NOT_FOUND_POST;
 
 @ActiveProfiles("test")
 @SpringBootTest
