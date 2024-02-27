@@ -29,24 +29,24 @@ class SchedulingServiceTest {
         memberRepository.deleteAllInBatch();
     }
 
-    @DisplayName("")
     @Test
-    void checkPostDDay(){
-        //given
-        Member client = Member.createClient("test1", "1234", null);
+    @DisplayName("마감시간이 지난 게시글은 마감 처리 된다.")
+    void checkPostDDay() {
+        // given
+        Member client = Member.createClient("user1", "1234", null);
         Member savedClient = memberRepository.save(client);
-        PostCreateDto postCreateDto = new PostCreateDto("승용차", "제네시스", 1, "서울시 강남구", "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 생성 이미지 미포함");
-
+        PostCreateDto postCreateDto = new PostCreateDto("승용차", "제네시스", 0, "서울시 강남구", "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 생성 이미지 미포함");
+        PostCreateDto postCreateDto2 = new PostCreateDto("승용차", "제네시스", -1, "서울시 강남구", "기스, 깨짐", "오일 교체", new ArrayList<>(),"게시글 생성 이미지 미포함");
         Post post1 = Post.createPost(postCreateDto, null, savedClient);
-        Post post2 = Post.createPost(postCreateDto, null, savedClient);
+        Post post2 = Post.createPost(postCreateDto2, null, savedClient);
+        Post post3 = Post.createPost(postCreateDto2, null, savedClient);
+        postRepository.saveAll(List.of(post1, post2, post3));
 
-        postRepository.saveAll(List.of(post1, post2));
-
-        //when
+        // when
         schedulingService.checkPostDDay();
 
-        //then
+        // then
         List<Post> posts = postRepository.findByDoneFalse();
-        Assertions.assertThat(posts).hasSize(2);
+        Assertions.assertThat(posts).hasSize(1);
     }
 }

@@ -20,7 +20,7 @@ public class SchedulingService {
     private final PostRepository postRepository;
     private final WebSocketService webSocketService;
 
-    @Scheduled(cron = "0 1 0 * * * ", zone = "Asia/Seoul") //매 00시 01분 마다 실행
+    @Scheduled(cron = "0 0 * * * * ", zone = "Asia/Seoul") //매 00시 00분 마다 실행
     @Transactional
     public void checkPostDDay(){
         log.info("게시글 마감 스케줄러 작동 시작");
@@ -31,7 +31,10 @@ public class SchedulingService {
             LocalDateTime postCreationTime = post.getCreateTime();  //게시글 생성 시간
             int dday = post.getDeadline(); // D-day
 
-            LocalDateTime deadlineTime = postCreationTime.plusDays(dday);   //마감 시간 계산
+            LocalDateTime deadlineTime = postCreationTime.plusDays(dday)
+                    .withHour(23)
+                    .withMinute(59)
+                    .withSecond(59);   //마감 시간: 마감일 기준 23시 59분 59초
 
             if (currentDate.isAfter(deadlineTime)) {
                 post.setDone();
