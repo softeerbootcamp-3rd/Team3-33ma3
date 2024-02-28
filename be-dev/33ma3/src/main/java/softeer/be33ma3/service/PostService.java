@@ -10,8 +10,8 @@ import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.dto.response.*;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.*;
-import softeer.be33ma3.repository.post.PostRepository;
-import softeer.be33ma3.repository.review.ReviewRepository;
+import softeer.be33ma3.repository.PostRepository;
+import softeer.be33ma3.repository.ReviewRepository;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -114,7 +114,7 @@ public class PostService {
         // 2. 게시글 세부 사항 가져오기
         PostDetailDto postDetailDto = PostDetailDto.fromEntity(post);
         // 3. 경매가 완료되었거나 글 작성자의 접근일 경우
-        if(post.isDone() || (member!=null && post.getMember().equals(member))) {
+        if(post.isDone() || (member!=null && post.getMember().getMemberId().equals(member.getMemberId()))) {
             List<Offer> offerList = post.getOffers();
             List<OfferDetailDto> offerDetailDtos = new ArrayList<>(
                     offerList.stream().map(offer -> {

@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -142,6 +143,33 @@ class PostControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.status").value("SUCCESS"))
                 .andExpect(jsonPath("$.message").value("게시글 삭제 성공"));
+    }
+
+    @Test
+    @DisplayName("성공적으로 게시글을 조회할 수 있다.")
+    void showPost() throws Exception {
+        // given & when & then
+        mockMvc.perform(get("/post/one/{post_id}", 1L)
+                .header("Authorization", accessToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("게시글 조회 완료"));
+    }
+
+    @Test
+    @DisplayName("성공적으로 게시글 목록을 조회할 수 있다.")
+    void showPosts() throws Exception {
+        // given
+        boolean mine = true;
+        boolean done = true;
+        String region = "강남구, 양천구";
+        String repair = "판금, 덴트";
+        String tuneUp = "엔진 오일, 타이어 교체";
+        mockMvc.perform(get("/post?mine={mine}&done={done}&region={region}&repair={repair}&tuneUp={tuneUp}", mine, done, region, repair, tuneUp))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.message").value("게시글 목록 조회 성공"))
+                .andExpect(jsonPath("$.data").isArray());
     }
 
     private MockMultipartFile createImages() throws IOException {

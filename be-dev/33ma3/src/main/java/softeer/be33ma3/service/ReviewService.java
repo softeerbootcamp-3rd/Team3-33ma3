@@ -13,8 +13,8 @@ import softeer.be33ma3.dto.response.ShowAllReviewDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.MemberRepository;
 import softeer.be33ma3.repository.OfferRepository;
-import softeer.be33ma3.repository.post.PostRepository;
-import softeer.be33ma3.repository.review.ReviewRepository;
+import softeer.be33ma3.repository.PostRepository;
+import softeer.be33ma3.repository.ReviewRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,7 @@ public class ReviewService {
             throw new BusinessException(NOT_DONE_POST);
         }
         // 2. 글 작성자인지 검증
-        if(!post.getMember().equals(member)) {
+        if(!post.getMember().getMemberId().equals(member.getMemberId())) {
             throw new BusinessException(AUTHOR_ONLY_ACCESS);
         }
         // 3. 이미 리뷰를 작성헀는지 검증
@@ -60,7 +60,7 @@ public class ReviewService {
         // 1. 기존 리뷰 가져오기
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new BusinessException(NOT_FOUND_REVIEW));
         // 2. 리뷰 작성자인지 검증
-        if(!review.getWriter().equals(member)) {
+        if(!review.getWriter().getMemberId().equals(member.getMemberId())) {
             throw new BusinessException(AUTHOR_ONLY_ACCESS);
         }
         reviewRepository.delete(review);

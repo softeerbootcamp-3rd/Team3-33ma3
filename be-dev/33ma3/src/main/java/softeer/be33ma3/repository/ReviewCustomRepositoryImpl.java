@@ -1,4 +1,4 @@
-package softeer.be33ma3.repository.review;
+package softeer.be33ma3.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;

@@ -1,4 +1,4 @@
-package softeer.be33ma3.repository.post;
+package softeer.be33ma3.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
