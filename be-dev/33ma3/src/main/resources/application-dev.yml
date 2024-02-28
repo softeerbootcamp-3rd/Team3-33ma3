@@ -1,24 +1,27 @@
-#profile
 spring:
-  profiles:
-    default: local
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/threethree?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
+    username: ${db-username}
+    password: ${db-password}
   jpa:
     open-in-view: true
     hibernate:
-      ddl-auto: none
+      dialect: org.hibernate.dialect.MySQLDialect
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate.format_sql: true
+jwt:
+  secret: ${jwt-secret}
 
----
-# AWS ??
 cloud:
   aws:
     s3:
       bucket: threethree
     credentials:
-      access-key: AKIAQAGGNPMBDF3KVXVU
-      secret-key: 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
+      access-key: ${s3-access-key}
+      secret-key: ${s3-secret-key}
     region:
       static: ap-northeast-2
       auto: false
@@ -32,53 +35,9 @@ logging:
           EC2MetadataUtils: ERROR
 
 # Multipart
+---
 spring:
   servlet:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
-
----
-jwt:
-  secret: threethreemathreethreethreemathreethreethreemathreethreethreemathreethreethreemathree
-
---- #local profile
-spring:
-  config:
-    activate:
-      on-profile: local
-  sql:
-    init:
-      mode: always
-
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/threethree?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
-    username: root
-    password: 12345678
-  jpa:
-    defer-datasource-initialization: true
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate.format_sql: true
-
-
---- #test profile
-spring:
-  config:
-    activate:
-      on-profile: test
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/testdb?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
-    username: root
-    password: 12345678
-  jpa:
-    defer-datasource-initialization: true
-    hibernate:
-      ddl-auto: create
-    show-sql: true
-    properties:
-      hibernate.format_sql: true
