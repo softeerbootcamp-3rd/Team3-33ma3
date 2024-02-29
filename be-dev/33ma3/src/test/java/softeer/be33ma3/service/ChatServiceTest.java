@@ -7,20 +7,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import softeer.be33ma3.domain.ChatMessage;
-import softeer.be33ma3.domain.ChatRoom;
-import softeer.be33ma3.domain.Member;
-import softeer.be33ma3.domain.Post;
+import org.springframework.transaction.annotation.Transactional;
+import softeer.be33ma3.domain.*;
 import softeer.be33ma3.dto.request.PostCreateDto;
 import softeer.be33ma3.dto.response.AllChatRoomDto;
 import softeer.be33ma3.dto.response.ChatHistoryDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.exception.ErrorCode;
 import softeer.be33ma3.repository.*;
-import softeer.be33ma3.repository.Chat.ChatMessageRepository;
-import softeer.be33ma3.repository.Chat.ChatRoomRepository;
-import softeer.be33ma3.repository.post.PostRepository;
-
+import softeer.be33ma3.repository.ChatMessageRepository;
+import softeer.be33ma3.repository.ChatRoomRepository;
+import softeer.be33ma3.repository.PostRepository;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,19 +26,23 @@ import static softeer.be33ma3.exception.ErrorCode.ONLY_POST_AUTHOR_ALLOWED;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Transactional
 class ChatServiceTest {
     @Autowired ChatService chatService;
     @Autowired MemberRepository memberRepository;
     @Autowired ChatRoomRepository chatRoomRepository;
     @Autowired PostRepository postRepository;
     @Autowired ChatMessageRepository chatMessageRepository;
+    @Autowired ImageRepository imageRepository;
 
     @BeforeEach
     void setUp(){
         Member member1 = new Member(1, "client1", "1234", null);
-        Member member2 = new Member(1, "center1", "1234", null);
-        Member other = new Member(1, "other", "1234", null);
-        memberRepository.saveAll(List.of(member1, member2, other));
+        Member member2 = new Member(2, "center1", "1234", null);
+        Member other1 = new Member(1, "otherClient", "1234", null);
+        Member other2 = new Member(2, "otherCenter", "1234", null);
+
+        memberRepository.saveAll(List.of(member1, member2, other1, other2));
     }
     @AfterEach
     void tearDown() {
@@ -49,6 +50,7 @@ class ChatServiceTest {
         chatRoomRepository.deleteAllInBatch();
         postRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();
+        imageRepository.deleteAllInBatch();
     }
 
     @DisplayName("채팅을 할 채팅방을 만든다.")
@@ -72,7 +74,7 @@ class ChatServiceTest {
     void creatRoomOtherMember(){
         //given
         Member client = memberRepository.findMemberByLoginId("client1").get();
-        Member other = memberRepository.findMemberByLoginId("other").get();
+        Member other = memberRepository.findMemberByLoginId("otherClient").get();
         Member center = memberRepository.findMemberByLoginId("center1").get();
 
         Long postId = createPost(client).getPostId();
@@ -101,23 +103,48 @@ class ChatServiceTest {
         assertThat(roomId).isEqualTo(existChatRoomId);
     }
 
-    @DisplayName("해당 사용자의 모든 채팅방을 정보를 반환한다.")
+    @DisplayName("해당 사용자의 모든 채팅방을 정보를 반환한다. - client")
     @Test
-    void showAllChatRoom(){
+    void showAllChatRoomWithClient(){
         //given
         Member client = memberRepository.findMemberByLoginId("client1").get();
         Member center = memberRepository.findMemberByLoginId("center1").get();
+        center.setProfile(saveProfile());
+        client.setProfile(saveProfile());
 
         ChatRoom chatRoom = ChatRoom.createChatRoom(client, center);
         chatRoomRepository.save(chatRoom);
+        ChatMessage chatMessage = ChatMessage.createChatMessage(client, chatRoom, "첫번째 메세지");
+        chatMessageRepository.save(chatMessage);
 
         //when
         List<AllChatRoomDto> allChatRoomDtos = chatService.showAllChatRoom(client);
 
         //then
         assertThat(allChatRoomDtos).hasSize(1)
+                .extracting("memberName", "lastMessage", "noReadCount")   //상대방 이름
+                .containsExactly(tuple("center1", "첫번째 메세지", 0));
+    }
+
+    @DisplayName("해당 사용자의 모든 채팅방을 정보를 반환한다. - center")
+    @Test
+    void showAllChatRoomWithCenter(){
+        //given
+        Member client = memberRepository.findMemberByLoginId("client1").get();
+        Member center = memberRepository.findMemberByLoginId("center1").get();
+        center.setProfile(saveProfile());
+        client.setProfile(saveProfile());
+
+        ChatRoom chatRoom = ChatRoom.createChatRoom(client, center);
+        chatRoomRepository.save(chatRoom);
+
+        //when
+        List<AllChatRoomDto> allChatRoomDtos = chatService.showAllChatRoom(center);
+
+        //then
+        assertThat(allChatRoomDtos).hasSize(1)
                 .extracting("memberName")   //상대방 이름
-                .containsExactly("center1");
+                .containsExactly("client1");
     }
 
     @DisplayName("기존 채팅방의 채팅 내역들을 정보를 반환한다.")
@@ -158,12 +185,28 @@ class ChatServiceTest {
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_FOUND_CHAT_ROOM);
     }
 
-    @DisplayName("해당방의 멤버가 아닌 경우 예외가 발생한다.")
+    @DisplayName("해당방의 멤버가 아닌 경우 예외가 발생한다. - 클라이언트가 없는 경우")
     @Test
-    void showOneChatHistoryWithOtherMember(){
+    void showOneChatHistoryWithOtherClient(){
         Member client = memberRepository.findMemberByLoginId("client1").get();
         Member center = memberRepository.findMemberByLoginId("center1").get();
-        Member other = memberRepository.findMemberByLoginId("other").get();
+        Member other = memberRepository.findMemberByLoginId("otherClient").get();
+
+        ChatRoom chatRoom = ChatRoom.createChatRoom(client, center);
+        ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
+
+        //when //then
+        assertThatThrownBy(() -> chatService.showOneChatHistory(other, savedChatRoom.getChatRoomId()))
+                .isInstanceOf(BusinessException.class)
+                .hasFieldOrPropertyWithValue("errorCode", ErrorCode.NOT_A_MEMBER_OF_ROOM);
+    }
+
+    @DisplayName("해당방의 멤버가 아닌 경우 예외가 발생한다. - 센터가 없는 경우")
+    @Test
+    void showOneChatHistoryWithOtherCenter(){
+        Member client = memberRepository.findMemberByLoginId("client1").get();
+        Member center = memberRepository.findMemberByLoginId("center1").get();
+        Member other = memberRepository.findMemberByLoginId("otherCenter").get();
 
         ChatRoom chatRoom = ChatRoom.createChatRoom(client, center);
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
@@ -178,5 +221,9 @@ class ChatServiceTest {
         PostCreateDto postCreateDto = new PostCreateDto("승용차", "제네시스", 3, "서울시 강남구", "기스, 깨짐", "오일 교체", new ArrayList<>(),"수정후 내용");
         Post post = Post.createPost(postCreateDto, null, savedClient);
         return postRepository.save(post);
+    }
+
+    private Image saveProfile() {
+        return imageRepository.save(Image.createImage("test", "test.png"));
     }
 }

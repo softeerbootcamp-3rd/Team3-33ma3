@@ -29,6 +29,20 @@ public class WebSocketRepository {
         // Set<Long>에 memberId가 포함되어 있는지 확인
         return members.contains(memberId);
     }
+
+    public Long findReceiverInChatRoom(Long roomId, Long memberId) {
+        Set<Long> memberIds = chatRoom.get(roomId);
+
+        if(memberIds != null){
+            return memberIds.stream()
+                    .filter(id -> !id.equals(memberId))
+                    .findFirst()
+                    .orElse(null); // 해당하는 멤버가 없을 경우
+        }
+
+        return null;
+    }
+
     public WebSocketSession findSessionByMemberId(Long memberId) {
         return sessions.get(memberId);
     }

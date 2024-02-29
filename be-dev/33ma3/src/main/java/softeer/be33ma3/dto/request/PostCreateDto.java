@@ -27,7 +27,6 @@ public class PostCreateDto {
 
     @Schema(description = "마감기한", example = "2")
     @NotNull(message = "마감기한은 필수입니다.")
-    @Min(value = 1,message = "최소 1일 이상 선택해야 합니다.")
     @Max(value = 10, message = "최대 10일까지 가능합니다.")
     private Integer deadline;
 
@@ -36,11 +35,9 @@ public class PostCreateDto {
     private String location;
 
     @Schema(description = "수리 서비스 종류", example = "기스, 깨짐")
-    @NotBlank(message = "수리 서비스는 필수입니다.")
     private String repairService;
 
     @Schema(description = "정비 서비스", example = "오일 교체, 타이어 교체")
-    @NotNull
     private String tuneUpService;
 
     @Schema(description = "주위 센터 아이디", example = "[1, 2, 3]")

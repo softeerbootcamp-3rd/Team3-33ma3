@@ -6,14 +6,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import softeer.be33ma3.dto.response.AvgPriceDto;
 import softeer.be33ma3.exception.BusinessException;
-import softeer.be33ma3.repository.review.ReviewRepository;
+import softeer.be33ma3.repository.ReviewRepository;
 import softeer.be33ma3.domain.Member;
 import softeer.be33ma3.domain.Offer;
 import softeer.be33ma3.domain.Post;
 import softeer.be33ma3.dto.request.OfferCreateDto;
 import softeer.be33ma3.dto.response.OfferDetailDto;
 import softeer.be33ma3.repository.OfferRepository;
-import softeer.be33ma3.repository.post.PostRepository;
+import softeer.be33ma3.repository.PostRepository;
 import softeer.be33ma3.response.DataResponse;
 import softeer.be33ma3.websocket.WebSocketService;
 
@@ -77,7 +77,7 @@ public class OfferService {
         // 2. 기존 댓글 가져오기
         Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
         // 3. 수정 가능한지 검증
-        if(!offer.getCenter().equals(member))
+        if(!offer.getCenter().getMemberId().equals(member.getMemberId()))
             throw new BusinessException(AUTHOR_ONLY_ACCESS);
         if(offerCreateDto.getPrice() > offer.getPrice())
             throw new BusinessException(ONLY_LOWER_AMOUNT_ALLOWED);
@@ -97,7 +97,7 @@ public class OfferService {
         // 2. 기존 댓글 가져오기
         Offer offer = offerRepository.findByPost_PostIdAndOfferId(postId, offerId).orElseThrow(() -> new BusinessException(NOT_FOUND_OFFER));
         // 3. 삭제 가능한지 검증
-        if(!offer.getCenter().equals(member))
+        if(!offer.getCenter().getMemberId().equals(member.getMemberId()))
             throw new BusinessException(AUTHOR_ONLY_ACCESS);
         // 4. 댓글 삭제
         offerRepository.delete(offer);

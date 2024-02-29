@@ -10,6 +10,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import softeer.be33ma3.dto.request.ChatMessageDto;
 import softeer.be33ma3.service.ChatService;
 
+import java.io.IOException;
 import java.util.Map;
 
 @Component
@@ -36,12 +37,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
             }
 
         } catch (Exception e) {
-            log.error("메세지 수신 에러");
+            log.error(e.getMessage());
         }
     }
   
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) {
+    public void afterConnectionEstablished(WebSocketSession session) throws IOException {
         try {
             super.afterConnectionEstablished(session);
         } catch(Exception e) {

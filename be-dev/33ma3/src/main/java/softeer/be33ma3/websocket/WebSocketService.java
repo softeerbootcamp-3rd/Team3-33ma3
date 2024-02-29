@@ -28,6 +28,7 @@ public class WebSocketService {
         if(payload.contains("chat") && payload.contains("memberId")) {
             log.info("채팅방에서 유저가 나갔습니다.");
             ExitRoomMember exitRoomMember = objectMapper.readValue(payload, ExitRoomMember.class);
+            sendReceiverExit(exitRoomMember.getRoomId(), exitRoomMember.getMemberId()); //상대방이 나가는 경우 전송
             closeChatConnection(exitRoomMember.getRoomId(), exitRoomMember.getMemberId());
         }
         if(payload.contains("chatRoom") && payload.contains("memberId")){
@@ -93,10 +94,32 @@ public class WebSocketService {
         webSocketRepository.saveSessionWithMemberId(memberId, session);
     }
 
-    public void saveInChat(Long roomId, Long memberId, WebSocketSession session){
+    public void saveInChat(Long roomId, Long memberId, WebSocketSession session) throws IOException {
         webSocketRepository.saveMemberInChat(roomId, memberId);
         webSocketRepository.saveSessionWithMemberId(memberId, session);
+        sendReceiverExists(roomId, memberId);
+    }
 
+    private void sendReceiverExists(Long roomId, Long memberId) throws IOException {
+        if(webSocketRepository.findReceiverInChatRoom(roomId, memberId) != null){
+            Long receiverId = webSocketRepository.findReceiverInChatRoom(roomId, memberId);
+            WebSocketSession receiver = webSocketRepository.findSessionByMemberId(receiverId);
+            WebSocketSession sender = webSocketRepository.findSessionByMemberId(memberId);
+
+            TextMessage textMessage = new TextMessage("true");
+            receiver.sendMessage(textMessage);
+            sender.sendMessage(textMessage);
+        }
+    }
+
+    private void sendReceiverExit(Long roomId, Long memberId) throws IOException {
+        if(webSocketRepository.findReceiverInChatRoom(roomId, memberId) != null){
+            Long receiverId = webSocketRepository.findReceiverInChatRoom(roomId, memberId);
+            WebSocketSession session = webSocketRepository.findSessionByMemberId(receiverId);
+
+            TextMessage textMessage = new TextMessage("false");
+            session.sendMessage(textMessage);
+        }
     }
 
     public void saveInAllChatRoom(Long memberId, WebSocketSession session) {

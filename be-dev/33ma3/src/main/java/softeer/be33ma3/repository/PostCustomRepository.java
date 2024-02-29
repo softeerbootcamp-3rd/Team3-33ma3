@@ -1,4 +1,4 @@
-package softeer.be33ma3.repository.post;
+package softeer.be33ma3.repository;
 
 import softeer.be33ma3.domain.Post;
 

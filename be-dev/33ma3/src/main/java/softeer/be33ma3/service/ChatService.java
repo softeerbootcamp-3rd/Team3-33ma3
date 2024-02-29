@@ -13,18 +13,17 @@ import softeer.be33ma3.dto.response.ChatMessageResponseDto;
 import softeer.be33ma3.dto.response.LastMessageDto;
 import softeer.be33ma3.exception.BusinessException;
 import softeer.be33ma3.repository.*;
-import softeer.be33ma3.repository.Chat.ChatMessageRepository;
-import softeer.be33ma3.repository.Chat.ChatRoomRepository;
-import softeer.be33ma3.repository.post.PostRepository;
+import softeer.be33ma3.repository.ChatMessageRepository;
+import softeer.be33ma3.repository.ChatRoomRepository;
+import softeer.be33ma3.repository.PostRepository;
 import softeer.be33ma3.websocket.WebSocketRepository;
 import softeer.be33ma3.websocket.WebSocketService;
 
-import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static softeer.be33ma3.exception.ErrorCode.*;
-import static softeer.be33ma3.utils.StringParser.createTimeParsing;
 
 @Service
 @RequiredArgsConstructor
@@ -75,7 +74,7 @@ public class ChatService {
     }
 
     @Transactional
-    public void sendChatMessage(ChatMessageDto chatMessageDto) throws IOException {
+    public void sendChatMessage(ChatMessageDto chatMessageDto) {
         Member sender = memberRepository.findById(chatMessageDto.getSenderId()).get();
         Member receiver = memberRepository.findById(chatMessageDto.getReceiverId()).get();
         ChatRoom chatRoom = chatRoomRepository.findById(chatMessageDto.getRoomId()).get();
@@ -93,6 +92,7 @@ public class ChatService {
             }
             return;
         }
+
         sendDirectToReceiver(savedChatMessage, chatRoom, sender, receiver);     //채팅방에 상대방이 존재하는 경우
     }
 
@@ -114,11 +114,11 @@ public class ChatService {
         LastMessageDto lastMessage = chatMessageRepository.findLastMessageByChatRoomId(chatRoom.getChatRoomId());//마지막 메세지
 
         if(lastMessage == null){    //방이 만들어지고 메세지를 보내지 않은 경우
-            return AllChatRoomDto.create(chatRoom, "", memberName, 0, "");
+            return AllChatRoomDto.create(chatRoom, "", memberName, 0, LocalDateTime.now());
         }
 
         int count = (int) chatMessageRepository.countReadDoneIsFalse(chatRoom.getChatRoomId(), member.getMemberId());     //안읽은 메세지 개수
-        return AllChatRoomDto.create(chatRoom, lastMessage.getMessage(), memberName, count, createTimeParsing(lastMessage.getCreateTime()));
+        return AllChatRoomDto.create(chatRoom, lastMessage.getMessage(), memberName, count, lastMessage.getCreateTime());
     }
 
     @Transactional
@@ -133,7 +133,7 @@ public class ChatService {
             if(!chatMessage.getSender().getMemberId().equals(member.getMemberId()) && !chatMessage.isReadDone()){   //상대방이 보낸 메세지의 읽음 여부가 false인 경우
                 chatMessage.setReadDoneTrue();      //읽음 처리
             }
-            chatHistoryDtos.add(ChatHistoryDto.getChatHistoryDto(chatMessage, createTimeParsing(chatMessage.getCreateTime())));
+            chatHistoryDtos.add(ChatHistoryDto.getChatHistoryDto(chatMessage, chatMessage.getCreateTime()));
         }
 
         return chatHistoryDtos;
